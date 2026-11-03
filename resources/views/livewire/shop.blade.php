@@ -199,6 +199,12 @@
                                             <h4 class="product-single__series">{{ $product->category->name }}</h4>
 
                                             <h3 class="product-card__title" style="white-space: normal; word-wrap: break-word; overflow: visible; display: block; height: auto;"><span style="color: red">{{ $product->isOutOfStock() ? '[Hết hàng]' : '' }}</span> {{ $product->name }}</h3>
+                                            @if($product->approved_reviews_count > 0)
+                                            <div style="color:#f59e0b;font-size:12px;margin:2px 0 4px;display:flex;align-items:center;gap:4px;">
+                                                <span>★ {{ number_format($product->approved_reviews_avg, 1) }}</span>
+                                                <span style="color:#9ca3af;font-size:11px;">({{ $product->approved_reviews_count }})</span>
+                                            </div>
+                                            @endif
                                             <div class="product-price">
 
 

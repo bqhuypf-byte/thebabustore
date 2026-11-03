@@ -45,7 +45,22 @@ class Product extends Model
     }
     public function reviews()
     {
-        return $this->hasMany(Review::class); // Giả sử bạn có một model Review
+        return $this->hasMany(Review::class);
+    }
+
+    public function approvedReviews()
+    {
+        return $this->hasMany(Review::class)->where('status', 'approved');
+    }
+
+    public function getApprovedReviewsCountAttribute(): int
+    {
+        return $this->approvedReviews()->count();
+    }
+
+    public function getApprovedReviewsAvgAttribute(): float
+    {
+        return (float) round($this->approvedReviews()->avg('rating') ?? 0, 1);
     }
 
     public function productCount()

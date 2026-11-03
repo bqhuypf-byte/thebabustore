@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -9,20 +10,35 @@ class Review extends Model
 {
     use HasFactory;
 
-    // Các trường có thể được gán giá trị
     protected $fillable = [
-        'product_id', // ID của sản phẩm
-        'rating', // Đánh giá từ 1 đến 5
-        'comment', // Nhận xét của người dùng
-        'name', // Tên người đánh giá
-        'phone', // Số điện thoại
-        'email', // Email
-        'image_path', // Đường dẫn đến hình ảnh
+        'product_id',
+        'rating',
+        'comment',
+        'name',
+        'phone',
+        'email',
+        'image_path',
+        'status',
+        'is_verified_purchase',
     ];
 
-    // Quan hệ với model Product
+    protected $casts = [
+        'rating' => 'integer',
+        'is_verified_purchase' => 'boolean',
+    ];
+
     public function product()
     {
         return $this->belongsTo(Product::class);
+    }
+
+    public function scopeApproved(Builder $query): Builder
+    {
+        return $query->where('status', 'approved');
+    }
+
+    public function scopePending(Builder $query): Builder
+    {
+        return $query->where('status', 'pending');
     }
 }

@@ -5329,39 +5329,17 @@
                         <div class="col-xs-12 col-sm-6 col-lg-6 col-md-6 details-pro">
                             <div class="product-top clearfix">
                                 <h1 class="title-head">{{ $product->name }}</h1>
-                                <div class="sapo-product-reviews-badge" data-id="34143815" onclick="scrollToxx();">
-                                    <div class="sapo-product-reviews-badge" data-id="34143815" onclick="scrollToxx();">
-                                        <div class="sapo-product-reviews-star" data-score="0" data-number="5"
-                                            title="Not rated yet!">
-                                            <svg class="star" xmlns="http://www.w3.org/2000/svg" width="24" height="24"
-                                                viewBox="0 0 24 24" fill="#ffbe00">
-                                                <path
-                                                    d="M12 .587l3.668 7.431 8.255 1.198-5.976 5.152 1.417 8.226L12 18.896l-7.364 3.867 1.417-8.226-5.976-5.152 8.255-1.198z" />
-                                            </svg>
-                                            <svg class="star" xmlns="http://www.w3.org/2000/svg" width="24" height="24"
-                                                viewBox="0 0 24 24" fill="#ffbe00">
-                                                <path
-                                                    d="M12 .587l3.668 7.431 8.255 1.198-5.976 5.152 1.417 8.226L12 18.896l-7.364 3.867 1.417-8.226-5.976-5.152 8.255-1.198z" />
-                                            </svg>
-                                            <svg class="star" xmlns="http://www.w3.org/2000/svg" width="24" height="24"
-                                                viewBox="0 0 24 24" fill="#ffbe00">
-                                                <path
-                                                    d="M12 .587l3.668 7.431 8.255 1.198-5.976 5.152 1.417 8.226L12 18.896l-7.364 3.867 1.417-8.226-5.976-5.152 8.255-1.198z" />
-                                            </svg>
-                                            <svg class="star" xmlns="http://www.w3.org/2000/svg" width="24" height="24"
-                                                viewBox="0 0 24 24" fill="#ffbe00">
-                                                <path
-                                                    d="M12 .587l3.668 7.431 8.255 1.198-5.976 5.152 1.417 8.226L12 18.896l-7.364 3.867 1.417-8.226-5.976-5.152 8.255-1.198z" />
-                                            </svg>
-                                            <svg class="star" xmlns="http://www.w3.org/2000/svg" width="24" height="24"
-                                                viewBox="0 0 24 24" fill="#ffbe00">
-                                                <path
-                                                    d="M12 .587l3.668 7.431 8.255 1.198-5.976 5.152 1.417 8.226L12 18.896l-7.364 3.867 1.417-8.226-5.976-5.152 8.255-1.198z" />
-                                            </svg>
-                                            <input name="score" type="hidden" readonly="">
-                                        </div>
+                                @if($reviewCount > 0)
+                                <div class="sapo-product-reviews-badge" onclick="scrollToxx();" style="display:inline-flex;align-items:center;gap:6px;cursor:pointer;margin:6px 0 10px;">
+                                    <div style="display:inline-flex;color:#f59e0b;font-size:15px;">
+                                        @for($s = 1; $s <= 5; $s++)
+                                            {{ $s <= round($avgRating) ? '★' : '☆' }}
+                                        @endfor
                                     </div>
+                                    <span style="font-size:13px;color:#4b5563;font-weight:600;">{{ number_format($avgRating, 1) }} ({{ $reviewCount }} đánh giá)</span>
                                 </div>
+                                @endif
+                            </div>
 
                                     <div style="display: flex; gap: 30px">
 
@@ -5611,8 +5589,8 @@
                             <div class="col-xs-12 col-sm-12 col-lg-12 col-md-12 margin-top-20">
                                 <div class="product-tab e-tabs padding-bottom-10 evo-tab-product-mobile">
                                     <ul class="tabs tabs-title clearfix hidden-xs">
-                                        <li class="tab-link" data-tab="tab-1">Mô tả</li>
-                                        <li class="tab-link " data-tab="tab-3">Nhận xét sản phẩm</li>
+                                        <li class="tab-link active" data-tab="tab-1">Mô tả</li>
+                                        <li class="tab-link" data-tab="tab-3">Đánh giá ({{ $reviewCount }})</li>
                                     </ul>
                                     <div id="tab-1" class="tab-content active">
                                         <a class="evo-product-tabs-header hidden-lg hidden-md hidden-sm"
@@ -5633,10 +5611,10 @@
 
 
 
-                                    <div id="tab-3" class="tab-content current">
+                                    <div id="tab-3" class="tab-content">
                                         <a class="evo-product-tabs-header hidden-lg hidden-md hidden-sm"
                                             href="javascript:void(0);">
-                                            <span>Nhận xét sản phẩm</span>
+                                            <span>Đánh giá ({{ $reviewCount }})</span>
                                             <svg xmlns="http://www.w3.org/2000/svg" width="5.658" height="9.903"
                                                 viewBox="0 0 5.658 9.903">
                                                 <path d="M5429 1331.94l4.451 4.451-4.451 4.452" stroke="#1c1c1c"
@@ -5646,105 +5624,66 @@
                                             </svg>
                                         </a>
                                         <div class="rte">
-                                            <div id="sapo-product-reviews" class="sapo-product-reviews"
-                                                data-id="37170225">
-                                                <div>
-                                                    <div id="sapo-product-reviews-noitem">
-                                                        <div>
-                                                            <div class="content">
-                                                                <p>Hiện tại sản phẩm chưa có đánh giá nào, bạn hãy trở
-                                                                    thành
-                                                                    người đầu tiên đánh giá cho sản phẩm này</p>
-                                                                <div class="product-reviews-summary-actions">
-                                                                    <button type="button" class="btn-new-review">Gửi
-                                                                        đánh giá của bạn</button>
-                                                                </div>
-
+                                            @if($reviewCount == 0)
+                                                <div style="background:#f9fafb;border:1px dashed #d1d5db;border-radius:12px;padding:32px 20px;text-align:center;margin:15px 0;">
+                                                    <p style="color:#6b7280;font-size:15px;margin-bottom:14px;">Hiện tại sản phẩm chưa có đánh giá nào. Bạn hãy trở thành người đầu tiên đánh giá cho sản phẩm này!</p>
+                                                    <button type="button" class="btn-new-review" style="background:#80BB35;color:#fff;border:none;padding:10px 22px;border-radius:6px;font-weight:bold;cursor:pointer;">Viết đánh giá ngay</button>
+                                                </div>
+                                            @else
+                                                <div style="background:#f9fafb;border:1px solid #e5e7eb;border-radius:12px;padding:24px;margin:15px 0;">
+                                                    <div class="row" style="display:flex;flex-wrap:wrap;align-items:center;">
+                                                        <div class="col-xs-12 col-sm-4 text-center" style="border-right:1px solid #e5e7eb;margin-bottom:15px;">
+                                                            <div style="font-size:42px;font-weight:900;color:#111827;line-height:1;">{{ number_format($avgRating, 1) }}</div>
+                                                            <div style="color:#f59e0b;font-size:18px;margin:8px 0;">
+                                                                @for($s = 1; $s <= 5; $s++)
+                                                                    {{ $s <= round($avgRating) ? '★' : '☆' }}
+                                                                @endfor
                                                             </div>
+                                                            <div style="font-size:13px;color:#6b7280;">Dựa trên {{ $reviewCount }} đánh giá</div>
+                                                        </div>
+                                                        <div class="col-xs-12 col-sm-5" style="padding:0 20px;margin-bottom:15px;">
+                                                            @foreach([5,4,3,2,1] as $star)
+                                                                @php
+                                                                    $cnt = $ratingDistribution[$star] ?? 0;
+                                                                    $pct = $reviewCount > 0 ? round(($cnt / $reviewCount) * 100) : 0;
+                                                                @endphp
+                                                                <div style="display:flex;align-items:center;gap:8px;font-size:12px;margin:3px 0;">
+                                                                    <span style="width:40px;color:#4b5563;">{{ $star }} sao</span>
+                                                                    <div style="flex:1;height:8px;background:#e5e7eb;border-radius:99px;overflow:hidden;">
+                                                                        <div style="width:{{ $pct }}%;height:100%;background:#f59e0b;border-radius:99px;"></div>
+                                                                    </div>
+                                                                    <span style="width:30px;color:#9ca3af;text-align:right;">{{ $cnt }}</span>
+                                                                </div>
+                                                            @endforeach
+                                                        </div>
+                                                        <div class="col-xs-12 col-sm-3 text-center">
+                                                            <button type="button" class="btn-new-review" style="background:#80BB35;color:#fff;border:none;padding:10px 18px;border-radius:6px;font-weight:bold;cursor:pointer;">Gửi đánh giá của bạn</button>
                                                         </div>
                                                     </div>
-                                                    <style>
-                                                        .sapo-product-reviews-summary,
-                                                        #sapo-product-reviews-noitem {
-                                                            background-color: rgba(128, 187, 53, 0.1)
-                                                        }
-
-                                                        .bpr-summary-average {
-                                                            color: #80BB35
-                                                        }
-
-                                                        .sapo-product-reviews-star {
-                                                            color: #ffbe00
-                                                        }
-
-                                                        .btn-new-review {
-                                                            background-color: #80BB35;
-                                                            border-color: #80BB35
-                                                        }
-
-                                                        #sapo-product-reviews .sapo-product-reviews-summary .sapo-product-reviews-filter input:checked~.checkmark {
-                                                            color: #80BB35;
-                                                            border-color: #80BB35
-                                                        }
-
-                                                        #sapo-product-reviews-frm #fileAttach svg path {
-                                                            fill: #80BB35
-                                                        }
-
-                                                        #sapo-product-reviews-frm .bpr-button-submit {
-                                                            background-color: #80BB35;
-                                                            border-color: #80BB35
-                                                        }
-
-                                                        .sapo-review-verified,
-                                                        .sapo-review-actions {
-                                                            color: #80BB35
-                                                        }
-
-                                                        .icon-verified path {
-                                                            fill: #80BB35
-                                                        }
-
-                                                        #sapo-product-reviews .sapo-product-reviews-list .sapo-review-reply-list .sapo-review-reply-item .sapo-review-reply-author .is-admin {
-                                                            background-color: #80BB35;
-                                                            border-color: #80BB35
-                                                        }
-
-                                                        .simple-pagination li span.current,
-                                                        .simple-pagination li a.current {
-                                                            color: #80BB35;
-                                                            border-color: #80BB35;
-                                                        }
-
-                                                        #sapo-product-reviews .sapo-product-reviews-summary .sapo-product-reviews-filter h4,
-                                                        #sapo-product-reviews .sapo-product-reviews-summary .sapo-product-reviews-filter p {
-                                                            background-color: #80BB35;
-                                                            border-color: #80BB35;
-                                                        }
-
-                                                        #sapo-product-reviews .sapo-product-reviews-summary .sapo-product-reviews-filter h4.active,
-                                                        #sapo-product-reviews .sapo-product-reviews-summary .sapo-product-reviews-filter p.active {
-                                                            color: #80BB35
-                                                        }
-
-                                                        #sapo-product-reviews .sapo-product-reviews-list .sapo-review-reply-list .btn-show-prev {
-                                                            background-color: rgba(128, 187, 53, 0.1);
-                                                            color: #80BB35
-                                                        }
-
-                                                        .bpr-success-popup .icon-checked svg path {
-                                                            fill: #80BB35
-                                                        }
-
-                                                        .sapo-review-reply-form .bpr-form-actions .bpr-reply-button-submit {
-                                                            border-color: #80BB35;
-                                                            background: #80BB35;
-                                                        }
-                                                    </style>
-                                                    <style></style>
                                                 </div>
-                                            </div>
 
+                                                <div class="reviews-list" style="margin-top:20px;">
+                                                    @foreach($approvedReviews as $rev)
+                                                        <div style="border-bottom:1px solid #f3f4f6;padding:16px 0;">
+                                                            <div style="display:flex;justify-content:space-between;align-items:center;">
+                                                                <div>
+                                                                    <strong style="color:#111827;font-size:14px;">{{ $rev->name }}</strong>
+                                                                    @if($rev->is_verified_purchase)
+                                                                        <span style="background:#dcfce7;color:#15803d;font-size:11px;padding:2px 8px;border-radius:99px;margin-left:6px;font-weight:600;">✓ Đã mua hàng</span>
+                                                                    @endif
+                                                                </div>
+                                                                <span style="color:#9ca3af;font-size:12px;">{{ $rev->created_at->format('d/m/Y H:i') }}</span>
+                                                            </div>
+                                                            <div style="color:#f59e0b;font-size:14px;margin:4px 0 8px;">
+                                                                @for($s = 1; $s <= 5; $s++)
+                                                                    {{ $s <= $rev->rating ? '★' : '☆' }}
+                                                                @endfor
+                                                            </div>
+                                                            <p style="color:#374151;font-size:14px;line-height:1.5;margin:0;">{{ $rev->comment }}</p>
+                                                        </div>
+                                                    @endforeach
+                                                </div>
+                                            @endif
                                         </div>
                                     </div>
 
@@ -6186,8 +6125,8 @@
                             <div class="form-group form-group__multiple">
                                 <div class="bpr-form-contact-name require">
                                     <input required type="text" maxlength="100" id="review_author" name="author"
-                                        wire:model="author" placeholder="Nhập họ tên của bạn">
-                                    <span class="bpr-form-message-error"></span>
+                                        wire:model="name" placeholder="Nhập họ tên của bạn">
+                                    @error('name') <span style="color:#ef4444;font-size:12px;">{{ $message }}</span> @enderror
                                 </div>
                                 <div class="bpr-form-contact-email require">
                                     <input required type="text" maxlength="50" id="review_email" name="email"
