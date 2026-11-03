@@ -21,6 +21,8 @@ class User extends Authenticatable implements FilamentUser
         'name',
         'email',
         'password',
+        'phone',
+        'is_admin',
         'province',
         'district',
         'ward',
@@ -47,13 +49,14 @@ class User extends Authenticatable implements FilamentUser
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
+            'is_admin' => 'boolean',
         ];
     }
 
     public function canAccessPanel(Panel $panel): bool
     {
-        // Only allow access for the user with the specific email
-        return $this->email === 'admin@gmail.com';
+        // Allow access for users marked as admin or fallback to admin@gmail.com
+        return (bool) $this->is_admin || $this->email === 'admin@gmail.com';
     }
 
     public function orders()

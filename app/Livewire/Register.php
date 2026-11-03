@@ -65,6 +65,16 @@ class Register extends Component
     }
     public function register()
     {
+        // Chặn đăng ký công khai dùng email admin hệ thống
+        if (strtolower(trim($this->email)) === 'admin@gmail.com') {
+            $this->alert('error', 'Email này được bảo lưu cho quản trị hệ thống!', [
+                'position' => 'top-end',
+                'timer' => 3000,
+                'toast' => true,
+            ]);
+            return;
+        }
+
         // Kiểm tra xem email đã tồn tại chưa
         if (User::where('email', $this->email)->exists()) {
             $this->alert('error', 'Email đã tồn tại!', [
