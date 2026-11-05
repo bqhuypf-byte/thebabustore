@@ -36,13 +36,14 @@ class ProductResource extends Resource
     protected static ?string $model = Product::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-squares-2x2';
-    protected static ?int $navigationSort = 4;
-    protected static ?string $navigationGroup = 'Quản lý chung'; // Nhóm điều hướng
+    protected static ?string $navigationLabel = 'Danh sách sản phẩm';
+    protected static ?int $navigationSort = 1;
+    protected static ?string $navigationGroup = 'Quản lý bán hàng';
     protected static ?string $recordTitleAttribute = 'name'; // Thuộc tính tiêu đề của bản ghi
 
     public static function getPluralModelLabel(): string
     {
-        return 'Sản phẩm';
+        return 'Danh sách sản phẩm';
     }
 
     public static function form(Form $form): Form

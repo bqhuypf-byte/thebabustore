@@ -18,7 +18,8 @@ class SubcategoryResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-folder'; // Thay đổi biểu tượng điều hướng
 
-    protected static ?string $navigationGroup = 'Quản lý chung'; // Nhóm điều hướng
+    protected static ?string $navigationGroup = 'Quản lý bán hàng';
+    protected static ?int $navigationSort = 5;
 
     public static function getPluralModelLabel(): string
     {

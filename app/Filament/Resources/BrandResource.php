@@ -19,13 +19,13 @@ class BrandResource extends Resource
 {
     protected static ?string $model = Brand::class;
     protected static ?string $navigationIcon = 'heroicon-o-computer-desktop';
-    protected static ?string $navigationGroup = 'Quản lý chung';
+    protected static ?string $navigationGroup = 'Quản lý bán hàng';
     public static function getPluralModelLabel(): string
     {
         return 'Thương hiệu';
     }
 
-    protected static ?int $navigationSort = 2;
+    protected static ?int $navigationSort = 4;
     
     public static function form(Form $form): Form
     {

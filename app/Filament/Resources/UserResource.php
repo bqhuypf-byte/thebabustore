@@ -23,12 +23,14 @@ class UserResource extends Resource
     protected static ?string $model = User::class; // Thay đổi model nếu cần
 
     protected static ?string $navigationIcon = 'heroicon-o-user-group'; // Biểu tượng điều hướng
-    protected static ?string $navigationGroup = 'Cài Đặt'; // Nhóm điều hướng
+    protected static ?string $navigationLabel = 'Người dùng hệ thống';
+    protected static ?string $navigationGroup = 'Hệ thống';
+    protected static ?int $navigationSort = 1;
     protected static ?string $recordTitleAttribute = 'name'; // Thuộc tính tiêu đề của bản ghi
     
     public static function getPluralModelLabel(): string
     {
-        return 'Người Dùng';
+        return 'Người dùng hệ thống';
     }
 
     public static function form(Form $form): Form
@@ -53,6 +55,16 @@ class UserResource extends Resource
                         Forms\Components\DateTimePicker::make('email_verified_at')
                             ->label('Ngày Xác Minh Email') // Nhãn cho trường Ngày Xác Minh Email
                             ->default(now()),
+
+                        Forms\Components\Select::make('role_id')
+                            ->label('Vai trò & Phân quyền')
+                            ->relationship('role', 'name')
+                            ->searchable()
+                            ->preload(),
+
+                        Forms\Components\Toggle::make('is_admin')
+                            ->label('Cho phép truy cập trang quản trị')
+                            ->default(true),
     
                         Forms\Components\TextInput::make('password')
                             ->label('Mật Khẩu') // Nhãn cho trường Mật Khẩu
@@ -75,6 +87,14 @@ class UserResource extends Resource
                 Tables\Columns\TextColumn::make('email')
                     ->label('Email') // Nhãn Email
                     ->searchable(),
+
+                Tables\Columns\TextColumn::make('role.name')
+                    ->label('Vai trò')
+                    ->badge(),
+
+                Tables\Columns\IconColumn::make('is_admin')
+                    ->label('Quản trị')
+                    ->boolean(),
     
                 Tables\Columns\TextColumn::make('email_verified_at')
                     ->label('Ngày Xác Minh Email') // Đổi nhãn sang tiếng Việt

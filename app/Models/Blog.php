@@ -15,7 +15,27 @@ class Blog extends Model
         'short_description',
         'banner',
         'slug',
+        'content_type_id',
+        'content_category_id',
+        'status',
+        'published_at',
+        'seo_title',
+        'seo_description',
     ];
+
+    protected $casts = [
+        'published_at' => 'datetime',
+    ];
+
+    public function contentType()
+    {
+        return $this->belongsTo(ContentType::class);
+    }
+
+    public function contentCategory()
+    {
+        return $this->belongsTo(ContentCategory::class);
+    }
     protected static function boot()
     {
         parent::boot();

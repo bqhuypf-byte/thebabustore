@@ -19,10 +19,17 @@ class SettingResource extends Resource
     protected static ?string $model = Setting::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-cog'; // Thay đổi biểu tượng
+    protected static ?string $navigationLabel = 'Cài đặt Website';
 
-    protected static ?string $navigationGroup = 'Cài Đặt'; // Thêm nhóm điều hướng
+    protected static ?string $navigationGroup = 'Hệ thống';
+    protected static ?int $navigationSort = 4;
 
     protected static string $title = 'Quản Lý Cài Đặt'; // Thêm tiêu đề
+
+    public static function getPluralModelLabel(): string
+    {
+        return 'Cài đặt Website';
+    }
 
     public static function form(Form $form): Form
     {

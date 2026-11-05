@@ -21,11 +21,13 @@ class BlogResource extends Resource
     protected static ?string $model = Blog::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-document-text'; // Biểu tượng điều hướng
-    protected static ?string $navigationGroup = 'Quản lý chung'; // Nhóm điều hướng
+    protected static ?string $navigationLabel = 'Bảng nội dung';
+    protected static ?string $navigationGroup = 'Quản lý nội dung';
+    protected static ?int $navigationSort = 1;
 
     public static function getPluralModelLabel(): string
     {
-        return 'Bài viết';
+        return 'Bảng nội dung';
     }
 
     public static function form(Form $form): Form
@@ -56,6 +58,27 @@ class BlogResource extends Resource
                         ->required()
                         ->helperText('Nhập một mô tả ngắn gọn cho bài viết của bạn.'), // Mô tả dễ hiểu
 
+                    Forms\Components\Select::make('content_type_id')
+                        ->label('Loại nội dung')
+                        ->relationship('contentType', 'name')
+                        ->searchable()
+                        ->preload(),
+
+                    Forms\Components\Select::make('content_category_id')
+                        ->label('Danh mục nội dung')
+                        ->relationship('contentCategory', 'name')
+                        ->searchable()
+                        ->preload(),
+
+                    Forms\Components\Select::make('status')
+                        ->label('Trạng thái xuất bản')
+                        ->options(['draft' => 'Bản nháp', 'published' => 'Đã xuất bản', 'archived' => 'Lưu trữ'])
+                        ->default('draft')
+                        ->required(),
+
+                    Forms\Components\DateTimePicker::make('published_at')
+                        ->label('Thời gian xuất bản'),
+
                         TinyEditor::make('description')
                         ->fileAttachmentsDirectory(directory: 'blogs')
                         ->label('Mô Tả Chi Tiết') // Đổi nhãn sang tiếng Việt
@@ -66,6 +89,13 @@ class BlogResource extends Resource
                         ->label('Ảnh Bìa') // Đổi nhãn sang tiếng Việt
                         ->required()
                         ->helperText('Tải lên ảnh bìa cho bài viết.'), // Mô tả dễ hiểu
+
+                    Forms\Components\Section::make('Tối ưu SEO')
+                        ->schema([
+                            Forms\Components\TextInput::make('seo_title')->label('Tiêu đề SEO')->maxLength(60),
+                            Forms\Components\Textarea::make('seo_description')->label('Mô tả SEO')->maxLength(160),
+                        ])
+                        ->columnSpanFull(),
                 ])
         ]);
     }
@@ -84,6 +114,13 @@ class BlogResource extends Resource
                 Tables\Columns\ImageColumn::make('banner')
                     ->label('Ảnh Bìa') // Đổi nhãn sang tiếng Việt
                     ->searchable(),
+
+                Tables\Columns\TextColumn::make('contentType.name')
+                    ->label('Loại nội dung'),
+
+                Tables\Columns\TextColumn::make('status')
+                    ->label('Trạng thái')
+                    ->badge(),
 
                 Tables\Columns\TextColumn::make('created_at')
                     ->label('Ngày Tạo') // Đổi nhãn sang tiếng Việt

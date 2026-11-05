@@ -23,6 +23,7 @@ class User extends Authenticatable implements FilamentUser
         'password',
         'phone',
         'is_admin',
+        'role_id',
         'province',
         'district',
         'ward',
@@ -62,5 +63,10 @@ class User extends Authenticatable implements FilamentUser
     public function orders()
     {
         return $this->hasMany(Order::class);
+    }
+
+    public function role()
+    {
+        return $this->belongsTo(Role::class);
     }
 }

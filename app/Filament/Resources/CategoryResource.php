@@ -28,13 +28,14 @@ class CategoryResource extends Resource
     protected static ?string $model = Category::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-tag';
-    protected static ?int $navigationSort = 3;
-    protected static ?string $navigationGroup = 'Quản lý chung'; // Nhóm điều hướng
+    protected static ?string $navigationLabel = 'Danh mục sản phẩm';
+    protected static ?int $navigationSort = 5;
+    protected static ?string $navigationGroup = 'Quản lý bán hàng';
     protected static ?string $recordTitleAttribute = 'name'; // Thuộc tính tiêu đề của bản ghi
 
     public static function getPluralModelLabel(): string
     {
-        return 'Danh mục';
+        return 'Danh mục sản phẩm';
     }
     public static function form(Form $form): Form
     {

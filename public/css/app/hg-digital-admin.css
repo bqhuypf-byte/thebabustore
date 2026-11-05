@@ -1,0 +1,175 @@
+@font-face {
+    font-family: "Geist";
+    src: url("/fonts/Geist-Variable.woff2") format("woff2");
+    font-weight: 100 900;
+    font-style: normal;
+    font-display: swap;
+}
+
+:root {
+    --font-family: "Geist", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif !important;
+}
+
+html,
+body,
+.fi-body,
+.fi-layout,
+.fi-sidebar,
+.fi-topbar,
+button,
+input,
+select,
+textarea {
+    font-family: "Geist", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif !important;
+    letter-spacing: -0.015em;
+}
+
+body,
+.fi-body {
+    font-size: 13px;
+    line-height: 20px;
+}
+
+.dark .fi-body,
+.dark .fi-layout {
+    background: #141414;
+}
+
+.dark .fi-sidebar,
+.dark .fi-topbar nav {
+    background: #141414;
+    border-color: #2c2c2c;
+    box-shadow: none;
+}
+
+.fi-sidebar-header {
+    min-height: 62px;
+    border-bottom: 1px solid #2c2c2c;
+    box-shadow: none;
+}
+
+.fi-logo {
+    font-size: 13px !important;
+    font-weight: 600 !important;
+    letter-spacing: 0.02em;
+}
+
+.fi-sidebar-nav {
+    padding: 16px 20px 24px;
+}
+
+.fi-sidebar-group-label {
+    color: #8b8b8b !important;
+    font-size: 13px !important;
+    font-weight: 400 !important;
+    text-transform: none !important;
+}
+
+.fi-sidebar-item-button {
+    min-height: 25px;
+    padding: 2px 0 !important;
+    border-radius: 0 !important;
+    background: transparent !important;
+}
+
+.fi-sidebar-item-label {
+    font-size: 13px !important;
+    font-weight: 450;
+}
+
+.fi-sidebar-item.fi-active .fi-sidebar-item-label {
+    color: #fff !important;
+    font-weight: 600;
+}
+
+.fi-sidebar-item.fi-active .fi-sidebar-item-button {
+    box-shadow: inset 2px 0 0 #fff;
+}
+
+.fi-main {
+    padding: 28px 32px 48px !important;
+}
+
+.fi-header-heading {
+    font-size: 32px !important;
+    font-weight: 500 !important;
+    line-height: 36px !important;
+}
+
+.fi-section,
+.fi-ta-ctn,
+.fi-wi-stats-overview-stat,
+.fi-fo-tabs {
+    border-radius: 8px !important;
+    box-shadow: none !important;
+}
+
+.dark .fi-section,
+.dark .fi-ta-ctn,
+.dark .fi-wi-stats-overview-stat,
+.dark .fi-fo-tabs {
+    background: #191919 !important;
+    border: 1px solid #2d2d2d !important;
+}
+
+.fi-wi-stats-overview-stats-ctn {
+    grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+    gap: 10px !important;
+}
+
+.fi-wi-stats-overview-stat {
+    min-height: 112px;
+    padding: 18px 16px !important;
+}
+
+.fi-wi-stats-overview-stat-label {
+    font-size: 11px !important;
+    color: #a2a2a2 !important;
+}
+
+.fi-wi-stats-overview-stat-value {
+    font-size: 22px !important;
+    font-weight: 600 !important;
+    line-height: 28px !important;
+}
+
+.fi-input-wrp,
+.fi-select-input,
+.fi-btn {
+    border-radius: 3px !important;
+    box-shadow: none !important;
+}
+
+.dark .fi-input-wrp,
+.dark .fi-select-input {
+    background: #222 !important;
+    border-color: #3c3c3c !important;
+}
+
+.fi-input {
+    font-size: 13px !important;
+    line-height: 20px !important;
+    padding-top: 8px !important;
+    padding-bottom: 8px !important;
+}
+
+.fi-ta-header-cell-label,
+.fi-ta-text-item-label {
+    font-size: 13px !important;
+}
+
+@media (max-width: 1279px) {
+    .fi-wi-stats-overview-stats-ctn {
+        grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    }
+}
+
+@media (max-width: 639px) {
+    .fi-main {
+        padding: 20px 16px 36px !important;
+    }
+
+    .fi-wi-stats-overview-stats-ctn {
+        grid-template-columns: 1fr !important;
+    }
+}

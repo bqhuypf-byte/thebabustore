@@ -18,7 +18,9 @@ class OrderItemResource extends Resource
     protected static ?string $model = OrderItem::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-shopping-cart';
-    protected static ?string $navigationGroup = 'Đơn hàng'; // Nhóm điều hướng
+    protected static ?string $navigationLabel = 'Chi tiết đơn hàng';
+    protected static ?string $navigationGroup = 'Quản lý bán hàng';
+    protected static ?int $navigationSort = 7;
     public static function getPluralModelLabel(): string
     {
         return 'Chi tiết đơn hàng';

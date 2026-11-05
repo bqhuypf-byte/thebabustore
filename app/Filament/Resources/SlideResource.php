@@ -20,7 +20,8 @@ class SlideResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack'; // Biểu tượng điều hướng
 
-    protected static ?string $navigationGroup = 'Quản lý chung'; // Nhóm điều hướng
+    protected static ?string $navigationGroup = 'Giao diện & Bố cục';
+    protected static ?int $navigationSort = 2;
 
     protected static string $title = 'Quản Lý Slide'; // Tiêu đề
 
