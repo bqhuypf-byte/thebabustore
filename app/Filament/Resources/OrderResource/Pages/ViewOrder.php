@@ -13,6 +13,11 @@ class ViewOrder extends ViewRecord
     protected function getHeaderActions(): array
     {
         return [
+            Actions\Action::make('receipt')
+                ->label('Xem phiếu xác nhận')
+                ->icon('heroicon-o-printer')
+                ->url(fn (): string => route('orders.receipt', $this->record))
+                ->openUrlInNewTab(),
             Actions\EditAction::make(),
         ];
     }

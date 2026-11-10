@@ -5,7 +5,9 @@ namespace App\Livewire\Inc;
 use App\Models\Activity;
 use Livewire\Component;
 use App\Models\Category; // Thêm dòng này để sử dụng mô hình Category
+use App\Models\Product;
 use App\Helpers\CartManagement;
+use Livewire\Attributes\On;
 
 class Header extends Component
 {
@@ -13,6 +15,7 @@ class Header extends Component
     public $totalPrice = 0;
     public $totalQuantity = 0; // Thêm thuộc tính để lưu tổng số sản phẩm
     public $categories = []; // Khai báo biến categories
+    public string $headerSearch = '';
 
     public function mount()
     {
@@ -52,9 +55,18 @@ class Header extends Component
         }, 0);
     }
 
+    #[On('cart-updated')]
+    public function refreshCart(): void
+    {
+        $this->cartItems = CartManagement::getCartItemsFromSession();
+        $this->calculateTotal();
+        $this->calculateTotalQuantity();
+    }
+
     public function incrementQuantity($productId)
     {
         $this->cartItems = CartManagement::incrementQuantityToCartItem($productId);
+        $this->dispatch('cart-updated');
         $this->calculateTotal(); // Cập nhật tổng
         $this->calculateTotalQuantity(); // Cập nhật tổng số lượng
     }
@@ -62,6 +74,7 @@ class Header extends Component
     public function decrementQuantity($productId)
     {
         $this->cartItems = CartManagement::decrementQuantityToCartItem($productId);
+        $this->dispatch('cart-updated');
         $this->calculateTotal(); // Cập nhật tổng
         $this->calculateTotalQuantity(); // Cập nhật tổng số lượng
     }
@@ -69,17 +82,23 @@ class Header extends Component
     public function removeItem($productId)
     {
         $this->cartItems = CartManagement::removeCartItem($productId);
+        $this->dispatch('cart-updated');
         $this->calculateTotal(); // Cập nhật tổng
         $this->calculateTotalQuantity(); // Cập nhật tổng số lượng
     }
 
     public function render()
     {
-        return view('livewire.inc.header', [
+        $term = trim($this->headerSearch);
+        $searchResults = mb_strlen($term) >= 2
+            ? Product::search($term)->with('variants')->take(6)->get()
+            : collect();
+        return view('livewire.inc.store-header', [
             'cartItems' => $this->cartItems,
             'totalPrice' => $this->totalPrice,
             'totalQuantity' => $this->totalQuantity, // Truyền tổng số lượng sản phẩm sang view
             'categories' => $this->categories, // Truyền danh mục sang view
+            'headerSearchResults' => $searchResults,
         ]);
     }
 }

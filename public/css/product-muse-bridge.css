@@ -1,0 +1,92 @@
+/* Adapter for the existing Laravel storefront; dimensions follow the inspected Muse reference. */
+#product-page, #product-page * { font-family:Roboto,system-ui,-apple-system,"Segoe UI",sans-serif!important; letter-spacing:normal; }
+#product-page { --babu-blue:#182abb; --babu-blue-dark:#111f8f; --babu-blue-light:#eef1fe; font-size:15px!important; line-height:1.55; }
+#product-page main :is(p,li,label,input,textarea,select) { font-size:15px!important; line-height:1.55; }
+#product-page :is(h2,h3,p,figure,ul,ol) { box-sizing:border-box; }
+#product-page main h1.title { font-size:27px; font-weight:800; line-height:1.28; }
+#product-page .tab-pane h2 { font-size:20px!important; line-height:1.35!important; font-weight:800; }
+#product-page .tab-pane h3 { font-size:16px!important; line-height:1.55!important; font-weight:700; }
+#product-page .tab-pane :is(h2,h3) * { font-size:inherit!important; font-weight:inherit; }
+#product-page .tab-pane :is(span,font,div) { font-size:inherit; }
+#product-page .tab-pane img { max-width:100%; height:auto; border-radius:12px; margin:20px auto; }
+#product-page .tab-pane ul { list-style:disc; padding-left:22px; margin:12px 0; }
+#product-page .tab-pane ol { list-style:decimal; padding-left:22px; margin:12px 0; }
+#product-page .tab-pane li { margin:6px 0; }
+#product-page .spec-table :is(th,td) { font-size:14.5px!important; line-height:1.55; }
+#product-page .tab-btn { font-size:14px!important; font-weight:600; }
+#product-page .btn { font-size:15px!important; }
+#product-page .price { color:#d92d20; }
+#product-page .pd-content-section + .pd-content-section { margin-top:24px; }
+#product-page .tabs-card { scroll-margin-top:84px; }
+#product-page .pd-section-text { white-space:pre-line; }
+#product-page .pd-prose table { width:100%; border-collapse:collapse; }
+#product-page .pd-prose td,#product-page .pd-prose th { border:1px solid #e4e7ec; padding:10px 13px; }
+#product-page .pd-prose { overflow-wrap:anywhere; }
+#product-page .pd-prose pre { white-space:pre-wrap; font-size:15px; line-height:1.55; }
+#product-page .pd-prose .table-scroll { overflow-x:auto; }
+#product-page .thumbs { display:flex; overflow-x:auto; padding:2px; scrollbar-width:thin; }
+#product-page .thumbs button { flex:0 0 calc((100% - 30px)/4); min-width:0; }
+#product-page .filled { color:#f5a623; }
+#product-page .meta-row button { font-size:13.5px!important; padding:0; }
+#product-page .feature-check { color:#182abb; flex:none; }
+#product-page .field-error { color:#b42318; }
+#product-page .btn-dark { background:#14161c; color:white; }
+#product-page .review-form.open { display:block; }
+#product-page .review-form .rate-pick button { font-size:28px!important; line-height:1; }
+#product-page .review-form .rate-pick button.on { color:#f5a623; }
+#product-page .warranty-contact a { display:flex; align-items:center; overflow-wrap:anywhere; color:#14161c; font-weight:600; }
+#product-page .pd-warranty .steps { list-style:none; padding:0; }
+#product-page .pd-warranty .steps li { margin:0; }
+#product-page .gallery-cap { font-size:12.5px!important; }
+#product-page .price-note,#product-page .picker-head span { font-size:12.5px; }
+#product-page .pay-line { font-size:13px!important; }
+#product-page .opt-grid { grid-template-columns:repeat(auto-fit,minmax(125px,1fr)); }
+#product-page .opt-grid.models { grid-template-columns:repeat(auto-fit,minmax(130px,1fr)); }
+#product-page .stock { flex:none; }
+#product-page .buy-col,#product-page .gallery { min-width:0; }
+#product-page .main-photo img { width:100%; height:100%; object-fit:contain; }
+#product-page .store-promo { display:none; }
+#product-page .store-header-root { position:sticky; top:0; border-bottom:1px solid #e4e7ec; background:#fff; }
+#product-page .store-header { height:68px; max-width:1200px; padding:0 20px; gap:22px; }
+#product-page .store-logo-mark { width:38px; height:38px; border-radius:9px; font-size:22px; background:#182abb!important; }
+#product-page .store-logo strong { font-size:17px!important; font-weight:800; color:#182abb; }
+#product-page .store-logo small { font-size:10.5px!important; color:#68707d; }
+#product-page .store-nav { gap:14px; }
+#product-page .store-nav a { font-size:14.5px!important; font-weight:600; }
+#product-page .store-tag { font-size:9.5px!important; }
+#product-page .store-account,#product-page .store-cart { font-size:14px!important; }
+#product-page .store-search-input { font-size:13px!important; }
+#product-page .store-cart { background:#182abb!important; }
+#product-page .store-footer-root { background:#14161c; color:#c6cbd4; margin-top:56px; }
+#product-page .store-footer-root :is(p,li,a) { font-size:13.5px!important; }
+#product-page .store-footer-root h3 { font-size:14.5px!important; color:white; }
+#product-page .store-footer-logo { color:white!important; }
+#product-page .store-footer-logo span { background:#182abb!important; }
+#product-page [hidden] { display:none!important; }
+#product-page .qv-dialog { font-size:15px; }
+@media(max-width:1020px) {
+    #product-page .store-nav { display:none; }
+    #product-page .store-menu-toggle { display:block; }
+    #product-page .gallery { position:static; }
+    #product-page .store-header { gap:12px; }
+}
+@media(max-width:640px) {
+    #gt_float_wrapper { bottom:92px!important; left:16px!important; }
+    #product-page .tabs-card { scroll-margin-top:124px; }
+    #product-page { padding-bottom:74px; }
+    #product-page .store-header { height:auto; min-height:68px; padding:10px 16px; }
+    #product-page .store-logo small { display:none; }
+    #product-page .store-logo strong { font-size:15px!important; }
+    #product-page main h1.title { font-size:23px; }
+    #product-page .price { font-size:29px; }
+    #product-page .tab-pane { padding:20px 16px 24px; }
+    #product-page .tab-btn { padding:9px 12px; }
+    #product-page .picker-head { flex-wrap:wrap; }
+    #product-page .opt-grid.models { grid-template-columns:1fr; }
+    #product-page .opt-grid.colors { grid-template-columns:repeat(2,minmax(0,1fr)); }
+    #product-page .sticky-bar .btn { font-size:13.5px!important; padding:0 12px; }
+    #product-page .sticky-bar .sp small { font-size:11px!important; }
+    #product-page .rel-grid { gap:12px; }
+    #product-page .spec-table th { width:40%; }
+    #product-page .spec-table :is(th,td) { padding:10px; overflow-wrap:anywhere; }
+}

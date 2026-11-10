@@ -213,3 +213,4 @@ class ReviewResource extends Resource
         ];
     }
 }
+

@@ -17,3 +17,4 @@ class ListReviews extends ListRecords
         ];
     }
 }
+

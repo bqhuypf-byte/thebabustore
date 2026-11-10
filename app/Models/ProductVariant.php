@@ -20,7 +20,11 @@ class ProductVariant extends Model
         'stock',
         'product_id',
         'warranty_days',
+        'classification',
+        'specifications',
     ];
+
+    protected $casts = ['classification' => 'array', 'specifications' => 'array'];
 
     public function product()
     {
@@ -40,6 +44,9 @@ class ProductVariant extends Model
         });
 
         static::deleting(function ($model) {
+            if (\App\Models\OrderItem::where('product_variant_id', $model->id)->exists()) {
+                throw \Illuminate\Validation\ValidationException::withMessages(['variants' => 'Biến thể đã có đơn hàng. Hãy chuyển sang hết hàng thay vì xóa để giữ lịch sử.']);
+            }
             // Xóa thumbnail
             if ($model->image) {
                 Storage::disk('public')->delete($model->image);

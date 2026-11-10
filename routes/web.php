@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\CheckPaymentController;
+use App\Http\Controllers\OrderReceiptController;
 use App\Livewire\Bank;
 use App\Livewire\Optimize;
 use App\Livewire\ProductDetail1;
@@ -57,7 +58,15 @@ Route::get('/chinh-sach-bao-mat', PrivacyPolicy::class);
 Route::get('/chinh-sach-thanh-toan', PaymentPolicy::class);
 Route::get('/chinh-sach-bao-hanh', WarrantyPolicy::class);
 Route::get('/chinh-sach-doi-tra-hang-hoan-tien', ReturnPolicy::class);
-// Route::get('/apps/kiem-tra-don-hang', OrderTracking::class);
+Route::get('/orders', \App\Livewire\WarrantyLookup::class)->name('orders.tracking');
+Route::get('/tra-cuu-don-hang', \App\Livewire\WarrantyLookup::class);
+Route::get('/tra-cuu-bao-hanh', \App\Livewire\WarrantyLookup::class)->name('warranty.lookup');
+Route::get('/kich-hoat', \App\Livewire\WarrantyLookup::class)->name('warranty.activate');
+Route::get('/kich-hoat/{code}', \App\Livewire\WarrantyLookup::class)->name('warranty.activate.code');
+Route::get('/products', Shop::class);
+Route::get('/products/{slug}', ProductDetail::class);
+Route::redirect('/guides', '/blogs');
+Route::redirect('/login', '/account/login');
 Route::get('/blogs', Blog::class);
 Route::get('/blog/{slug}', BlogPost::class);
 Route::get('/search', Search::class);
@@ -68,6 +77,7 @@ Route::middleware([CheckLogin::class])->group(function () {
     Route::get('/account', Account::class);
     Route::get('/account/orders', AccountOrders::class);
     Route::get('/account/orders/{orderCode}', AccountOrdersDetail::class);
+    Route::get('/account/order-receipts/{order}', OrderReceiptController::class)->name('orders.receipt');
     Route::get('/account/changepassword', ChangePassword::class);
     // Route::get('/account/addresses', AccountAddresses::class);
     Route::get('/account/logout', Logout::class);
@@ -82,7 +92,8 @@ Route::middleware([CheckLogin::class])->group(function () {
 Route::get('/shop', Shop::class);
 Route::get('/cart', Cart::class);
 Route::get('/product/{slug}', ProductDetail::class);
-Route::get('/product1/{slug}', ProductDetail1::class);
+Route::get('/product1/{slug}', fn (string $slug) => redirect('/product/'.$slug, 301));
+Route::get('/sitemap-products.xml', \App\Http\Controllers\ProductSitemapController::class);
 
 
 

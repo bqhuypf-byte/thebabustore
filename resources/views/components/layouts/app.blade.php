@@ -1,12 +1,17 @@
 <!DOCTYPE html>
-<script>
-    const hostname = window.location.hostname;
-    fetch(`https://hgdigital.vn/traffic/${hostname}`);
-</script>
 @php
 $settings = App\Models\Setting::first(); // Truy vấn model Settings
+$seoProduct = request()->is('product/*', 'products/*') && request()->route('slug')
+    ? App\Models\Product::with(['category', 'variants'])->where('slug', request()->route('slug'))->first()
+    : null;
+if ($seoProduct) {
+    $productSeo = \App\Support\ProductSeo::metadata($seoProduct, $settings);
+    $seoTitle = $productSeo['title'];
+    $seoDescription = $productSeo['description'];
+    $seoImage = ($seoProduct->images ?: [])[0] ?? null;
+}
 @endphp
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
+<html lang="{{ $seoProduct ? 'vi' : str_replace('_', '-', app()->getLocale()) }}">
 
 <head>
     <meta charset="utf-8">
@@ -14,10 +19,27 @@ $settings = App\Models\Setting::first(); // Truy vấn model Settings
     <link rel="icon" href="{{ Storage::url($settings->web_icon)}}" type="image/png">
     <meta name="google" content="notranslate">
 
+    @if($seoProduct)
+        <link rel="stylesheet" href="{{ asset('css/product-muse.css') }}?v={{ filemtime(public_path('css/product-muse.css')) }}">
+        <link rel="stylesheet" href="{{ asset('css/product-muse-bridge.css') }}?v={{ filemtime(public_path('css/product-muse-bridge.css')) }}">
+        <title>{{ $seoTitle }}</title>
+        <meta name="description" content="{{ $seoDescription }}">
+        <link rel="canonical" href="{{ url('/product/'.$seoProduct->slug) }}">
+        <meta property="og:title" content="{{ $seoTitle }}">
+        <meta property="og:description" content="{{ $seoDescription }}">
+        @if($seoImage)<meta property="og:image" content="{{ asset('storage/'.$seoImage) }}">@endif
+        <meta name="twitter:card" content="summary_large_image">
+        <meta name="twitter:title" content="{{ $seoTitle }}">
+        <meta name="twitter:description" content="{{ $seoDescription }}">
+        @if($seoImage)<meta name="twitter:image" content="{{ asset('storage/'.$seoImage) }}">@endif
+        @if(!$seoProduct->is_active)<meta name="robots" content="noindex,follow">@endif
+        <script type="application/ld+json">{!! json_encode(\App\Support\ProductSeo::schema($seoProduct, $settings), JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT) !!}</script>
+    @endif
 
-    <meta property="og:type" content="website">
-    <meta property="og:url" content="{{ request()->fullUrl() }}">
-    <meta name="twitter:url" content="{{ request()->fullUrl() }}">
+
+    <meta property="og:type" content="{{ $seoProduct ? 'product' : 'website' }}">
+    <meta property="og:url" content="{{ $seoProduct ? url('/product/'.$seoProduct->slug) : request()->fullUrl() }}">
+    <meta name="twitter:url" content="{{ $seoProduct ? url('/product/'.$seoProduct->slug) : request()->fullUrl() }}">
 
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <meta name="google-site-verification" content="Otn01gb0LRdxp72pl915reM6YtB358zdpnUdocErXtY" />
@@ -25,6 +47,11 @@ $settings = App\Models\Setting::first(); // Truy vấn model Settings
 </head>
 
 <body>
+    <script>
+        if (!['localhost', '127.0.0.1', '[::1]'].includes(window.location.hostname)) {
+            fetch('https://hgdigital.vn/traffic/' + window.location.hostname).catch(() => {});
+        }
+    </script>
    
     <style>
         body {
@@ -71,10 +98,11 @@ $settings = App\Models\Setting::first(); // Truy vấn model Settings
     <script>
         document.addEventListener('livewire:navigated', function() {
             // Re-enable scroll after loading
-            document.getElementById('loadingScreen').remove();
+            document.getElementById('loadingScreen')?.remove();
         });
     
     </script>
+    <livewire:search-palette />
     {{ $slot }}
 
     @livewireScripts
@@ -302,6 +330,84 @@ button.button.btn.btn-large.btn-block.btn-danger.btn-checkout.evo-button {
     border-color: #000000;
 }
     </style>
+    <style>
+        /* Điểm nhấn xanh theo nhận diện BABU; giữ nền sáng và chữ dễ đọc. */
+        :root { --babu-blue: #1240f7; --babu-blue-dark: #0c2fbf; --babu-blue-light: #eef1ff; }
+        .store-logo-mark, .store-footer-logo span { background: var(--babu-blue) !important; }
+        .store-nav a:hover, .store-mobile-nav a:hover, .store-footer-root a:hover { color: var(--babu-blue) !important; }
+        .store-cart, .ms-product-cart, .ms-products-more a, .ss-card-bottom button,
+        .ss-chips button.active, .store-pagination-pages button.active,
+        .pd-actions button:last-child, .pd-review-form button,
+        .qv-actions button:last-child, .ms-preview-actions button:last-child { background: var(--babu-blue) !important; border-color: var(--babu-blue) !important; color: #fff !important; }
+        .store-cart:hover, .ms-product-cart:hover, .ms-products-more a:hover,
+        .ss-card-bottom button:hover, .pd-actions button:last-child:hover,
+        .qv-actions button:last-child:hover, .ms-preview-actions button:last-child:hover { background: var(--babu-blue-dark) !important; }
+        .ms-category-label, .ms-products-label, .ss-pill { color: var(--babu-blue) !important; background: var(--babu-blue-light); border-color: #dedbff !important; }
+        .ss-layout aside button.active, .pd-related > div:first-child a, .qv-top a { color: var(--babu-blue) !important; }
+        .qv-variants button.selected, .ms-preview-variants button.selected, .pd-variants button.selected,
+        .qv-thumbs button.selected, .ms-preview-thumbnails button.selected, .pd-thumbnails button.selected { border-color: var(--babu-blue) !important; }
+        .ms-flash { background: linear-gradient(115deg, #10164d, var(--babu-blue)) !important; }
+        .ms-flash-kicker { color: #c9d5ff !important; }
+        .ms-flash-body strong { color: var(--babu-blue) !important; }
+        .ms-flash-body button { background: var(--babu-blue) !important; }
+        .ms-flash-heading p, .ms-flash-empty span { color: #e0e4ff !important; }
+
+        /* Tăng độ dễ đọc trong cửa hàng, giữ nguyên phông chữ sẵn có. */
+        .store-promo, .store-logo small, .store-search-label, .store-footer-root,
+        .ss-breadcrumb, .sc-breadcrumb, .pd-breadcrumb { font-size: 13px !important; }
+        .store-logo strong, .store-nav a, .store-header-actions a, .store-mobile-nav a,
+        .store-footer-root h3, .store-drawer-item-info, .store-drawer-name,
+        .store-drawer-item-total, .store-drawer-footer p, .store-drawer-submit,
+        .ss-heading p, .ss-controls input, .ss-controls select, .ss-chips button,
+        .ss-layout aside button, .ss-layout aside label, .ss-pill,
+        .store-pagination, .sc-muted, .sc-info, .sc-checkout,
+        .pd-page, .pd-tabs button, .pd-benefit, .qv-info,
+        .ms-category-label, .ms-products-label, .ms-section-head > a,
+        .ms-preview-details p, .ms-preview-details h3, .ms-preview-variants button,
+        .ms-preview-top, .ms-flash-heading p, .ms-flash-empty span { font-size: 14px !important; }
+        .ms-product-info > a, .ms-product-price b, .ss-name, .ss-card-bottom strong,
+        .store-drawer-footer > div, .store-drawer-heading h2 { font-size: 16px !important; }
+        .ms-category-description { font-size: 14px !important; }
+        .store-footer-root { line-height: 1.7; }
+        .store-drawer-name, .ss-name, .ms-product-info > a { line-height: 1.45; }
+        @media (min-width: 851px) and (max-width: 1200px) {
+            .store-nav, .store-header-actions { gap: 12px; }
+            .store-search { width: 36px; justify-content: center; padding: 0; }
+            .store-search-label, .store-search kbd { display: none; }
+        }
+        /* Cỡ chữ đọc và điều khiển thống nhất trên các trang dành cho khách hàng. */
+        body { font-size: 16px; }
+        main :is(p, label, input:not([type=radio]):not([type=checkbox]), textarea, select, li, small),
+        .store-header-root :is(.store-nav a, .store-header-actions a, .store-mobile-nav a, .store-search-label),
+        .store-footer-root, .store-footer-root h3,
+        .ss-layout aside :is(button, label), .ss-chips button, .ss-controls :is(input, select),
+        .sc-container :is(button, a, span), .co-container :is(button, label, input, select, textarea, p, span),
+        .pd-container :is(button, label, input, select, textarea, p),
+        .qv-dialog :is(button, p, small), .ms-preview :is(button, p, small),
+        .store-drawer :is(p, a, button, span), .store-pagination,
+        .palette-card :is(input, a, kbd),
+        .palette-card [style*="font-size: 11px"], .palette-card [style*="font-size: 12px"],
+        .palette-card [style*="font-size: 13px"], .palette-card [style*="font-size: 14px"] { font-size: 16px !important; }
+        .store-drawer-quantity button { font-size: 18px !important; }
+        .store-search-label { font-size: 15px !important; }
+        .store-logo small, .store-promo, .store-tag, .ms-category-count,
+        .ss-layout aside h3, .ss-breadcrumb, .sc-breadcrumb, .pd-breadcrumb,
+        .co-breadcrumb { font-size: 14px !important; }
+        .ss-name, .ms-product-info > a, .ss-card-bottom strong, .ms-product-price b { font-size: 17px !important; }
+        .store-drawer-name { font-size: 16px !important; }
+        .store-header-root .store-drawer-item-total, .store-drawer-footer > div { font-size: 16px !important; }
+        .palette-card > div:last-child { flex-wrap: wrap; gap: 8px; }
+        /* Giá bán và tổng tiền dùng cùng một màu để khách dễ nhận biết. */
+        .ms-product-price b, .ms-flash-body strong, .ms-preview-price,
+        .ms-preview-variants button small, .ss-card-bottom strong,
+        .pd-price, .pd-variants button strong, .pd-related-grid a > span,
+        .qv-price, .qv-variants button small, .store-drawer-item-info > span,
+        .store-drawer-item-total, .store-drawer-footer strong,
+        .sc-info > span, .sc-item-total strong, .sc-summary > div strong,
+        .co-item > span, .co-row strong { color: #d92332 !important; font-weight: 800 !important; }
+        .ms-product-price del { color: #777 !important; }
+    </style>
+    @include('components.store-support')
 </body>
 
 </html>

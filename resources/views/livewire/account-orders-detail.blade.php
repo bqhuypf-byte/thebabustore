@@ -70,6 +70,7 @@
                         <div class="col-xs-12 col-sm-12 col-lg-9">
                             <div class="head-title clearfix">
                                 <h1>Chi tiết đơn hàng {{ $order->order_code }}</h1>
+                                <a href="{{ route('orders.receipt', $order) }}" target="_blank" rel="noopener">Xem và in phiếu xác nhận</a>
                                 <span class="note order_date">
                                     Ngày đặt hàng: {{ $order->created_at->format('d/m/Y H:i') }}
                                 </span>
@@ -181,7 +182,7 @@
                                                                         {{ $item->product_variant->product->name }}
                                                                     </a>
                                                                     <p style="color:#828282;font-size:12px;">{{ $item->product_variant->name }}</p>
-                                                                    <p class="sku_order">Mã sản phẩm: {{ $item->product_variant->sku }}</p>
+                                                                    
                                                                 </div>
                                                             </td>
                                                             <td data-title="Giá" class="numeric">{{ number_format($item->unit_amount, 0, ',', '.') }}₫</td>
