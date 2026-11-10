@@ -1,14 +1,15 @@
 <div class="ms-root">
 @php
-    $modernCategories = \App\Models\Category::query()->where('is_active', 1)->withCount(['product_cat as active_products_count' => fn ($query) => $query->where('is_active', 1)])->orderBy('ordinal_number')->take(6)->get();
+    $modernCategories = \App\Models\Category::query()->where('is_active', 1)->withCount(['product_cat as active_products_count' => fn ($query) => $query->where('is_active', 1)])->orderBy('ordinal_number')->take(4)->get();
     $modernProducts = \App\Models\Product::query()->with('variants')->where('is_active', 1)->latest('id')->take(4)->get();
     $saleProducts = \App\Models\Product::query()->with('variants')->where('is_active', 1)->where('on_sale', 1)->latest('id')->take(4)->get();
 @endphp
 
-<div class="modern-storefront">
+<div class="modern-storefront mc-home">
     @livewire('inc.header')
 
     <main>
+        @include('livewire.partials.home-hero')
         <section class="ms-section" id="modern-categories">
             <div class="ms-section-head">
                 <div>
@@ -94,9 +95,11 @@
             </div>
             <div class="ms-products-more"><a href="/shop">Đến trang Cửa Hàng để lọc & xem đầy đủ sản phẩm <span aria-hidden="true">→</span></a></div>
         </section>
+        @include('livewire.partials.home-editorial')
     </main>
 
     @livewire('inc.footer')
+    <link rel="stylesheet" href="{{ asset('css/home-mchose.css') }}?v={{ filemtime(public_path('css/home-mchose.css')) }}">
 </div>
 
 @if($previewProduct)
