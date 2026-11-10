@@ -56,6 +56,11 @@ class SettingResource extends Resource
                     ->default(null)
                     ->label('Hotline'),
 
+                Forms\Components\TextInput::make('support_hours')
+                    ->maxLength(255)
+                    ->label('Giờ hỗ trợ hiển thị ở nút liên hệ')
+                    ->placeholder('Ví dụ: 8h30 - 20h00'),
+
                 Forms\Components\TextInput::make('email')
                     ->email()
                     ->maxLength(255)
@@ -178,7 +183,8 @@ class SettingResource extends Resource
                             ->schema([
                                 Forms\Components\RichEditor::make('warranty_policy')
                                     ->columnSpanFull()
-                                    ->label('Chính sách bảo hành'),
+                                    ->label('Chính sách bảo hành')
+                                    ->helperText('Mỗi tiêu đề lớn (H2) sẽ tự động hiển thị thành 1 mục đóng/mở (accordion) trong tab Chính sách bảo hành của trang sản phẩm.'),
                             ]),
 
                         Tabs\Tab::make('Bảo mật')

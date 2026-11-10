@@ -77,12 +77,12 @@ body,
     font-weight: 450;
 }
 
-.fi-sidebar-item.fi-active .fi-sidebar-item-label {
+.dark .fi-sidebar-item.fi-active .fi-sidebar-item-label {
     color: #fff !important;
     font-weight: 600;
 }
 
-.fi-sidebar-item.fi-active .fi-sidebar-item-button {
+.dark .fi-sidebar-item.fi-active .fi-sidebar-item-button {
     box-shadow: inset 2px 0 0 #fff;
 }
 

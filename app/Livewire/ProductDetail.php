@@ -31,11 +31,16 @@ class ProductDetail extends Component
     public $email;
     public $phone;
     public $body;
+    public $activeTab = 'description';
+    public bool $showReviewForm = false;
+    public string $classificationNotice = '';
+    public $activeImage = null;
     public function mount($slug)
     {
         $this->slug = $slug;
         $this->loadProduct();
         $this->setDefaultVariant();
+        if (request()->filled('variant')) $this->updateVariantDetails((int) request('variant'));
         $this->loadRelatedProducts();
     }
 
@@ -49,8 +54,8 @@ class ProductDetail extends Component
     public function setDefaultVariant()
     {
         if ($this->product->variants->isNotEmpty()) {
-            $this->selectedVariant = $this->product->variants->first()->id;
-            $this->updateVariantDetails($this->product->variants->first()->id);
+            $variant = $this->product->variants->firstWhere('stock', 'in_stock') ?? $this->product->variants->first();
+            $this->updateVariantDetails($variant->id);
         }
     }
 
@@ -64,8 +69,114 @@ class ProductDetail extends Component
             $this->discount_price = $variant->discount_price;
             $this->sku = $variant->sku;
             $this->variant_img = $variant->image;
+            $this->activeImage = $variant->image ?: collect($this->product->images ?: [])->first();
             $this->stock_status = $variant->stock; // Cập nhật trạng thái tồn kho
         }
+    }
+
+    public function selectImage(int $index): void
+    {
+        $images = collect($this->product->images ?: [])->merge($this->product->variants->pluck('image'))->filter()->unique()->values();
+        if ($images->has($index)) {
+            $this->activeImage = $images->get($index);
+        }
+    }
+
+    public function changeImage(int $direction): void
+    {
+        $images = collect($this->product->images ?: [])->merge($this->product->variants->pluck('image'))->filter()->unique()->values();
+        if ($images->isEmpty()) return;
+        $current = $images->search($this->activeImage);
+        $index = $current === false ? 0 : $current;
+        $this->activeImage = $images->get(($index + ($direction < 0 ? -1 : 1) + $images->count()) % $images->count());
+    }
+
+    private function classificationMap(): array
+    {
+        $variants = $this->product->variants;
+        if ($variants->count() < 2) return [];
+        $map = [];
+        foreach ($variants as $variant) {
+            $attributes = collect($variant->classification ?: [])->filter(fn ($value, $key) => is_string($key) && trim($key) !== '' && is_string($value) && trim($value) !== '')->mapWithKeys(fn ($value, $key) => [trim($key) => trim($value)])->all();
+            if (!$attributes) {
+                // Derive a model and colour only when every existing variant follows this unambiguous pattern.
+                if (!preg_match('/^(.+?)\s+(gray|grey|purple|blue|black|golden|gold|silver|white|green|pink|orange|red)$/iu', trim($variant->name), $match)) return [];
+                $attributes = ['Dòng máy' => trim($match[1]), 'Màu sắc' => ucfirst(mb_strtolower($match[2]))];
+            }
+            $map[$variant->id] = $attributes;
+        }
+        $keys = array_keys(reset($map));
+        // MySQL may reorder JSON object keys. Prefer familiar selection order unless admin overrides it.
+        $priority = ['dong may' => 0, 'model' => 0, 'phien ban' => 0, 'loai' => 0, 'mau sac' => 1, 'mau' => 1, 'color' => 1, 'switch' => 2, 'cong tac' => 2, 'mic' => 3, 'cap' => 4];
+        usort($keys, fn ($a, $b) => ($priority[\Illuminate\Support\Str::lower(\Illuminate\Support\Str::ascii($a))] ?? 5) <=> ($priority[\Illuminate\Support\Str::lower(\Illuminate\Support\Str::ascii($b))] ?? 5));
+        $configured = array_column($this->product->option_group_order ?? [], 'name');
+        $keys = array_values(array_unique(array_merge(array_intersect($configured, $keys), $keys)));
+        if (count($keys) < 1) return [];
+        $combinations = [];
+        foreach ($map as $attrs) {
+            if (count($attrs) !== count($keys) || array_diff($keys, array_keys($attrs))) return [];
+            $combination = json_encode(array_map(fn ($key) => $attrs[$key], $keys), JSON_UNESCAPED_UNICODE);
+            if (isset($combinations[$combination])) return [];
+            $combinations[$combination] = true;
+        }
+        foreach ($map as $id => $attrs) $map[$id] = array_replace(array_fill_keys($keys, ''), $attrs);
+        return $map;
+    }
+
+    public function selectClassification(string $group, string $value): void
+    {
+        $map = $this->classificationMap();
+        if (!$map || !in_array($group, array_keys(reset($map)), true)) return;
+        $current = $map[$this->selectedVariant] ?? [];
+        $keys = array_keys(reset($map));
+        $prior = array_slice($keys, 0, array_search($group, $keys, true));
+        $candidates = $this->product->variants->filter(function ($variant) use ($map, $group, $value, $prior, $current) {
+            if ($variant->stock !== 'in_stock' || ($map[$variant->id][$group] ?? null) !== $value) return false;
+            foreach ($prior as $key) if (($map[$variant->id][$key] ?? null) !== ($current[$key] ?? null)) return false;
+            return true;
+        });
+        $best = $candidates->sortByDesc(function ($variant) use ($current, $map, $group) {
+            $score = 0;
+            foreach ($current as $key => $selected) if ($key !== $group && ($map[$variant->id][$key] ?? null) === $selected) $score++;
+            return $score;
+        })->first();
+        if ($best) {
+            $changed = [];
+            foreach ($current as $key => $selected) {
+                if ($key !== $group && ($map[$best->id][$key] ?? null) !== $selected) $changed[] = $key.': '.$map[$best->id][$key];
+            }
+            $this->classificationNotice = $changed ? 'Đã chọn phiên bản còn hàng phù hợp: '.implode(', ', $changed).'.' : '';
+            $this->updateVariantDetails($best->id);
+        }
+    }
+
+    private function classificationGroups(): array
+    {
+        $map = $this->classificationMap();
+        if (!$map) return [];
+        $fallbackImage = collect($this->product->images ?: [])->filter()->first();
+        $current = $map[$this->selectedVariant] ?? reset($map);
+        $groups = [];
+        $prior = [];
+        foreach (array_keys(reset($map)) as $key) {
+            $eligible = $this->product->variants->filter(function ($variant) use ($map, $prior, $current) {
+                foreach ($prior as $previous) if (($map[$variant->id][$previous] ?? null) !== ($current[$previous] ?? null)) return false;
+                return true;
+            });
+            $values = [];
+            foreach ($eligible as $variant) {
+                $value = $map[$variant->id][$key];
+                if (!isset($values[$value])) $values[$value] = ['label' => $value, 'image' => $variant->image ?: $fallbackImage, 'price' => $variant->price, 'available' => false];
+                if ($variant->stock === 'in_stock') {
+                    if (!$values[$value]['available'] || $variant->price < $values[$value]['price']) $values[$value]['price'] = $variant->price;
+                    $values[$value]['available'] = true;
+                    $values[$value]['image'] = $variant->image ?: $values[$value]['image'] ?: $fallbackImage;
+                }
+            }
+            $groups[] = ['name' => $key, 'selected' => $current[$key] ?? '', 'options' => array_values($values)];
+            $prior[] = $key;
+        }
+        return $groups;
     }
 
     public function loadRelatedProducts()
@@ -78,7 +189,7 @@ class ProductDetail extends Component
     }
     public function incrementQuantity()
     {
-        $this->quantity++;
+        $this->quantity = min(99, (int) $this->quantity + 1);
     }
 
     public function decrementQuantity()
@@ -89,19 +200,23 @@ class ProductDetail extends Component
     }
     public function addtocart()
     {
-        $cartItemCount = CartManagement::addItemToCart($this->selectedVariant, $this->quantity);
-
-        $this->alert('success', 'Sản phẩm đã được thêm vào giỏ hàng!', [
-            'position' => 'top-end',
-            'timer' => 3000,
-            'toast' => true,
-        ]);
+        if (! $this->product->variants()->where('id', $this->selectedVariant)->where('stock', 'in_stock')->exists()) {
+            $this->addError('selectedVariant', 'Vui lòng chọn phiên bản còn hàng.');
+            return;
+        }
+        $cartItemCount = CartManagement::addItemToCart($this->selectedVariant, max(1, min(99, (int) $this->quantity)));
+        $this->dispatch('cart-updated');
+        $this->dispatch('cart-added');
 
         $this->quantity = 1;
     }
     public function buyNow()
     {
-        $cartItemCount = CartManagement::addItemToCart($this->selectedVariant, $this->quantity);
+        if (! $this->product->variants()->where('id', $this->selectedVariant)->where('stock', 'in_stock')->exists()) {
+            $this->addError('selectedVariant', 'Vui lòng chọn phiên bản còn hàng.');
+            return;
+        }
+        $cartItemCount = CartManagement::addItemToCart($this->selectedVariant, max(1, min(99, (int) $this->quantity)));
         $this->quantity = 1;
         return redirect('/checkout');
     }
@@ -124,13 +239,16 @@ class ProductDetail extends Component
             1 => $approvedReviews->where('rating', 1)->count(),
         ];
 
-        return view('livewire.product-detail', [
+        return view('livewire.modern-product-detail', [
             'product' => $this->product,
             'relatedProducts' => $this->relatedProducts,
             'approvedReviews' => $approvedReviews,
             'reviewCount' => $reviewCount,
             'avgRating' => $avgRating,
             'ratingDistribution' => $ratingDistribution,
+            'classificationGroups' => $this->classificationGroups(),
+            'productContent' => \App\Support\ProductContent::forProduct($this->product, $this->product->variants->firstWhere('id', $this->selectedVariant)),
+            'settings' => \App\Models\Setting::query()->first(),
         ]);
     }
 

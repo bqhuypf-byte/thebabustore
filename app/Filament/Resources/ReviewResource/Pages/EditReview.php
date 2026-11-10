@@ -17,3 +17,4 @@ class EditReview extends EditRecord
         ];
     }
 }
+

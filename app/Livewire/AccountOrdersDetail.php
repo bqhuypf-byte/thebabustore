@@ -17,7 +17,7 @@ class AccountOrdersDetail extends Component
     {
         $this->orderCode = $orderCode; // Lưu mã đơn hàng
         // Lấy đơn hàng từ cơ sở dữ liệu
-        $this->order = Order::where('order_code', $orderCode)->first();
+        $this->order = Order::where('order_code', $orderCode)->where('user_id', auth()->id())->first();
 
         // Kiểm tra xem đơn hàng có tồn tại không
         if (!$this->order) {

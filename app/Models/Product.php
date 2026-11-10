@@ -12,7 +12,12 @@ class Product extends Model
     protected $guarded = [];
 
     protected $casts = [
-        'images' => 'array'
+        'images' => 'array',
+        'content_sections' => 'array',
+        'specification_groups' => 'array',
+        'option_group_order' => 'array',
+        'content_standardized_at' => 'datetime',
+        'seo_research' => 'array',
     ];
 
     public function brand()
@@ -61,6 +66,36 @@ class Product extends Model
     public function getApprovedReviewsAvgAttribute(): float
     {
         return (float) round($this->approvedReviews()->avg('rating') ?? 0, 1);
+    }
+
+    public function scopeSearch($query, $term)
+    {
+        $term = trim($term);
+        if ($term === '') {
+            return $query;
+        }
+
+        // Escape % and _ for LIKE query to prevent SQL injection/pattern matching surprises
+        $escaped = str_replace(['\\', '%', '_'], ['\\\\', '\\%', '\\_'], $term);
+        $ascii = Str::ascii($term);
+        $escapedAscii = str_replace(['\\', '%', '_'], ['\\\\', '\\%', '\\_'], $ascii);
+
+        return $query->where('is_active', 1)
+            ->where(function ($q) use ($escaped, $escapedAscii) {
+                $q->where('name', 'like', "%{$escaped}%")
+                  ->orWhere('slug', 'like', "%{$escaped}%")
+                  ->orWhereHas('brand', function ($b) use ($escaped) {
+                      $b->where('name', 'like', "%{$escaped}%");
+                  })
+                  ->orWhereHas('category', function ($c) use ($escaped) {
+                      $c->where('name', 'like', "%{$escaped}%");
+                  });
+
+                if ($escapedAscii !== $escaped && $escapedAscii !== '') {
+                    $q->orWhere('name', 'like', "%{$escapedAscii}%")
+                      ->orWhere('slug', 'like', "%{$escapedAscii}%");
+                }
+            });
     }
 
     public function productCount()
@@ -125,7 +160,8 @@ class Product extends Model
                 $oldImages = self::extractImagePaths($model->getOriginal('description'));
                 $newImages = self::extractImagePaths($model->description);
 
-                $deletedImages = array_diff($oldImages, $newImages);
+                $structuredImages = self::extractImagePaths(json_encode($model->content_sections ?? [], JSON_UNESCAPED_SLASHES).' '.($model->warranty_content ?? ''));
+                $deletedImages = array_diff($oldImages, $newImages, $structuredImages);
 
                 foreach ($deletedImages as $imagePath) {
                     Storage::disk('public')->delete($imagePath);
@@ -134,6 +170,10 @@ class Product extends Model
         });
 
         static::deleting(function ($model) {
+
+            if (\App\Models\OrderItem::whereIn('product_variant_id', $model->variants()->select('id'))->exists()) {
+                throw \Illuminate\Validation\ValidationException::withMessages(['product' => 'Sản phẩm đã có đơn hàng. Hãy ngừng bán thay vì xóa để giữ lịch sử.']);
+            }
 
             // Xóa toàn bộ images
             if (is_array($model->images)) {
