@@ -119,8 +119,14 @@ class SettingResource extends Resource
                     ->default(null)
                     ->label('Tên Website'),
                 Forms\Components\FileUpload::make('logo')
+                    ->disk('public')
+                    ->directory('branding')
+                    ->acceptedFileTypes(['image/png', 'image/jpeg', 'image/webp', 'image/svg+xml'])
+                    ->imagePreviewHeight('100')
+                    ->maxSize(4096)
                     ->default(null)
-                    ->label('Logo'),
+                    ->label('Logo header & footer')
+                    ->helperText('Logo hiển thị trên thanh menu và chân trang. Nên dùng ảnh ngang, nền trong suốt; hỗ trợ SVG, PNG, WebP, JPG.'),
 
                 Forms\Components\FileUpload::make('logo_light')
                     ->default(null)

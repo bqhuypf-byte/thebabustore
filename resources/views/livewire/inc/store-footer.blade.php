@@ -8,7 +8,7 @@
     @endphp
     <div class="store-footer-grid">
         <div>
-            <a class="store-footer-logo" href="/"><span>B</span><strong>THE BABU STORE</strong></a>
+            <a class="store-footer-logo" href="/">@if($footerSettings?->logo)<img class="store-footer-brand-image" src="{{ Storage::url($footerSettings->logo) }}" alt="{{ $footerSettings->web_name ?: 'BABU STORE' }}" width="240" height="48" loading="lazy">@else<strong>{{ $footerSettings?->web_name ?: 'BABU STORE' }}</strong>@endif</a>
             <p>{{ $footerBio }}</p>
             @if($footerSettings?->address)
                 <p class="store-footer-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 10c0 6-8 12-8 12S4 16 4 10a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg><span>{{ $footerSettings->address }}</span></p>
@@ -58,5 +58,6 @@
     </div>
     <style>
         .store-footer-root,.store-footer-root *{box-sizing:border-box;font-family:StoreGeist,Geist,Arial,sans-serif!important;letter-spacing:normal}.store-footer-root{background:#fff;color:#6b7280;border-top:1px solid #e5e5e5;padding:42px max(24px,calc((100vw - 1152px)/2)) 24px;font-size:12px;line-height:1.6}.store-footer-root a{color:inherit;text-decoration:none}.store-footer-root a:hover{color:#171717}.store-footer-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:32px}.store-footer-logo{display:flex;gap:9px;align-items:center;color:#171717!important}.store-footer-logo span{display:grid;place-items:center;width:25px;height:25px;color:#fff;background:#171717;border-radius:6px}.store-footer-root h3{font-size:12px;color:#171717;margin:0 0 16px;font-weight:700}.store-footer-root p{margin:12px 0;max-width:280px}.store-footer-item{display:flex;align-items:flex-start;gap:8px}.store-footer-item svg{width:16px;height:16px;flex:0 0 16px;margin-top:3px;color:#1240f7}.store-footer-item a,.store-footer-item span{word-break:break-word}.store-footer-grid>div>a:not(.store-footer-logo){display:block;margin:7px 0}.store-footer-bottom{margin-top:32px;padding-top:20px;border-top:1px solid #eee;display:flex;justify-content:space-between;gap:20px}.store-footer-bottom div{display:flex;gap:18px}@media(max-width:700px){.store-footer-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:25px}.store-footer-bottom{flex-direction:column}.store-footer-bottom div{flex-wrap:wrap}}
-    </style>
+    .store-footer-logo .store-footer-brand-image{display:block;width:240px;max-width:100%;height:48px;object-fit:contain;object-position:left center}
+</style>
 </footer>

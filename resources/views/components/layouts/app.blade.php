@@ -43,6 +43,7 @@ if ($seoProduct) {
 
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <meta name="google-site-verification" content="Otn01gb0LRdxp72pl915reM6YtB358zdpnUdocErXtY" />
+    <link rel="stylesheet" href="{{ asset('fonts/bai-jamjuree/font.css') }}">
     @livewireStyles
 </head>
 
@@ -408,6 +409,7 @@ button.button.btn.btn-large.btn-block.btn-danger.btn-checkout.evo-button {
         .ms-product-price del { color: #777 !important; }
     </style>
     @include('components.store-support')
+    <link rel="stylesheet" href="{{ asset('css/store-typography.css') }}?v={{ filemtime(public_path('css/store-typography.css')) }}">
 </body>
 
 </html>
