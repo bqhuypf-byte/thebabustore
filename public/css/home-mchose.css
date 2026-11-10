@@ -30,7 +30,7 @@
 .mc-home .ms-product-info { padding:16px 0; }
 .mc-home .ms-product-price b { color:#111; }
 .mc-home .ms-products-more a { border-radius:24px; color:#111; background:#fff; border:1px solid #ddd; }
-.mc-home .ms-flash { border-radius:6px; background:#151515; }
+.mc-home .ms-flash { border-radius:6px; background:linear-gradient(115deg,#10164d,#1240f7); }
 .mc-home .ms-flash-card { border-radius:3px; }
 .mc-home .ms-flash-body button { background:#111; }
 .mc-editorial p { font-size:14px; line-height:1.75; color:#666; white-space:pre-line; }

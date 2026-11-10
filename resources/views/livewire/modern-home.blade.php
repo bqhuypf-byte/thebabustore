@@ -2,7 +2,7 @@
 @php
     $modernCategories = \App\Models\Category::query()->where('is_active', 1)->withCount(['product_cat as active_products_count' => fn ($query) => $query->where('is_active', 1)])->orderBy('ordinal_number')->take(4)->get();
     $modernProducts = \App\Models\Product::query()->with('variants')->where('is_active', 1)->latest('id')->take(4)->get();
-    $saleProducts = \App\Models\Product::query()->with('variants')->where('is_active', 1)->where('on_sale', 1)->latest('id')->take(4)->get();
+    $saleProducts = \App\Models\Product::query()->with('variants')->where('is_active', 1)->where('on_sale', 1)->whereHas('variants', fn ($query) => $query->where('stock', 'in_stock'))->latest('id')->take(4)->get();
 @endphp
 
 <div class="modern-storefront mc-home">
