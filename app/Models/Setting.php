@@ -12,7 +12,6 @@ class Setting extends Model
     use HasFactory;
 
     protected $fillable = [
-        'homepage_sections',
         'address',
         'hotline',
         'support_hours',
@@ -62,11 +61,6 @@ class Setting extends Model
         'streak_widget_title',
         'streak_widget_subtitle',
     ];
-
-    protected function casts(): array
-    {
-        return ['homepage_sections' => 'array'];
-    }
 
     protected static function boot()
     {
