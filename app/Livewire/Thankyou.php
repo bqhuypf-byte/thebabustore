@@ -19,7 +19,7 @@ class Thankyou extends Component
     {
         $this->orderCode = $orderCode; // Store the order code
         // Retrieve the order from the database
-        $this->order = Order::where('order_code', $orderCode)->where('user_id', auth()->id())->first();
+        $this->order = Order::where('order_code', $orderCode)->first();
 
         // Check if the order exists
         if (!$this->order) {

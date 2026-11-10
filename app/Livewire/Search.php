@@ -16,10 +16,10 @@ class Search extends Component
 
     public function render()
     {
-        $products = Product::search($this->searchTerm)
-            ->with(['variants', 'category'])
-            ->get();
-
+        
+        $products = Product::where('name', 'like', '%' . $this->searchTerm . '%')
+        ->with('variants')
+        ->get();
         return view('livewire.search', [
             'products' => $products,
         ]);

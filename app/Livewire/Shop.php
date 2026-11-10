@@ -6,7 +6,6 @@ use App\Models\Category;
 use App\Models\Product;
 use App\Models\Brand;
 use App\Models\Subcategory;
-use Livewire\Attributes\Url;
 use Livewire\Component;
 use Livewire\WithPagination;
 
@@ -22,36 +21,20 @@ class Shop extends Component
     public $brands = []; // Thêm thuộc tính để lưu trữ danh sách thương hiệu
     public $categories_all = [];
     public $categoryInfo ;
-
-    #[Url(except: '', history: true)]
     public $search = '';
-
     public $sortField = 'name';
     public $sortDirection = 'asc';
-
-    #[Url(as: 'subcategory', except: '', history: true)]
     public $subcategorySlug = '';
-
-    #[Url(as: 'category', except: '', history: true)]
     public $categorySlug = '';
-
-    public $saleOnly = false;
-
-    #[Url(as: 'price', except: '', history: true)]
-    public $priceRange = '';
-
-    #[Url(except: 'featured', history: true)]
-    public $sort = 'featured';
-
     public $subcategoryInfo;
-
     public function mount()
     {
         $this->categories_all = Category::with('subcategories')->get();
         $this->categories = Category::with('subcategories')->where('show_in_header', true)->get();
         $this->brands = Brand::all();
 
-        $this->saleOnly = $this->sort === 'discount';
+        $this->categorySlug = request()->query('category', '');
+        $this->subcategorySlug = request()->query('subcategory', '');
         if ($this->subcategorySlug) {
             $this->subcategoryInfo = Subcategory::where('slug', $this->subcategorySlug)->first();
         }
@@ -66,19 +49,7 @@ class Shop extends Component
         $productsQuery = Product::with('variants')
         ->inStock() // chỉ lấy sản phẩm còn hàng
         ->where('name', 'like', "%{$this->search}%")
-        ;
-
-        if ($this->sort === 'discount') {
-            $productsQuery->where('on_sale', true);
-        }
-
-        match ($this->priceRange) {
-            'under_500' => $productsQuery->where('price', '<', 500000),
-            '500_1000' => $productsQuery->whereBetween('price', [500000, 999999]),
-            '1000_2000' => $productsQuery->whereBetween('price', [1000000, 1999999]),
-            'over_2000' => $productsQuery->where('price', '>=', 2000000),
-            default => null,
-        };
+        ->orderBy('created_at', 'desc');
 
         // Lọc theo khoảng giá
         if (!empty($this->selectedPriceRanges)) {
@@ -113,15 +84,13 @@ class Shop extends Component
         }
 
         // Sắp xếp và phân trang
-        match ($this->sort) {
-            'price-asc' => $productsQuery->orderBy('price'),
-            'price-desc' => $productsQuery->orderByDesc('price'),
-            default => $productsQuery->orderByDesc('created_at'),
-        };
-        $products = $productsQuery->paginate(12);
+        $products = $productsQuery
+        ->orderByDesc('in_stock') // đưa sản phẩm còn hàng (1) lên đầu
+        ->orderBy($this->sortField, $this->sortDirection)
+        ->paginate(12);
 
 
-        return view('livewire.store-shop', [
+        return view('livewire.shop', [
             'products' => $products,
             'categories' => $this->categories,
             'brands' => $this->brands,
@@ -130,24 +99,6 @@ class Shop extends Component
             'subcategoryInfo' => $this->subcategoryInfo,
         ]);
     }
-
-    public function selectCategory(string $slug = ''): void
-    {
-        $this->categorySlug = $slug;
-        $this->subcategorySlug = '';
-        $this->categoryInfo = $slug ? Category::where('slug', $slug)->first() : null;
-        $this->subcategoryInfo = null;
-        $this->resetPage();
-    }
-
-    public function selectCategoryById(int $id): void
-    {
-        $this->selectCategory(Category::query()->whereKey($id)->value('slug') ?? '');
-    }
-
-    public function updatedSearch(): void { $this->resetPage(); }
-    public function updatedPriceRange(): void { $this->resetPage(); }
-    public function updatedSort(): void { $this->resetPage(); }
 
     public function sortBy($field)
     {

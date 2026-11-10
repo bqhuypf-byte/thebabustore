@@ -29,98 +29,27 @@ class OrderItemResource extends Resource
     {
         return $form
             ->schema([
-                Forms\Components\Section::make('Thông Tin Sản Phẩm & Thời Hạn Bảo Hành')
-                    ->schema([
-                        Forms\Components\Select::make('product_variant_id')
-                            ->label('Sản Phẩm / Biến Thể (SKU)')
-                            ->relationship('product_variant', 'sku')
-                            ->getOptionLabelFromRecordUsing(fn (\App\Models\ProductVariant $record) => "[SKU: {$record->sku}] " . ($record->product?->name ?? 'Sản phẩm') . ' — ' . OrderResource::formatVariantClassification($record))
-                            ->searchable(['sku', 'name'])
-                            ->preload()
-                            ->required(),
-
-                        Forms\Components\DateTimePicker::make('warranty')
-                            ->label('Hạn Bảo Hành Đến Ngày')
-                            ->required(),
-
-                        Forms\Components\TextInput::make('quantity')
-                            ->label('Số Lượng')
-                            ->numeric()
-                            ->default(1)
-                            ->required(),
-
-                        Forms\Components\TextInput::make('unit_amount')
-                            ->label('Đơn Giá (VNĐ)')
-                            ->numeric()
-                            ->required(),
-
-                        Forms\Components\TextInput::make('total_amount')
-                            ->label('Tổng Tiền (VNĐ)')
-                            ->numeric()
-                            ->required(),
-
-                        Forms\Components\TextInput::make('profit_loss')
-                            ->label('Lợi Nhuận (VNĐ)')
-                            ->numeric()
-                            ->default(0),
-                    ])->columns(2),
+            
             ]);
     }
 
     public static function table(Table $table): Table
     {
         return $table
-            ->modifyQueryUsing(fn (Builder $query) => $query->with(['product_variant.product', 'order.address']))
-            ->defaultSort('created_at', 'desc')
             ->columns([
-                Tables\Columns\ImageColumn::make('variant_display_image')
-                    ->label('Hình Ảnh')
-                    ->state(function (OrderItem $record): ?string {
-                        $variant = $record->product_variant;
-                        if (!$variant) {
-                            return null;
-                        }
-                        if (!empty($variant->image) && is_string($variant->image)) {
-                            return $variant->image;
-                        }
-                        $prodImages = $variant->product?->images;
-                        if (is_array($prodImages) && !empty($prodImages)) {
-                            return reset($prodImages) ?: null;
-                        }
-                        return null;
-                    })
-                    ->disk('public')
-                    ->square()
-                    ->size(52),
-                Tables\Columns\TextColumn::make('product_variant.sku')
-                    ->label('Mã Sản Phẩm (SKU)')
-                    ->badge()
-                    ->color('info')
-                    ->copyable()
+                Tables\Columns\ImageColumn::make('product_variant.image') // ID biến thể sản phẩm
+                    ->label('Ảnh Biến Thể') // Thêm label
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('product_variant.sku') // ID biến thể sản phẩm
+                    ->label('Mã Biến Thể') // Thêm label
+                    ->numeric()
                     ->sortable()
                     ->searchable(),
-                Tables\Columns\TextColumn::make('product_variant.product.name')
-                    ->label('Sản Phẩm & Loại Biến Thể')
-                    ->description(fn (OrderItem $record): string => 'Loại: ' . OrderResource::formatVariantClassification($record->product_variant))
-                    ->wrap()
+                Tables\Columns\TextColumn::make('order.order_code') // ID đơn hàng
+                    ->label('Mã Đơn Hàng') // Thêm label
+                    ->numeric()
                     ->sortable()
                     ->searchable(),
-                Tables\Columns\TextColumn::make('order.order_code')
-                    ->label('Mã Đơn Hàng / BH')
-                    ->badge()
-                    ->color('primary')
-                    ->copyable()
-                    ->sortable()
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('order.address.full_name')
-                    ->label('Khách Hàng & SĐT')
-                    ->description(fn (OrderItem $record): string => '📞 ' . ($record->order?->address?->phone ?: 'Chưa cập nhật'))
-                    ->searchable(query: function (Builder $query, string $search): Builder {
-                        return $query->whereHas('order.address', function (Builder $aq) use ($search) {
-                            $aq->where('full_name', 'like', "%{$search}%")
-                                ->orWhere('phone', 'like', "%{$search}%");
-                        });
-                    }),
                 Tables\Columns\TextColumn::make('quantity') // Số lượng
                     ->label('Số Lượng') // Thêm label
                     ->numeric()
@@ -161,29 +90,66 @@ class OrderItemResource extends Resource
                         ->searchable()
                         ->badge()
                         ->color(fn ($state) => $state > 0 ? 'success' : 'danger'),
-                    Tables\Columns\TextColumn::make('warranty')
-                        ->label('Hạn Bảo Hành')
-                        ->dateTime('d/m/Y')
-                        ->badge()
+                    // Start of Selection
+                    Tables\Columns\TextColumn::make('warranty') // Lợi nhuận/ lỗ
+                        ->label('Hạn Bảo Hành') // Thêm label
+                        ->dateTime()
                         ->sortable()
+                        ->searchable()
                         ->color(fn ($state) => $state < now() ? 'danger' : 'success'),
             ])
             ->filters([
+                // Filter by Order Code
+                // Tables\Filters\Filter::make('order')
+                //     ->label('Lọc Theo Đơn Hàng')
+                //     ->form([
+                //         Forms\Components\TextInput::make('order_code')
+                //             ->label('Mã Đơn Hàng')
+                //             ->placeholder('Nhập mã đơn hàng'),
+                //     ])
+                //     ->query(function (Builder $query, array $data): Builder {
+                //         return $query->whereHas('order', function (Builder $query) use ($data) {
+                //             $query->where('order_code', $data['order_code']);
+                //         });
+                //     }),
+                
+                // Filter by Product Variant SKU
+                // Tables\Filters\Filter::make('product_variant')
+                //     ->label('Lọc Theo Biến Thể Sản Phẩm')
+                //     ->form([
+                //         Forms\Components\TextInput::make('sku')
+                //             ->label('Mã Biến Thể')
+                //             ->placeholder('Nhập mã biến thể'),
+                //     ])
+                //     ->query(function (Builder $query, array $data): Builder {
+                //         return $query->whereHas('product_variant', function (Builder $query) use ($data) {
+                //             $query->where('sku', $data['sku']);
+                //         });
+                //     }),
+    
+                // Filter by Quantity
+                // Tables\Filters\Filter::make('quantity')
+                //     ->label('Lọc Theo Số Lượng')
+                //     ->form([
+                //         Forms\Components\TextInput::make('quantity')
+                //             ->label('Số Lượng')
+                //             ->numeric(),
+                //     ])
+                //     ->query(function (Builder $query, array $data): Builder {
+                //         return $query->where('quantity', '>=', $data['quantity']);
+                //     }),
+    
+                // Filter by Date Range
+            
             ])
             ->actions([
-                Tables\Actions\Action::make('activation_link')
-                    ->label('Link Kích Hoạt')
-                    ->icon('heroicon-o-link')
-                    ->color('success')
-                    ->url(fn (OrderItem $record): string => url('/kich-hoat/' . ($record->order?->order_code ?: '')))
-                    ->openUrlInNewTab(),
-                Tables\Actions\EditAction::make()
-                    ->label('Sửa BH'),
+                // View Order Action
                 Tables\Actions\Action::make('view_order')
-                    ->label('Xem Đơn Hàng')
-                    ->url(fn ($record) => \App\Filament\Resources\OrderResource::getUrl('edit', ['record' => $record->order_id]))
-                    ->icon('heroicon-o-eye')
-                    ->openUrlInNewTab(),
+                ->label('Xem Đơn Hàng')
+                ->url(fn ($record) => \App\Filament\Resources\OrderResource::getUrl('edit', ['record' => $record->order_id]))
+                ->icon('heroicon-o-eye')
+                ->openUrlInNewTab(),
+            
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([

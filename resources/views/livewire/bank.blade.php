@@ -216,9 +216,9 @@
                                 <br />
                                 Vui lòng thanh toán vào thông tin tài khoản trên để hệ thống xử lý hoá đơn tự động.
                             </p>
-                            <a href="{{ route('orders.receipt', $order) }}" target="_blank" rel="noopener">
-                                <i class="fa fa-print" aria-hidden="true"></i>
-                                <span>Xem và in phiếu xác nhận đơn hàng</span></a>
+                            <a href="/pay/client/invoices">
+                                <i class="fa fa-arrow-left" aria-hidden="true"></i>
+                                <span>Quay lại</span></a>
                         </div>
                     </div>
                 </div>

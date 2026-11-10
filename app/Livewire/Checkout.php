@@ -6,13 +6,10 @@ use App\Helpers\CartManagement;
 use App\Models\Address;
 use App\Models\OrderItem;
 use App\Models\Order;
-use App\Models\ProductVariant;
-use Illuminate\Validation\ValidationException;
 use Jantinnerezo\LivewireAlert\LivewireAlert;
 
 use Illuminate\Support\Facades\DB;
 use Livewire\Component;
-use Livewire\Attributes\On;
 
 class Checkout extends Component
 {
@@ -68,13 +65,6 @@ class Checkout extends Component
         $this->total = $this->subtotal; // Calculate total including shipping fee
     }
 
-    #[On('cart-updated')]
-    public function refreshCart(): void
-    {
-        $this->cartItems = CartManagement::getCartItemsFromSession();
-        $this->calculateTotals();
-    }
-
     // Increment the quantity of the specified product
     public function incrementQuantity($product_id)
     {
@@ -92,29 +82,11 @@ class Checkout extends Component
     // Remove an item from the cart
     public function removeItem($product_id)
     {
-        $this->cartItems = CartManagement::removeCartItem($product_id); // Update cart items after removal
+        $this->cartItems = CartManagement::removeCarItem($product_id); // Update cart items after removal
         $this->calculateTotals(); // Recalculate totals after removing an item
     }
     public function placeOrder()
     {
-        $this->validate([
-            'shippingAddress.full_name' => 'required|string|max:255',
-            'shippingAddress.phone' => 'required|string|max:30',
-            'shippingAddress.province' => 'required|string|max:255',
-            'shippingAddress.district' => 'required|string|max:255',
-            'shippingAddress.ward' => 'required|string|max:255',
-            'shippingAddress.detailed_address' => 'required|string|max:2000',
-            'shipping_method' => 'required|in:home_delivery,in_store_pickup',
-            'paymentMethod' => 'required|in:bank,cod',
-            'note' => 'nullable|string|max:2000',
-        ]);
-
-        // Re-read prices and quantities from the server-side cart before creating an order.
-        $this->cartItems = CartManagement::getCartItemsFromSession();
-        $this->calculateTotals();
-        if (count($this->cartItems) !== count(CartManagement::getRawCartItemsFromSession())) {
-            throw ValidationException::withMessages(['cart' => 'Một sản phẩm trong giỏ hàng không còn tồn tại. Vui lòng kiểm tra lại giỏ hàng.']);
-        }
         // Kiểm tra xem giỏ hàng có trống không
         if (empty($this->cartItems)) {
             $this->alert('error', 'Giỏ hàng của bạn đang trống. Vui lòng thêm sản phẩm trước khi đặt hàng.');
@@ -122,27 +94,12 @@ class Checkout extends Component
         }
 
         // Thực hiện giao dịch cơ sở dữ liệu để đảm bảo tính nhất quán
-        $order = DB::transaction(function () {
-            $ids = collect($this->cartItems)->pluck('product_variant_id')->all();
-            $variants = ProductVariant::whereIn('id', $ids)->lockForUpdate()->get()->keyBy('id');
-            foreach ($this->cartItems as &$item) {
-                $variant = $variants->get($item['product_variant_id']);
-                if (!$variant || $variant->stock !== 'in_stock') {
-                    throw ValidationException::withMessages(['cart' => 'Một phiên bản trong giỏ hàng đã hết hàng. Vui lòng kiểm tra lại giỏ hàng.']);
-                }
-                $item['price'] = $item['unit_amount'] = (float) $variant->price;
-                $item['discount_price'] = (float) $variant->discount_price;
-                $item['total_amount'] = $item['unit_amount'] * $item['quantity'];
-            }
-            unset($item);
-            $this->calculateTotals();
+        DB::transaction(function () {
             $order_code = $this->generateUniqueOrderCode();
 
             // Tạo đơn hàng
-            if ($this->total > 800000 && $this->paymentMethod !== 'cod') {
+            if ($this->total > 800000) {
                 $this->shipping_amount = 0;
-            } else {
-                $this->shipping_amount = 30000;
             }
 
             // Create the order
@@ -151,7 +108,6 @@ class Checkout extends Component
                 'grand_total' => $this->total,
                 'payment_method' => $this->paymentMethod,
                 'payment_status' => 'pending',
-                'status' => 'new',
                 'currency' => 'VND',
                 'shipping_method' => $this->shipping_method,
                 'order_code' => $order_code,
@@ -159,7 +115,7 @@ class Checkout extends Component
                 'profit_loss' => $this->profit_loss,
                 'shipping_amount' => $this->shipping_method === 'in_store_pickup' ? 0 : $this->shipping_amount,
                 'deposit_amount' => $this->paymentMethod == 'cod' ? 50000 : 0,
-                'deposit_status' => 'pending',
+                'deposit_status' => $this->paymentMethod == 'cod' ? 'pending' : 'paid',
             ]);
 
             // Tạo địa chỉ giao hàng
@@ -179,7 +135,7 @@ class Checkout extends Component
                     'order_id' => $order->id,
                     'product_variant_id' => $item['product_variant_id'],
                     'quantity' => $item['quantity'],
-                    'profit_loss' => ($item['unit_amount'] - $item['discount_price']) * $item['quantity'],
+                    'profit_loss' =>$item['unit_amount'] - ($item['discount_price'] * $item['quantity']) ,
                     'unit_amount' => $item['unit_amount'],
                     'total_amount' => $item['total_amount'],
                     'warranty' => now()->addDays($item['warranty_days']) ,
@@ -196,7 +152,8 @@ class Checkout extends Component
                     'detailed_address' => $this->shippingAddress['detailed_address'],
                 ]);
             }
-            return $order;
+            CartManagement::clearCartItems();
+            return redirect()->route('bank', ['orderCode' => $order->order_code]);
             // if($this->paymentMethod == 'bank'){
             //     return redirect()->route('bank', ['orderCode' => $order->order_code]);
             // }else{
@@ -205,9 +162,6 @@ class Checkout extends Component
 
 
         });
-        CartManagement::clearCartItems();
-
-        return redirect()->route('bank', ['orderCode' => $order->order_code]);
     }
     protected function generateUniqueOrderCode()
     {
@@ -221,7 +175,7 @@ class Checkout extends Component
     public function render()
     {
         // dd($this->cartItems);
-        return view('livewire.store-checkout', [
+        return view('livewire.checkout', [
             'cartItems' => $this->cartItems, // Pass cart items to the view
         ]);
     }

@@ -19,8 +19,7 @@ class Bank extends Component
         $this->orderCode = $orderCode; // Store the order code
         // Retrieve the order from the database
         $this->order = Order::where('order_code', $orderCode)
-        ->where('user_id', auth()->id())
-        ->firstOrFail();
+        ->first();
         if ($this->order->payment_method == 'cod' && $this->order->deposit_status == 'paid') {
             return redirect()->to('/thanks/' . $this->orderCode);  // Redirect if payment is COD and deposit is paid
         }

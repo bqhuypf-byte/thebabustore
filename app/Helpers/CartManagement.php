@@ -160,7 +160,7 @@ class CartManagement
         if (empty($rawItems)) return [];
 
         $ids = array_values(array_unique(array_column($rawItems, 'product_variant_id')));
-        $variants = ProductVariant::with('product:id,name,slug,images')
+        $variants = ProductVariant::with('product:id,name,slug')
             ->whereIn('id', $ids)
             ->get(['id', 'name', 'sku', 'price', 'discount_price', 'product_id', 'image', 'warranty_days'])
             ->keyBy('id');
@@ -182,7 +182,7 @@ class CartManagement
                 'product_id' => (int) $variant->product_id,
                 'product_name' => $variant->product?->name,
                 'product_slug' => $variant->product?->slug,
-                'image' => $variant->image ?: ($variant->product?->images[0] ?? null),
+                'image' => $variant->image,
                 'quantity' => $qty,
                 'unit_amount' => $unit,
                 'total_amount' => $unit * $qty,

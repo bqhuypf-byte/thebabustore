@@ -1,5 +1,0 @@
-name: "atk_store_frontend"
-title: "ATK Store frontend design (animations + UI)"
-description: "Rebuild the ATK Store (atk.store) frontend look and motion — measured Rubik + system-serif typography, black square buttons, #DE2A2A sale accent, 5s hero autoplay, .6s cart drawer, Flickity sliders — in the owner's own shop under their own brand, products and contacts."
-category: "Work and knowledge"
-include_in_prompt: true
