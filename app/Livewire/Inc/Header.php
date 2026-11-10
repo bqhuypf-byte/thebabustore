@@ -20,7 +20,6 @@ class Header extends Component
 
     public function mount()
     {
-        $this->legacyHomepage = request()->is('/');
         // Lấy giỏ hàng từ cookie
         $this->cartItems = CartManagement::getCartItemsFromCookie();
         $this->calculateTotal();
