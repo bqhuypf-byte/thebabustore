@@ -37,6 +37,40 @@ class SettingResource extends Resource
             ->schema([
                 Forms\Components\Tabs::make('Cài đặt') // Đổi tên tab
                     ->tabs([
+                        Tabs\Tab::make('Trang chủ')
+                            ->icon('heroicon-o-home')
+                            ->schema([
+                                Forms\Components\Placeholder::make('homepage_help')
+                                    ->label('Bố cục trang chủ')
+                                    ->content('Banner đầu trang lấy từ mục Slide; nếu chưa có Slide sẽ dùng Banner Web. Danh mục, sản phẩm và bài viết lấy từ dữ liệu hiện có. Thêm các khối bên dưới theo thứ tự mong muốn; chỉ nhập nội dung và hình ảnh thực tế.'),
+                                Forms\Components\Repeater::make('homepage_sections')
+                                    ->label('Các khối nội dung sau sản phẩm')
+                                    ->afterStateHydrated(function (Forms\Components\Repeater $component, $state, ?Setting $record) {
+                                        if ($state === null) {
+                                            $component->state(\App\Support\HomepageContent::defaults($record));
+                                        }
+                                    })
+                                    ->schema([
+                                        Forms\Components\Toggle::make('enabled')->label('Hiển thị')->default(true),
+                                        Forms\Components\Select::make('layout')->label('Bố cục')->options([
+                                            'split' => 'Giới thiệu: ảnh và nội dung hai cột',
+                                            'banner' => 'Banner: HUB / cộng đồng',
+                                            'cards' => 'Thẻ: người giới thiệu / ảnh khách hàng',
+                                            'faq' => 'Câu hỏi thường gặp',
+                                        ])->required()->default('split')->live(),
+                                        Forms\Components\TextInput::make('title')->label('Tiêu đề')->required()->maxLength(255),
+                                        Forms\Components\Textarea::make('body')->label('Nội dung')->rows(3),
+                                        Forms\Components\FileUpload::make('image')->label('Ảnh chính')->image()->disk('public')->directory('homepage')->visible(fn (Forms\Get $get) => in_array($get('layout'), ['split', 'banner'])),
+                                        Forms\Components\TextInput::make('button_label')->label('Chữ trên nút')->maxLength(100)->visible(fn (Forms\Get $get) => in_array($get('layout'), ['split', 'banner'])),
+                                        Forms\Components\TextInput::make('link')->label('Liên kết')->maxLength(2048)->rules(['nullable', 'regex:~^(?:/(?!/)|https?://)[^\s]*$~i'])->helperText('Đường dẫn nội bộ /shop hoặc URL https://...')->visible(fn (Forms\Get $get) => in_array($get('layout'), ['split', 'banner'])),
+                                        Forms\Components\Repeater::make('items')->label('Các mục')->schema([
+                                            Forms\Components\TextInput::make('title')->label('Tiêu đề / câu hỏi')->required()->maxLength(255),
+                                            Forms\Components\Textarea::make('body')->label('Nội dung / câu trả lời')->rows(3),
+                                            Forms\Components\FileUpload::make('image')->label('Ảnh')->image()->disk('public')->directory('homepage'),
+                                            Forms\Components\TextInput::make('link')->label('Liên kết')->maxLength(2048)->rules(['nullable', 'regex:~^(?:/(?!/)|https?://)[^\s]*$~i']),
+                                        ])->defaultItems(0)->collapsible()->itemLabel(fn (array $state): ?string => $state['title'] ?? null)->visible(fn (Forms\Get $get) => in_array($get('layout'), ['cards', 'faq'])),
+                                    ])->defaultItems(0)->collapsible()->itemLabel(fn (array $state): ?string => $state['title'] ?? null)->columnSpanFull(),
+                            ]),
                         Tabs\Tab::make('Thông Tin')
     ->icon('heroicon-o-information-circle')
     ->schema([
