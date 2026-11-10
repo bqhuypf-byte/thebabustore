@@ -7,7 +7,6 @@ use App\Models\Address;
 use App\Models\OrderItem;
 use App\Models\Order;
 use App\Models\ProductVariant;
-use App\Models\Setting;
 use Illuminate\Validation\ValidationException;
 use Jantinnerezo\LivewireAlert\LivewireAlert;
 
@@ -212,18 +211,12 @@ class Checkout extends Component
     }
     protected function generateUniqueOrderCode()
     {
-        $setting = Setting::first();
-        $prefix = $setting?->order_code_prefix ?: 'BB';
-        $digits = (int) ($setting?->order_code_digits ?: 6);
-        $min = (int) pow(10, max(1, $digits - 1));
-        $max = (int) (pow(10, $digits) - 1);
-
         do {
-            $uniqueNumber = mt_rand($min, $max);
-            $order_code = $prefix . str_pad((string)$uniqueNumber, $digits, '0', STR_PAD_LEFT);
-        } while (Order::where('order_code', $order_code)->exists());
+            $uniqueNumber = mt_rand(1000000000, 9999999999); // Tạo số ngẫu nhiên 10 chữ số
+            $order_code = 'WEB03' . $uniqueNumber; // Tạo mã đơn hàng
+        } while (Order::where('order_code', $order_code)->exists()); // Kiểm tra xem mã có tồn tại trong DB không
 
-        return $order_code;
+        return $order_code; // Trả về mã đơn hàng duy nhất
     }
     public function render()
     {

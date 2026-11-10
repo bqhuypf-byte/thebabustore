@@ -44,22 +44,6 @@ class Setting extends Model
         'web_name',
         'description_web',
         'banner_web',
-        'order_code_prefix',
-        'order_code_digits',
-        'announcement_enabled',
-        'announcement_text',
-        'announcement_link',
-        'announcement_button_text',
-        'announcement_countdown_end',
-        'cart_tier_1_amount',
-        'cart_tier_1_reward',
-        'cart_tier_2_amount',
-        'cart_tier_2_reward',
-        'cart_tier_3_amount',
-        'cart_tier_3_reward',
-        'streak_widget_enabled',
-        'streak_widget_title',
-        'streak_widget_subtitle',
     ];
 
     protected static function boot()
