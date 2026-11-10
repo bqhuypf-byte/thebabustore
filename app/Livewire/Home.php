@@ -103,7 +103,7 @@ class Home extends Component
 
     public function render()
     {
-        return view('livewire.modern-home', [
+        return view('livewire.home', [
             'categories' => $this->categories,
             'latestPosts' => $this->latestPosts,
             'latestProducts' => $this->latestProducts,

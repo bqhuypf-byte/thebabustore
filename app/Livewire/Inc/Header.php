@@ -11,6 +11,7 @@ use Livewire\Attributes\On;
 
 class Header extends Component
 {
+    public bool $legacyHomepage = false;
     public $cartItems = [];
     public $totalPrice = 0;
     public $totalQuantity = 0; // Thêm thuộc tính để lưu tổng số sản phẩm
@@ -93,7 +94,7 @@ class Header extends Component
         $searchResults = mb_strlen($term) >= 2
             ? Product::search($term)->with('variants')->take(6)->get()
             : collect();
-        return view('livewire.inc.store-header', [
+        return view($this->legacyHomepage ? 'livewire.inc.header' : 'livewire.inc.store-header', [
             'cartItems' => $this->cartItems,
             'totalPrice' => $this->totalPrice,
             'totalQuantity' => $this->totalQuantity, // Truyền tổng số lượng sản phẩm sang view
