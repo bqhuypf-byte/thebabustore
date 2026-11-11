@@ -96,7 +96,7 @@ class Header extends Component
         $menuProductScope = fn ($query) => $query->where('is_active', true)
             ->whereHas('variants', fn ($variants) => $variants->where('stock', 'in_stock'))
             ->with(['variants' => fn ($variants) => $variants->where('stock', 'in_stock')->orderBy('price')])
-            ->latest('id')->limit(7);
+            ->latest('id')->limit(14);
         $menuCategories = Category::query()->where('is_active', true)->where('show_in_header', true)
             ->whereHas('product_cat', fn ($products) => $products->where('is_active', true)
                 ->whereHas('variants', fn ($variants) => $variants->where('stock', 'in_stock')))
