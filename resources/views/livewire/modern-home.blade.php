@@ -14,7 +14,7 @@
             <div class="ms-section-head">
                 <div>
                     <span class="ms-category-label">Danh Mục Sản Phẩm <span aria-hidden="true">→</span></span>
-                    <h2>Khám Phá Theo Nhu Cầu Gaming Của Bạn</h2>
+                    <h2>Khám phá theo danh mục</h2>
                     <p style="color: var(--ms-muted); margin: 6px 0 0; font-size: 14px;">Lựa chọn linh kiện và gaming gear phù hợp cho trải nghiệm của bạn.</p>
                 </div>
                 <a href="/shop">Xem tất cả danh mục →</a>
@@ -24,8 +24,8 @@
                     @php $categoryImage = $category->banner ?: $category->image; @endphp
                     <a class="ms-category-card" href="/shop?category={{ urlencode($category->slug) }}">
                         <span class="ms-category-top"><span class="ms-category-icon" aria-hidden="true">@if($categoryImage)<img src="{{ asset('storage/'.$categoryImage) }}" alt="">@else{{ ['⌨', '◉', '♬', '◇', '▦', '▧'][$index % 6] }}@endif</span><span class="ms-category-count">{{ $category->active_products_count }} mẫu</span></span>
-                        <span class="ms-category-name"><b>{{ $category->name }}</b><span aria-hidden="true">→</span></span>
-                        @if($category->description)<small class="ms-category-description">{{ \Illuminate\Support\Str::limit(strip_tags($category->description), 65) }}</small>@endif
+                        <span class="ms-gear-eyebrow">KHÁM PHÁ</span><span class="ms-category-name"><b>{{ $category->name }}</b><span aria-hidden="true">→</span></span>
+                        @if($category->description)<small class="ms-category-description">{{ \Illuminate\Support\Str::limit(strip_tags($category->description), 110) }}</small>@endif<span class="ms-gear-cta">Khám phá <span aria-hidden="true">→</span></span>
                     </a>
                 @endforeach
             </div>

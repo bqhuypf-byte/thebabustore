@@ -1,12 +1,11 @@
 <div class="store-mega-backdrop" x-cloak x-show="megaOpen" x-transition.opacity @click="megaOpen = false" aria-hidden="true"></div>
-<section id="store-product-menu" class="store-mega-panel" x-ref="megaPanel" x-cloak x-show="megaOpen" x-transition.opacity.duration.150ms
+<section id="store-product-menu" class="store-mega-panel" :class="{ 'has-sidebar': megaMode === 'all' }" x-ref="megaPanel" x-cloak x-show="megaOpen" x-transition.opacity.duration.150ms
     @mouseenter="clearTimeout(megaTimer)" @mouseleave="closeMegaLater()" aria-label="Khám phá sản phẩm">
     <div class="store-mega-inner">
         <div class="store-mega-top"><button type="button" class="store-mega-close" @click="if (window.matchMedia('(min-width:851px)').matches) $refs.megaTrigger.focus(); megaOpen = false" aria-label="Đóng danh mục sản phẩm">×</button></div>
         <div class="store-mega-categories" aria-label="Chọn danh mục">
-            <button type="button" @mouseenter="megaCategory = 'all'" @focus="megaCategory = 'all'" @click="megaCategory = 'all'" :class="{ 'is-selected': megaCategory === 'all' }" :aria-pressed="(megaCategory === 'all').toString()">Tất cả sản phẩm</button>
             @foreach($menuCategories as $menuCategory)
-                <button type="button" @mouseenter="megaCategory = '{{ $menuCategory->id }}'" @focus="megaCategory = '{{ $menuCategory->id }}'" @click="megaCategory = '{{ $menuCategory->id }}'" :class="{ 'is-selected': megaCategory === '{{ $menuCategory->id }}' }" :aria-pressed="(megaCategory === '{{ $menuCategory->id }}').toString()">{{ $menuCategory->name }}</button>
+                <a href="/shop?category={{ urlencode($menuCategory->slug) }}" @mouseenter="megaCategory = '{{ $menuCategory->id }}'" @focus="megaCategory = '{{ $menuCategory->id }}'" :class="{ 'is-selected': megaCategory === '{{ $menuCategory->id }}' }" :aria-current="megaCategory === '{{ $menuCategory->id }}' ? 'true' : 'false'">{{ $menuCategory->name }}</a>
             @endforeach
         </div>
         @php $megaGroups = collect([['key' => 'all', 'name' => 'Khám phá gaming gear', 'url' => '/shop', 'products' => $menuProducts]])->concat($menuCategories->map(fn ($category) => ['key' => (string) $category->id, 'name' => $category->name, 'url' => '/shop?category='.urlencode($category->slug), 'products' => $category->product_cat])); @endphp
