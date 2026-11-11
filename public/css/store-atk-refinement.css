@@ -94,3 +94,14 @@ body .store-header-root .store-nav a { gap:9px; white-space:nowrap; }
 body .store-header-root .store-nav a svg { width:12px; height:12px; stroke-width:2; flex:none; }
 body .store-header-root .store-nav a[aria-controls="store-product-menu"]:not([x-ref])::before { content:''; order:2; width:6px; height:6px; border-right:1.8px solid currentColor; border-bottom:1.8px solid currentColor; transform:rotate(45deg); margin:-4px 2px 0 1px; }
 body .store-header-root .store-nav a:hover { color:#111; }
+/* Keep the category area to four simple image banners. */
+body .mc-home #modern-categories { background:#fafafa; padding:24px clamp(24px,4.4vw,80px) 48px; }
+body .mc-home #modern-categories .ms-category-grid { gap:24px; }
+body .mc-home #modern-categories .ms-category-card { min-height:0; aspect-ratio:2.62; height:auto; padding:clamp(28px,2.6vw,48px); justify-content:flex-start; box-shadow:0 8px 24px #0000000d; }
+body .mc-home #modern-categories .ms-category-name { width:80%; margin:0; }
+body .mc-home #modern-categories .ms-category-name b { font-family:'Bai Jamjuree',Arial,sans-serif!important; font-size:clamp(24px,1.8vw,32px); font-weight:700; line-height:1.25; }
+body .mc-home #modern-categories .ms-gear-cta { border-radius:99px; margin-top:30px; padding:15px 28px; gap:0; font-size:14px!important; font-weight:600; }
+body .mc-home #modern-categories .ms-gear-cta>span { display:none; }
+body .mc-home #modern-categories .ms-category-card::after { background:linear-gradient(90deg,#0009,#0004 50%,transparent); }
+@media(max-width:900px) { body .mc-home #modern-categories .ms-category-card { min-height:230px; aspect-ratio:auto; } body .mc-home #modern-categories .ms-category-name { width:100%; } }
+@media(max-width:600px) { body .mc-home #modern-categories { padding:20px; } body .mc-home #modern-categories .ms-category-grid { gap:16px; } body .mc-home #modern-categories .ms-category-card { height:240px; min-height:0; padding:28px; } body .mc-home #modern-categories .ms-gear-cta { margin-top:24px; padding:13px 24px; } }
