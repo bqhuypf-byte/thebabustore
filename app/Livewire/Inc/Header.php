@@ -93,12 +93,25 @@ class Header extends Component
         $searchResults = mb_strlen($term) >= 2
             ? Product::search($term)->with('variants')->take(6)->get()
             : collect();
+        $menuProductScope = fn ($query) => $query->where('is_active', true)
+            ->whereHas('variants', fn ($variants) => $variants->where('stock', 'in_stock'))
+            ->with(['variants' => fn ($variants) => $variants->where('stock', 'in_stock')->orderBy('price')])
+            ->latest('id')->limit(7);
+        $menuCategories = Category::query()->where('is_active', true)->where('show_in_header', true)
+            ->whereHas('product_cat', fn ($products) => $products->where('is_active', true)
+                ->whereHas('variants', fn ($variants) => $variants->where('stock', 'in_stock')))
+            ->with(['product_cat' => $menuProductScope])->orderBy('ordinal_number')->get();
+        $menuProducts = Product::query();
+        $menuProductScope($menuProducts);
+        $menuProducts = $menuProducts->get();
         return view('livewire.inc.store-header', [
             'cartItems' => $this->cartItems,
             'totalPrice' => $this->totalPrice,
             'totalQuantity' => $this->totalQuantity, // Truyền tổng số lượng sản phẩm sang view
             'categories' => $this->categories, // Truyền danh mục sang view
             'headerSearchResults' => $searchResults,
+            'menuCategories' => $menuCategories,
+            'menuProducts' => $menuProducts,
         ]);
     }
 }
