@@ -105,3 +105,7 @@ body .mc-home #modern-categories .ms-gear-cta>span { display:none; }
 body .mc-home #modern-categories .ms-category-card::after { background:linear-gradient(90deg,#0009,#0004 50%,transparent); }
 @media(max-width:900px) { body .mc-home #modern-categories .ms-category-card { min-height:230px; aspect-ratio:auto; } body .mc-home #modern-categories .ms-category-name { width:100%; } }
 @media(max-width:600px) { body .mc-home #modern-categories { padding:20px; } body .mc-home #modern-categories .ms-category-grid { gap:16px; } body .mc-home #modern-categories .ms-category-card { height:240px; min-height:0; padding:28px; } body .mc-home #modern-categories .ms-gear-cta { margin-top:24px; padding:13px 24px; } }
+body .mc-home #modern-categories .ms-gear-cta { transition:color .18s ease; }
+body .mc-home #modern-categories .ms-gear-cta:hover,
+body .mc-home #modern-categories .ms-category-card:focus-visible .ms-gear-cta { color:#1240f7; }
+@media(prefers-reduced-motion:reduce) { body .mc-home #modern-categories .ms-gear-cta { transition:none; } }
