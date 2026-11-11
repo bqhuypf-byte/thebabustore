@@ -1,3 +1,11 @@
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url(/fonts/inter-menu/inter-semibold-1.ttf) format('truetype');
+}
+
 /* ATK reference: full-width masthead, icon actions and category sidebar. */
 @media(min-width:1101px) {
     body .store-header-root .store-header { display:grid; grid-template-columns:210px minmax(0,1fr) auto; max-width:none; height:72px; padding:0 clamp(28px,3.6vw,72px); gap:28px; }
@@ -79,3 +87,10 @@ body .mc-home #modern-categories .ms-gear-cta { display:flex; align-items:center
 body .mc-home #modern-categories .ms-category-description { white-space:normal!important; text-overflow:clip; }
 body .mc-home #modern-categories .ms-category-card { width:100%; min-width:0; }
 @media(max-width:600px) { body .mc-home #modern-categories .ms-category-grid { grid-template-columns:minmax(0,1fr); } body .mc-home #modern-categories .ms-category-card { aspect-ratio:auto; height:270px; } }
+/* Navigation typography follows the user's compact semibold reference. */
+body .store-header-root .store-nav a,
+body .store-header-root .store-mobile-nav :is(a,button) { font-family:Inter,Arial,sans-serif!important; font-size:14px!important; font-weight:600!important; line-height:20px; letter-spacing:0; color:#252525; text-decoration:none; }
+body .store-header-root .store-nav a { gap:9px; white-space:nowrap; }
+body .store-header-root .store-nav a svg { width:12px; height:12px; stroke-width:2; flex:none; }
+body .store-header-root .store-nav a[aria-controls="store-product-menu"]:not([x-ref])::before { content:''; order:2; width:6px; height:6px; border-right:1.8px solid currentColor; border-bottom:1.8px solid currentColor; transform:rotate(45deg); margin:-4px 2px 0 1px; }
+body .store-header-root .store-nav a:hover { color:#111; }
