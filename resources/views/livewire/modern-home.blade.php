@@ -1,7 +1,6 @@
 <div class="ms-root">
 @php
     $modernCategories = \App\Models\Category::query()->where('is_active', 1)->withCount(['product_cat as active_products_count' => fn ($query) => $query->where('is_active', 1)])->orderBy('ordinal_number')->take(4)->get();
-    $modernProducts = \App\Models\Product::query()->with('variants')->where('is_active', 1)->latest('id')->take(4)->get();
     $saleProducts = \App\Models\Product::query()->with('variants')->where('is_active', 1)->where('on_sale', 1)->whereHas('variants', fn ($query) => $query->where('stock', 'in_stock'))->latest('id')->take(4)->get();
 @endphp
 
@@ -41,51 +40,7 @@
             </div>
         </section>
 
-        <section class="ms-section ms-products-section">
-            <div class="ms-section-head">
-                <div>
-                    <span class="ms-products-label"><span aria-hidden="true">✧</span> Top Bán Chạy Nhất</span>
-                    <h2>Sản Phẩm Đang Được Game Thủ Yêu Thích</h2>
-                </div>
-                <a href="/shop">Xem tất cả ({{ \App\Models\Product::where('is_active', 1)->count() }} sản phẩm) <span aria-hidden="true">→</span></a>
-            </div>
-            <div class="ms-product-grid">
-                @foreach($modernProducts as $product)
-                    @php
-                        $rawImages = data_get($product, 'images', []);
-                        if (is_string($rawImages)) { $rawImages = json_decode($rawImages, true) ?: []; }
-                        $image = is_array($rawImages) ? ($rawImages[0] ?? null) : null;
-                        $variant = $product->variants->first();
-                        $price = data_get($variant, 'price') ?: data_get($product, 'price');
-                        $oldPrice = data_get($product, 'on_sale') && data_get($product, 'price') > $price ? data_get($product, 'price') : null;
-                        $discountPercent = ($oldPrice && $price && $oldPrice > $price) ? round((($oldPrice - $price) / $oldPrice) * 100) : null;
-                    @endphp
-                    <article class="ms-product-card">
-                        <div class="ms-product-image">
-                            <a href="/product/{{ $product->slug }}" aria-label="{{ $product->name }}">
-                            @if($image)<img src="{{ asset('storage/'.$image) }}" alt="{{ $product->name }}">@else<span class="ms-image-fallback">BABU</span>@endif
-                            </a>
-                            @if($discountPercent)
-                                <span class="ms-badge">-{{ $discountPercent }}%</span>
-                            @endif
-                            <button type="button" class="ms-quick" wire:click="openPreview({{ $product->id }})"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M2 12s3.5-6 10-6 10 6 10 6-3.5 6-10 6S2 12 2 12Z"/><circle cx="12" cy="12" r="3"/></svg> Xem nhanh</button>
-                        </div>
-                        <div class="ms-product-info">
-                            <a href="/product/{{ $product->slug }}">{{ $product->name }}</a>
-                            <div class="ms-product-bottom">
-                                <div class="ms-product-price"><b>{{ $price ? number_format($price, 0, ',', '.').'₫' : 'Liên hệ' }}</b>
-                                @if($oldPrice && $price && $oldPrice > $price)
-                                    <del>{{ number_format($oldPrice, 0, ',', '.') }}₫</del>
-                                @endif
-                                </div>
-                                <button class="ms-product-cart" type="button" wire:click="openPreview({{ $product->id }})" aria-label="Chọn phiên bản {{ $product->name }}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 3h2l2.4 10.3a2 2 0 0 0 2 1.5h7.9a2 2 0 0 0 1.9-1.4L21 7H6"/><circle cx="10" cy="19" r="1"/><circle cx="18" cy="19" r="1"/></svg></button>
-                            </div>
-                        </div>
-                    </article>
-                @endforeach
-            </div>
-            <div class="ms-products-more"><a href="/shop">Đến trang Cửa Hàng để lọc & xem đầy đủ sản phẩm <span aria-hidden="true">→</span></a></div>
-        </section>
+        @include('livewire.partials.home-product-carousel')
         @include('livewire.partials.home-editorial')
     </main>
 

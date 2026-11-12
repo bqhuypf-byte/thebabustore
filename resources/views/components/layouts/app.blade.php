@@ -412,6 +412,7 @@ button.button.btn.btn-large.btn-block.btn-danger.btn-checkout.evo-button {
     <link rel="stylesheet" href="{{ asset('css/store-typography.css') }}?v={{ filemtime(public_path('css/store-typography.css')) }}">
     <link rel="stylesheet" href="{{ asset('css/store-mega-menu.css') }}?v={{ filemtime(public_path('css/store-mega-menu.css')) }}">
     <link rel="stylesheet" href="{{ asset('css/store-atk-refinement.css') }}?v={{ filemtime(public_path('css/store-atk-refinement.css')) }}">
+    <link rel="stylesheet" href="{{ asset('css/home-product-carousel.css') }}?v={{ filemtime(public_path('css/home-product-carousel.css')) }}">
 </body>
 
 </html>
