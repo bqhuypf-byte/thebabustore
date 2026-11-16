@@ -36,11 +36,14 @@
 @endforeach
 </div>
 @if($latestPosts->isNotEmpty())
-<section class="mc-editorial mc-home-blog" aria-labelledby="mc-blog-title">
-    <div class="mc-blog-heading"><h2 id="mc-blog-title">Bài viết & tin tức</h2><a href="/blogs">Xem tất cả →</a></div>
-    <div class="mc-blog-grid">
-        @foreach($latestPosts->take(3) as $post)
-            <article><a href="/blog/{{ $post->slug }}">@if($post->banner)<img src="{{ Storage::url($post->banner) }}" alt="{{ $post->title }}" loading="lazy">@endif<h3>{{ $post->title }}</h3></a>@if($post->created_at)<time datetime="{{ $post->created_at->toDateString() }}">{{ $post->created_at->format('d.m.Y') }}</time>@endif</article>
+<section class="babu-blog-section babu-blog-home" aria-labelledby="mc-blog-title">
+    <div class="babu-blog-heading">
+        <h2 id="mc-blog-title">BLOG</h2>
+        <a href="/blogs">Xem tất cả <span aria-hidden="true">→</span></a>
+    </div>
+    <div class="babu-blog-grid">
+        @foreach($latestPosts->take(6) as $post)
+            @include('livewire.partials.blog-card')
         @endforeach
     </div>
 </section>

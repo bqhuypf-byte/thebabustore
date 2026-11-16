@@ -1,6 +1,6 @@
 @if ($paginator->hasPages())
-    <nav class="store-pagination" aria-label="Phân trang sản phẩm">
-        <p>Hiển thị {{ $paginator->firstItem() }}–{{ $paginator->lastItem() }} trong {{ $paginator->total() }} sản phẩm</p>
+    <nav class="store-pagination" aria-label="Phân trang {{ $itemLabel ?? 'sản phẩm' }}">
+        <p>Hiển thị {{ $paginator->firstItem() }}–{{ $paginator->lastItem() }} trong {{ $paginator->total() }} {{ $itemLabel ?? 'sản phẩm' }}</p>
         <div class="store-pagination-pages">
             <button type="button" wire:click="previousPage('{{ $paginator->getPageName() }}')" @disabled($paginator->onFirstPage()) aria-label="Trang trước">‹</button>
             @foreach ($elements as $element)

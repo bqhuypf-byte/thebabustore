@@ -99,7 +99,7 @@ class Home extends Component
 
             return $category;
         });
-        $this->latestPosts = Blog::latest()->take(8)->get();
+        $this->latestPosts = Blog::with(['contentCategory', 'contentType'])->latest()->take(8)->get();
         $this->latestProducts = Product::whereHas('variants', function ($query) {
             $query->where('stock', '!=', 'out_of_stock');
         })

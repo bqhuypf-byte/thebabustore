@@ -34,6 +34,8 @@ if ($seoProduct) {
         @if($seoImage)<meta name="twitter:image" content="{{ asset('storage/'.$seoImage) }}">@endif
         @if(!$seoProduct->is_active)<meta name="robots" content="noindex,follow">@endif
         <script type="application/ld+json">{!! json_encode(\App\Support\ProductSeo::schema($seoProduct, $settings), JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT) !!}</script>
+    @elseif(request()->is('blogs'))
+        <title>Blog | {{ $settings?->web_name ?: 'The BABU Store' }}</title>
     @endif
 
 
