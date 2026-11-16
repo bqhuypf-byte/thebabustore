@@ -10,7 +10,7 @@ export default defineConfig({
     ],
     server: {
         watch: {
-            ignored: ['**/docs*/**', '**/storage/**', '**/.git/**', '**/vendor/**'],
+            ignored: ['**/docs*/**', '**/storage/**', '**/.git/**', '**/vendor/**', '**/public/fonts/**', '**/public/assets*/**'],
         },
     },
 });
