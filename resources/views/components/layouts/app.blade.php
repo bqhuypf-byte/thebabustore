@@ -107,6 +107,14 @@ if ($seoProduct) {
     {{ $slot }}
 
     @livewireScripts
+    <style>
+        @media (max-width: 640px) {
+            #gt_float_wrapper { left: 12px !important; bottom: calc(88px + env(safe-area-inset-bottom, 0px)) !important; }
+            #gt_float_wrapper .gt_float_switcher { font-size: 12px; border-radius: 12px; }
+            #gt_float_wrapper .gt-current-lang { display: flex; align-items: center; gap: 6px; min-height: 44px; padding: 8px 10px; }
+            #gt_float_wrapper .gt-current-lang img { width: 20px; height: auto; margin: 0; }
+        }
+    </style>
     <div class="gtranslate_wrapper"></div>
     <script>
         window.gtranslateSettings = {

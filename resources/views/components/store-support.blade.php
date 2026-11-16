@@ -87,8 +87,9 @@
         .store-support-toggle:hover { background: var(--babu-blue-dark, #0c2fbf); transform: translateY(-1px); }
         .store-support-toggle span { font-weight: 700 !important; color: #fff; line-height: 1; }
         @media (max-width: 640px) {
-            .store-support { right: 14px; bottom: 84px; }
-            .store-support-toggle { height: 44px; padding: 0 15px; font-size: 13.5px; }
+            .store-support { right: 16px; bottom: calc(88px + env(safe-area-inset-bottom, 0px)); }
+            .store-support-toggle { width: 48px; height: 48px; padding: 0; }
+            .store-support-toggle > span { display: none; }
         }
     </style>
 @endif
