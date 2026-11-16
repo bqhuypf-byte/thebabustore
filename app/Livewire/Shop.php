@@ -4,6 +4,7 @@ namespace App\Livewire;
 
 use App\Models\Category;
 use App\Models\Product;
+use App\Models\ProductVariant;
 use App\Models\Brand;
 use App\Models\Subcategory;
 use Livewire\Attributes\Url;
@@ -63,7 +64,14 @@ class Shop extends Component
 
     public function render()
     {
-        $productsQuery = Product::with('variants')
+        // Match the first available variant used by the product card.
+        $displayPrice = ProductVariant::query()->select('price')
+            ->whereColumn('product_variants.product_id', 'products.id')
+            ->orderByRaw('CASE WHEN stock = ? THEN 0 ELSE 1 END', ['in_stock'])
+            ->orderBy('id')->limit(1);
+
+        $productsQuery = Product::with(['variants' => fn ($query) => $query->orderBy('id')])
+        ->addSelect(['display_price' => $displayPrice])
         ->inStock() // chỉ lấy sản phẩm còn hàng
         ->where('name', 'like', "%{$this->search}%")
         ;
@@ -73,10 +81,10 @@ class Shop extends Component
         }
 
         match ($this->priceRange) {
-            'under_500' => $productsQuery->where('price', '<', 500000),
-            '500_1000' => $productsQuery->whereBetween('price', [500000, 999999]),
-            '1000_2000' => $productsQuery->whereBetween('price', [1000000, 1999999]),
-            'over_2000' => $productsQuery->where('price', '>=', 2000000),
+            'under_500' => $productsQuery->where($displayPrice, '<', 500000),
+            '500_1000' => $productsQuery->where($displayPrice, '>=', 500000)->where($displayPrice, '<', 1000000),
+            '1000_2000' => $productsQuery->where($displayPrice, '>=', 1000000)->where($displayPrice, '<', 2000000),
+            'over_2000' => $productsQuery->where($displayPrice, '>=', 2000000),
             default => null,
         };
 
@@ -114,8 +122,8 @@ class Shop extends Component
 
         // Sắp xếp và phân trang
         match ($this->sort) {
-            'price-asc' => $productsQuery->orderBy('price'),
-            'price-desc' => $productsQuery->orderByDesc('price'),
+            'price-asc' => $productsQuery->orderBy('display_price')->orderBy('id'),
+            'price-desc' => $productsQuery->orderByDesc('display_price')->orderBy('id'),
             default => $productsQuery->orderByDesc('created_at'),
         };
         $products = $productsQuery->paginate(12);
