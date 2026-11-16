@@ -68,6 +68,7 @@ Route::get('/products/{slug}', ProductDetail::class);
 Route::redirect('/guides', '/blogs');
 Route::redirect('/login', '/account/login');
 Route::get('/blogs', Blog::class);
+Route::get('/test-thiet-bi', \App\Livewire\DeviceTester::class)->name('device-tester');
 Route::get('/blog/{slug}', BlogPost::class);
 Route::get('/search', Search::class);
 
