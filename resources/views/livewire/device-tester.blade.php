@@ -1,7 +1,7 @@
 <div class="device-test-page">
     @livewire('inc.header')
     <link rel="stylesheet" href="{{ asset('css/device-tester.css') }}?v={{ filemtime(public_path('css/device-tester.css')) }}">
-    <main class="dt-container" id="device-tester" wire:ignore>
+    <main class="dt-container" id="device-tester" data-key-sound="{{ asset('audio/device-test/key.wav') }}?v={{ filemtime(public_path('audio/device-test/key.wav')) }}" wire:ignore>
         <div class="dt-intro">
             <div><p class="dt-eyebrow">BABU TOOLS</p><h1>Kiểm tra chuột & bàn phím</h1><p>Thử phím bấm, nút chuột và chuyển động ngay trên trình duyệt.</p></div>
             <button class="dt-button dt-secondary" type="button" data-action="reset">Đặt lại kết quả</button>
@@ -14,13 +14,24 @@
         <section id="dt-keyboard" role="tabpanel" aria-labelledby="dt-tab-keyboard">
             <div class="dt-card">
                 <div class="dt-card-heading">
-                    <div><h2>Test bàn phím</h2><p>Chọn bắt đầu rồi nhấn các phím. Nhấn Esc để kết thúc.</p></div>
+                    <div><h2>Test bàn phím</h2><p>Chọn bắt đầu rồi nhấn phím. Bấm chuột ra ngoài khung để kết thúc.</p></div>
                     <div class="dt-toolbar">
                         <label class="dt-select-label">Layout <select id="dt-layout"><option value="full">Full-size · 104 phím</option><option value="tkl">TKL · 87 phím</option></select></label>
                         <button class="dt-button" type="button" data-action="keyboard-toggle">Bắt đầu test</button>
                     </div>
                 </div>
+                <div class="dt-keyboard-options">
+                    <label><input id="dt-auto-layout" type="checkbox" checked> Tự nhận diện bố trí chữ</label>
+                    <label><input id="dt-key-sound" type="checkbox"> Âm thanh app gốc</label>
+                    <label><input id="dt-reset-shortcut" type="checkbox" checked> Ctrl + Space đặt lại</label>
+                    <label class="dt-select-label">Bố trí chữ <select id="dt-letter-layout"><option value="us">US · QWERTY</option><option value="auto">Theo hệ điều hành</option></select></label>
+                </div>
+                <p id="dt-layout-status" class="dt-option-note">Chọn bắt đầu để nhận diện bố trí chữ.</p>
+                <p id="dt-sound-status" class="dt-option-note" hidden></p>
                 <div class="dt-keyboard-scroll" id="dt-keyboard-stage" tabindex="0" role="region" aria-label="Vùng nhận phím bàn phím">
+                    <div class="dt-media-heading"><span>Phím media & trình duyệt</span><span id="dt-media-tested">0 / 18</span></div>
+                    <div class="dt-media-row" id="dt-media-visual"></div>
+                    <div class="dt-lock-indicators" aria-label="Đèn trạng thái bàn phím"><span data-lock="NumLock">Num <b>—</b></span><span data-lock="CapsLock">Caps <b>—</b></span><span data-lock="ScrollLock">Scroll <b>—</b></span></div>
                     <div class="dt-keyboard" id="dt-keyboard-visual"></div>
                 </div>
                 <div class="dt-keyboard-footer">
@@ -35,7 +46,9 @@
                 <div class="dt-stat"><span>Lần nhấn mới</span><strong id="dt-key-count">0</strong></div>
             </div>
             <div class="dt-card dt-event-card">
-                <div><h2>Sự kiện gần nhất</h2><p id="dt-last-key" class="dt-last-key">Chưa nhận phím</p><p class="dt-muted">Một số phím hệ thống và tổ hợp do trình duyệt giữ lại có thể không được ghi nhận.</p></div>
+                <div><h2>Sự kiện gần nhất</h2><p id="dt-last-key" class="dt-last-key">Chưa nhận phím</p>
+                    <dl class="dt-key-details"><div><dt>Code</dt><dd id="dt-event-code">—</dd></div><div><dt>KeyCode web</dt><dd id="dt-event-number">—</dd></div><div><dt>Vị trí</dt><dd id="dt-event-location">—</dd></div><div><dt>Trạng thái</dt><dd id="dt-event-flags">—</dd></div></dl>
+                    <p class="dt-muted">Mã trên do trình duyệt cung cấp; scan code Windows không có trong bản web. Một số phím hệ thống/media có thể được hệ điều hành giữ lại.</p></div>
                 <div class="dt-event-log" id="dt-key-log" aria-label="Lịch sử sự kiện bàn phím"><p class="dt-empty">Nhấn phím trong vùng test để xem lịch sử.</p></div>
             </div>
         </section>
@@ -49,18 +62,19 @@
                         <span class="dt-pad-position" id="dt-mouse-position">X — · Y —</span>
                     </div>
                     <div class="dt-mouse-buttons" aria-label="Trạng thái nút chuột">
-                        <span data-mouse-button="0">Trái <b>0</b></span><span data-mouse-button="2">Phải <b>0</b></span><span data-mouse-button="1">Giữa <b>0</b></span><span data-mouse-button="3">Nút 4 <b>0</b></span><span data-mouse-button="4">Nút 5 <b>0</b></span>
+                        <span data-mouse-button="0">Trái <b>0</b></span><span data-mouse-button="2">Phải <b>0</b></span><span data-mouse-button="1">Giữa <b>0</b></span><span data-mouse-button="3" title="Back">Hông 1 <b>0</b></span><span data-mouse-button="4" title="Forward">Hông 2 <b>0</b></span>
                     </div>
-                    <p class="dt-wheel-status" id="dt-wheel-status" role="status">Con lăn chưa có sự kiện</p>
+                    <div class="dt-mouse-summary"><p class="dt-wheel-status" id="dt-wheel-status" role="status">Con lăn chưa có sự kiện</p><span id="dt-mouse-total">Tổng 0 lượt bấm</span></div>
                 </div>
                 <aside class="dt-card dt-cps-card">
-                    <h2>Tốc độ click</h2><p>Đo số lần click trái mỗi giây trong vùng test.</p>
+                    <h2>Tốc độ click</h2><p>Đo nút được chọn, bao gồm cả hai nút hông. Mặc định tính tất cả 5 nút.</p>
+                    <label class="dt-select-label" for="dt-cps-button">Nút tính CPS <select id="dt-cps-button"><option value="all">Tất cả 5 nút</option><option value="0">Nút trái</option><option value="2">Nút phải</option><option value="1">Nút giữa</option><option value="3">Hông 1 · Back</option><option value="4">Hông 2 · Forward</option></select></label>
                     <label class="dt-select-label" for="dt-cps-duration">Thời gian <select id="dt-cps-duration"><option value="5">5 giây</option><option value="10">10 giây</option></select></label>
                     <div class="dt-cps-score"><strong id="dt-cps-score">0.00</strong><span>click / giây</span></div>
                     <div class="dt-cps-detail"><span id="dt-cps-count">0 click</span><span id="dt-cps-time">5.0 giây</span></div>
                     <progress id="dt-cps-progress" max="100" value="0" aria-label="Tiến độ đo tốc độ click"></progress>
                     <button class="dt-button" type="button" data-action="cps-start">Bắt đầu đo</button>
-                    <p id="dt-cps-status" role="status">Chọn bắt đầu, sau đó click trái trong vùng test.</p>
+                    <p id="dt-cps-status" role="status">Chọn bắt đầu, sau đó bấm nút đã chọn trong vùng test.</p>
                 </aside>
             </div>
             <div class="dt-stat-grid dt-mouse-stats">

@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { ClickSession, summarizeIntervals } from '../../public/js/device-tester.js';
+import { ClickSession, summarizeIntervals, countsForSession, resolveKeyCode } from '../../public/js/device-tester.js';
 
 test('click timing starts on the first click and excludes the exact deadline', () => {
     const session = new ClickSession();
@@ -48,4 +48,38 @@ test('stale, duplicate, invalid and insufficient movement samples are excluded',
     const valid = Array.from({ length: 21 }, (_, i) => 1000 + i * 10);
     const noisy = [-2000, NaN, ...valid.flatMap(time => [time, time]), Infinity, 9000];
     assert.deepEqual(summarizeIntervals(noisy, 1200), { hz: 100, mean: 10, min: 10, max: 10 });
+});
+
+test('both side buttons and all other buttons count in the default session', () => {
+    const session = new ClickSession();
+    session.arm(5, 'all');
+    for (let button = 0; button <= 4; button += 1) session.click(1000 + button * 100, button);
+    session.click(1500, 3);
+    session.click(1600, 4);
+    assert.equal(session.result(6000).count, 7);
+    assert.equal(session.result(6000).cps, 1.4);
+    assert.equal(countsForSession(3, 'all'), true);
+    assert.equal(countsForSession(4, 'all'), true);
+    assert.equal(countsForSession(-1, 'all'), false);
+    assert.equal(countsForSession(5, 'all'), false);
+});
+
+test('a side-button-only session starts only on that button', () => {
+    const session = new ClickSession();
+    session.arm(5, '3');
+    session.click(100, 0);
+    session.click(200, 4);
+    assert.equal(session.result(300).phase, 'armed');
+    session.click(1000, 3);
+    session.click(1100, 0);
+    session.click(1200, 4);
+    session.click(1300, 3);
+    assert.equal(session.result(6000).count, 2);
+});
+
+test('media keys without a physical code use the observed media key value', () => {
+    assert.equal(resolveKeyCode({code:'',key:'AudioVolumeUp'}), 'AudioVolumeUp');
+    assert.equal(resolveKeyCode({code:'Unidentified',key:'MediaPlayPause'}), 'MediaPlayPause');
+    assert.equal(resolveKeyCode({code:'KeyQ',key:'a'}), 'KeyQ');
+    assert.equal(resolveKeyCode({code:'',key:'a'}), null);
 });
