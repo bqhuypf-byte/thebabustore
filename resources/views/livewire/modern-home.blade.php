@@ -21,13 +21,15 @@
             </div>
         </section>
 
+        @include('livewire.partials.home-product-carousel')
+
         <section class="ms-section ms-flash-section" aria-labelledby="flash-title">
             <div class="ms-flash">
                 <div class="ms-flash-heading"><div><span class="ms-flash-kicker">⚡ ƯU ĐÃI NỔI BẬT</span><h2 id="flash-title">Flash Sale hôm nay</h2><p>Khám phá ưu đãi gaming gear từ The BABU Store</p></div><a href="/shop?sort=discount">Xem tất cả ưu đãi →</a></div>
                 @if($saleProducts->isNotEmpty())
                     <div class="ms-flash-grid">
                         @foreach($saleProducts as $saleProduct)
-                            @php $saleVariant = $saleProduct->variants->firstWhere('stock', 'in_stock') ?: $saleProduct->variants->first(); $saleImage = ($saleProduct->images ?: [])[0] ?? null; @endphp
+                            @php $saleVariant = $saleProduct->variants->firstWhere('stock', 'in_stock') ?: $saleProduct->variants->first(); $saleImage = $saleVariant?->image ?: (($saleProduct->images ?: [])[0] ?? null); @endphp
                             <article class="ms-flash-card">
                                 <a class="ms-flash-image" href="/product/{{ $saleProduct->slug }}">@if($saleImage)<img src="{{ asset('storage/'.$saleImage) }}" alt="{{ $saleProduct->name }}">@endif</a>
                                 <div class="ms-flash-body"><a href="/product/{{ $saleProduct->slug }}">{{ $saleProduct->name }}</a><strong>{{ number_format($saleVariant?->price ?? $saleProduct->price, 0, ',', '.') }}₫</strong><button type="button" wire:click="openPreview({{ $saleProduct->id }})">Chọn phiên bản</button></div>
@@ -40,7 +42,6 @@
             </div>
         </section>
 
-        @include('livewire.partials.home-product-carousel')
         @include('livewire.partials.home-editorial')
     </main>
 

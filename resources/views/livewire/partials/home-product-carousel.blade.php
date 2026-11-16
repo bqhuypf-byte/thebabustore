@@ -31,7 +31,7 @@
             <div class="home-catalog-track" x-ref="track" @scroll.passive="sync()" tabindex="0" aria-label="Sản phẩm {{ $group['name'] }}" @keydown.arrow-right.prevent="step(1)" @keydown.arrow-left.prevent="step(-1)">
                 @forelse($group['products'] as $product)
                     @php
-                        $image = ($product->images ?: [])[0] ?? $product->variants->first()?->image;
+                        $image = $product->variants->first(fn ($variant) => filled($variant->image))?->image ?: (($product->images ?: [])[0] ?? null);
                         $price = $product->variants->min('price');
                         $priceVaries = $product->variants->max('price') > $price;
                         $variantImages = $product->variants->filter(fn ($variant) => filled($variant->image))->unique('image')->values();

@@ -1,4 +1,5 @@
 @php $homeSettings = \App\Models\Setting::query()->first(); $homeSections = $homeSettings?->homepage_sections ?? \App\Support\HomepageContent::defaults($homeSettings); @endphp
+<div class="mc-editorial-stack">
 @foreach($homeSections as $section)
     @if(($section['enabled'] ?? true) && filled($section['title'] ?? null))
         @php $layout = in_array($section['layout'] ?? '', ['split', 'banner', 'cards', 'faq'], true) ? $section['layout'] : 'split'; @endphp
@@ -33,6 +34,7 @@
         </section>
     @endif
 @endforeach
+</div>
 @if($latestPosts->isNotEmpty())
 <section class="mc-editorial mc-home-blog" aria-labelledby="mc-blog-title">
     <div class="mc-blog-heading"><h2 id="mc-blog-title">Bài viết & tin tức</h2><a href="/blogs">Xem tất cả →</a></div>
