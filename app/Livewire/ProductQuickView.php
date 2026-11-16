@@ -36,6 +36,13 @@ class ProductQuickView extends Component
         if ($variant->image && ($index = $images->search($variant->image)) !== false) $this->imageIndex = $index;
     }
 
+    public function selectClassification(string $group, string $value): void
+    {
+        $product = Product::with('variants')->where('is_active', true)->findOrFail($this->productId);
+        $variant = \App\Support\VariantSelection::select($product, $this->variantId, $group, $value);
+        if ($variant) $this->selectVariant($variant->id);
+    }
+
     public function changeQuantity(int $change): void
     {
         $this->quantity = max(1, min(99, (int) $this->quantity + $change));

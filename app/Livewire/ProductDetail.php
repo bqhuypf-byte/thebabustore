@@ -91,55 +91,11 @@ class ProductDetail extends Component
         $this->activeImage = $images->get(($index + ($direction < 0 ? -1 : 1) + $images->count()) % $images->count());
     }
 
-    private function classificationMap(): array
-    {
-        $variants = $this->product->variants;
-        if ($variants->count() < 2) return [];
-        $map = [];
-        foreach ($variants as $variant) {
-            $attributes = collect($variant->classification ?: [])->filter(fn ($value, $key) => is_string($key) && trim($key) !== '' && is_string($value) && trim($value) !== '')->mapWithKeys(fn ($value, $key) => [trim($key) => trim($value)])->all();
-            if (!$attributes) {
-                // Derive a model and colour only when every existing variant follows this unambiguous pattern.
-                if (!preg_match('/^(.+?)\s+(gray|grey|purple|blue|black|golden|gold|silver|white|green|pink|orange|red)$/iu', trim($variant->name), $match)) return [];
-                $attributes = ['Dòng máy' => trim($match[1]), 'Màu sắc' => ucfirst(mb_strtolower($match[2]))];
-            }
-            $map[$variant->id] = $attributes;
-        }
-        $keys = array_keys(reset($map));
-        // MySQL may reorder JSON object keys. Prefer familiar selection order unless admin overrides it.
-        $priority = ['dong may' => 0, 'model' => 0, 'phien ban' => 0, 'loai' => 0, 'mau sac' => 1, 'mau' => 1, 'color' => 1, 'switch' => 2, 'cong tac' => 2, 'mic' => 3, 'cap' => 4];
-        usort($keys, fn ($a, $b) => ($priority[\Illuminate\Support\Str::lower(\Illuminate\Support\Str::ascii($a))] ?? 5) <=> ($priority[\Illuminate\Support\Str::lower(\Illuminate\Support\Str::ascii($b))] ?? 5));
-        $configured = array_column($this->product->option_group_order ?? [], 'name');
-        $keys = array_values(array_unique(array_merge(array_intersect($configured, $keys), $keys)));
-        if (count($keys) < 1) return [];
-        $combinations = [];
-        foreach ($map as $attrs) {
-            if (count($attrs) !== count($keys) || array_diff($keys, array_keys($attrs))) return [];
-            $combination = json_encode(array_map(fn ($key) => $attrs[$key], $keys), JSON_UNESCAPED_UNICODE);
-            if (isset($combinations[$combination])) return [];
-            $combinations[$combination] = true;
-        }
-        foreach ($map as $id => $attrs) $map[$id] = array_replace(array_fill_keys($keys, ''), $attrs);
-        return $map;
-    }
-
     public function selectClassification(string $group, string $value): void
     {
-        $map = $this->classificationMap();
-        if (!$map || !in_array($group, array_keys(reset($map)), true)) return;
+        $map = \App\Support\VariantSelection::map($this->product);
         $current = $map[$this->selectedVariant] ?? [];
-        $keys = array_keys(reset($map));
-        $prior = array_slice($keys, 0, array_search($group, $keys, true));
-        $candidates = $this->product->variants->filter(function ($variant) use ($map, $group, $value, $prior, $current) {
-            if ($variant->stock !== 'in_stock' || ($map[$variant->id][$group] ?? null) !== $value) return false;
-            foreach ($prior as $key) if (($map[$variant->id][$key] ?? null) !== ($current[$key] ?? null)) return false;
-            return true;
-        });
-        $best = $candidates->sortByDesc(function ($variant) use ($current, $map, $group) {
-            $score = 0;
-            foreach ($current as $key => $selected) if ($key !== $group && ($map[$variant->id][$key] ?? null) === $selected) $score++;
-            return $score;
-        })->first();
+        $best = \App\Support\VariantSelection::select($this->product, $this->selectedVariant, $group, $value);
         if ($best) {
             $changed = [];
             foreach ($current as $key => $selected) {
@@ -148,35 +104,6 @@ class ProductDetail extends Component
             $this->classificationNotice = $changed ? 'Đã chọn phiên bản còn hàng phù hợp: '.implode(', ', $changed).'.' : '';
             $this->updateVariantDetails($best->id);
         }
-    }
-
-    private function classificationGroups(): array
-    {
-        $map = $this->classificationMap();
-        if (!$map) return [];
-        $fallbackImage = collect($this->product->images ?: [])->filter()->first();
-        $current = $map[$this->selectedVariant] ?? reset($map);
-        $groups = [];
-        $prior = [];
-        foreach (array_keys(reset($map)) as $key) {
-            $eligible = $this->product->variants->filter(function ($variant) use ($map, $prior, $current) {
-                foreach ($prior as $previous) if (($map[$variant->id][$previous] ?? null) !== ($current[$previous] ?? null)) return false;
-                return true;
-            });
-            $values = [];
-            foreach ($eligible as $variant) {
-                $value = $map[$variant->id][$key];
-                if (!isset($values[$value])) $values[$value] = ['label' => $value, 'image' => $variant->image ?: $fallbackImage, 'price' => $variant->price, 'available' => false];
-                if ($variant->stock === 'in_stock') {
-                    if (!$values[$value]['available'] || $variant->price < $values[$value]['price']) $values[$value]['price'] = $variant->price;
-                    $values[$value]['available'] = true;
-                    $values[$value]['image'] = $variant->image ?: $values[$value]['image'] ?: $fallbackImage;
-                }
-            }
-            $groups[] = ['name' => $key, 'selected' => $current[$key] ?? '', 'options' => array_values($values)];
-            $prior[] = $key;
-        }
-        return $groups;
     }
 
     public function loadRelatedProducts()
@@ -246,7 +173,7 @@ class ProductDetail extends Component
             'reviewCount' => $reviewCount,
             'avgRating' => $avgRating,
             'ratingDistribution' => $ratingDistribution,
-            'classificationGroups' => $this->classificationGroups(),
+            'classificationGroups' => \App\Support\VariantSelection::groups($this->product, $this->selectedVariant),
             'productContent' => \App\Support\ProductContent::forProduct($this->product, $this->product->variants->firstWhere('id', $this->selectedVariant)),
             'settings' => \App\Models\Setting::query()->first(),
         ]);

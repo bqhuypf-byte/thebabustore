@@ -77,6 +77,12 @@
                 <h2 id="preview-title">{{ $previewProduct->name }}</h2>
                 <p>Thông tin sản phẩm</p>
                 <div class="ms-preview-price">{{ number_format($previewVariant?->price ?? $previewProduct->price, 0, ',', '.') }}₫</div>
+                @php($classificationGroups = \App\Support\VariantSelection::groups($previewProduct, $previewVariantId))
+                @if($classificationGroups)
+                    <div class="store-option-picker">
+                        @include('livewire.partials.variant-option-groups', ['selectionAction' => 'selectPreviewClassification'])
+                    </div>
+                @else
                 <div class="ms-preview-variant-heading"><h3>Chọn phiên bản / Biến thể:</h3></div>
                 <div class="ms-preview-variants">
                     @forelse($previewProduct->variants as $variant)
@@ -85,6 +91,7 @@
                         <p>Sản phẩm chưa có phiên bản để đặt hàng.</p>
                     @endforelse
                 </div>
+                @endif
                 @error('previewVariantId') <p class="ms-preview-error">{{ $message }}</p> @enderror
                 @if($previewProduct->short_description)
                     <h3>Thông tin nổi bật:</h3>

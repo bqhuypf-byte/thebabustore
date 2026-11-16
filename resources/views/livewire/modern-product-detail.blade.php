@@ -27,20 +27,13 @@
                 <h1 class="title">{{ $product->name }}</h1>
                 <div class="meta-row pd-rating"><span class="stars" aria-label="{{ $reviewCount ? $avgRating.' trên 5 sao' : 'Chưa có đánh giá' }}">@foreach(range(1,5) as $star)<span class="{{ $star <= round($avgRating) ? 'filled' : '' }}">★</span>@endforeach</span><button type="button" wire:click="$set('activeTab', 'reviews')">{{ $reviewCount ? $reviewCount.' đánh giá' : 'Chưa có đánh giá' }}</button>@if($product->brand)<span class="dot"></span><span>Thương hiệu: <b>{{ $product->brand->name }}</b></span>@endif</div>
                 <div class="price-panel"><div class="price-top"><div class="price pd-price">{{ $price ? number_format($price,0,',','.').'₫' : 'Liên hệ' }}</div><div class="price-note">Giá của {{ $selected?->name ?? $product->name }}</div></div><div class="price-sub"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" style="flex:none" aria-hidden="true"><rect x="1" y="3" width="15" height="13" rx="2"/><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg> <span>Phí và phương thức giao hàng được xác nhận tại bước thanh toán.</span></div></div>
-                <div class="picker pd-classification">
+                <div class="picker pd-classification store-option-picker">
                     <div class="picker-head"><h3>Chọn phân loại</h3></div>
                     @if($classificationNotice)<p class="note-box" role="status">{{ $classificationNotice }}</p>@endif
-                    @forelse($classificationGroups as $group)
-                        <div class="step pd-classification-group"><div class="step-label"><span class="step-num">{{ $loop->iteration }}</span><b>{{ $group['name'] }}</b><span class="picked">{{ $group['selected'] }}</span></div><div class="opt-grid {{ $loop->first ? 'models' : 'colors' }}">
-                        @foreach($group['options'] as $option)
-                            <button type="button" class="opt has-thumb {{ $group['selected'] === $option['label'] ? 'sel' : '' }}" wire:click="selectClassification({{ json_encode($group['name'], JSON_HEX_APOS | JSON_HEX_QUOT) }}, {{ json_encode($option['label'], JSON_HEX_APOS | JSON_HEX_QUOT) }})" aria-pressed="{{ $group['selected'] === $option['label'] ? 'true' : 'false' }}" @disabled(!$option['available'])>
-                                <img class="opt-thumb" src="{{ asset('storage/'.$option['image']) }}" alt="Ảnh phân loại {{ $option['label'] }}" loading="lazy">
-                                <span class="opt-copy"><span class="on">{{ $option['label'] }}</span>@if(!$option['available'])<span class="oos">Hết hàng</span>@elseif($loop->parent->first)<span class="op">Từ {{ number_format($option['price'],0,',','.') }}₫</span>@endif</span>
-                            </button>
-                        @endforeach
-                        </div></div>
-                    @empty
-                        <div class="step"><div class="step-label"><span class="step-num">1</span><b>Phiên bản</b><span class="picked">{{ $selected?->name }}</span></div><div class="opt-grid models pd-variants">
+                    @if($classificationGroups)
+                        @include('livewire.partials.variant-option-groups', ['selectionAction' => 'selectClassification'])
+                    @else
+                        <div class="step"><div class="step-label"><span class="step-num">1</span><b>Phiên bản</b><span class="picked">{{ $selected?->name }}</span></div><div class="opt-grid models pd-variants pd-variant-list">
                             @forelse($product->variants as $variant)
                                 @php($variantThumb = $variant->image ?: $images->first())
                                 <button type="button" class="opt has-thumb {{ $selectedVariant == $variant->id ? 'sel' : '' }}" wire:click="updateVariantDetails({{ $variant->id }})" aria-pressed="{{ $selectedVariant == $variant->id ? 'true' : 'false' }}" @disabled($variant->stock !== 'in_stock')>
@@ -49,7 +42,7 @@
                                 </button>
                             @empty<p>Liên hệ cửa hàng về phiên bản sản phẩm.</p>@endforelse
                         </div></div>
-                    @endforelse
+                    @endif
                     <button class="compare-link" type="button" wire:click="$set('activeTab', 'specifications')" onclick="document.getElementById('chi-tiet').scrollIntoView({behavior:'smooth'})">Xem thông số và so sánh các phiên bản →</button>
                 </div>
                 @error('selectedVariant')<p class="field-error" role="alert">{{ $message }}</p>@enderror

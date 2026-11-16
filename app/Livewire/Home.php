@@ -52,6 +52,13 @@ class Home extends Component
         $this->resetErrorBag('previewVariantId');
     }
 
+    public function selectPreviewClassification(string $group, string $value): void
+    {
+        $product = Product::with('variants')->where('is_active', true)->findOrFail($this->previewProductId);
+        $variant = \App\Support\VariantSelection::select($product, $this->previewVariantId, $group, $value);
+        if ($variant) $this->selectPreviewVariant($variant->id);
+    }
+
     public function changePreviewQuantity(int $change): void
     {
         $this->previewQuantity = max(1, min(99, (int) $this->previewQuantity + $change));
