@@ -123,13 +123,9 @@ function mount(root) {
     let lastMovementTime = -1;
     let padWidth = 1;
     let padHeight = 1;
-    let nativeLabels = null;
-    let layoutRequest = 0;
     let audioContext = null;
     let audioBuffer = null;
     let audioLoading = null;
-    let soundRequest = 0;
-    let barkSource = null;
 
     function makeKey(data) {
         const element = document.createElement('kbd');
@@ -186,7 +182,6 @@ function mount(root) {
             }
             visual.append(grid);
         }
-        renderKeyLabels();
         renderKeyboard();
     }
     function renderKeyboard() {
@@ -214,45 +209,7 @@ function mount(root) {
         set('#dt-keyboard-status', message);
         renderKeyboard();
     }
-    function renderKeyLabels() {
-        for (const [code, element] of keyElements) {
-            const mapped = nativeLabels?.get(code);
-            const printable = /^(Key|Digit|Backquote|Minus|Equal|Bracket|Backslash|Semicolon|Quote|Comma|Period|Slash|Intl)/.test(code);
-            element.textContent = printable && mapped ? mapped.toLocaleUpperCase() : element.dataset.defaultLabel;
-        }
-    }
-    async function refreshLayout() {
-        const request = ++layoutRequest;
-        nativeLabels = null;
-        if (!find('#dt-auto-layout').checked) {
-            find('#dt-letter-layout').value = 'us';
-            renderKeyLabels();
-            set('#dt-layout-status', 'Bố trí chữ US · QWERTY.');
-            return;
-        }
-        if (!navigator.keyboard?.getLayoutMap) {
-            find('#dt-letter-layout').value = 'us';
-            renderKeyLabels();
-            set('#dt-layout-status', 'Trình duyệt chưa hỗ trợ tự nhận diện; đang dùng US · QWERTY.');
-            return;
-        }
-        try {
-            const labels = await navigator.keyboard.getLayoutMap();
-            if (request !== layoutRequest || !find('#dt-auto-layout').checked) return;
-            nativeLabels = labels;
-            find('#dt-letter-layout').value = 'auto';
-            renderKeyLabels();
-            set('#dt-layout-status', 'Nhãn phím theo bố trí hiện tại của hệ điều hành.');
-        } catch {
-            if (request !== layoutRequest) return;
-            find('#dt-letter-layout').value = 'us';
-            renderKeyLabels();
-            set('#dt-layout-status', 'Không đọc được bố trí hệ điều hành; đang dùng US · QWERTY.');
-        }
-    }
     async function prepareSound() {
-        const request = soundRequest;
-        const selectedSound = find('#dt-sound-type').value;
         const status = find('#dt-sound-status');
         status.hidden = !find('#dt-key-sound').checked;
         if (status.hidden) return;
@@ -262,14 +219,13 @@ function mount(root) {
             if (!Audio) throw new Error('Audio unavailable');
             audioContext ??= new Audio();
             await audioContext.resume();
-            audioLoading ??= fetch(selectedSound === 'bark' ? root.dataset.barkSound : root.dataset.keySound).then(response => {
+            audioLoading ??= fetch(root.dataset.keySound).then(response => {
                 if (!response.ok) throw new Error('Sound unavailable');
                 return response.arrayBuffer();
             }).then(data => audioContext.decodeAudioData(data));
             const buffer = await audioLoading;
-            if (request !== soundRequest) return;
             audioBuffer = buffer;
-            status.textContent = selectedSound === 'bark' ? 'Đã bật một tiếng gâu mô phỏng khi nhấn phím.' : 'Đã bật tiếng click ngắn khi nhấn phím.';
+            status.textContent = 'Đã bật tiếng click ngắn khi nhấn phím.';
         } catch {
             audioLoading = null;
             status.textContent = 'Chưa bật được âm thanh. Thử tắt rồi bật lại tùy chọn.';
@@ -277,23 +233,14 @@ function mount(root) {
     }
     function playKeySound() {
         if (!find('#dt-key-sound').checked || !audioBuffer || audioContext?.state !== 'running') return;
-        const bark = find('#dt-sound-type').value === 'bark';
-        if (bark && barkSource) return;
         const source = audioContext.createBufferSource();
         const gain = audioContext.createGain();
         source.buffer = audioBuffer;
         gain.gain.value = 0.5;
         source.connect(gain).connect(audioContext.destination);
-        if (bark) barkSource = source;
-        source.onended = () => { if (barkSource === source) barkSource = null; source.disconnect(); gain.disconnect(); };
+        source.onended = () => { source.disconnect(); gain.disconnect(); };
         source.start();
     }
-    listen(find('#dt-sound-type'), 'change', () => {
-        soundRequest += 1;
-        audioLoading = null; audioBuffer = null;
-        barkSource?.stop(); barkSource = null;
-        prepareSound().then(playKeySound);
-    });
     function updateKeyDetails(event, code, action) {
         set('#dt-event-code', code || event.code || 'Không có');
         set('#dt-event-number', event.keyCode ? `0x${event.keyCode.toString(16).toUpperCase().padStart(2, '0')} (${event.keyCode})` : 'Không có');
@@ -341,7 +288,6 @@ function mount(root) {
         set('[data-action="keyboard-toggle"]', 'Tạm dừng');
         set('#dt-keyboard-status', 'Đang nhận phím · Bấm ngoài khung để tạm dừng');
         stage.focus({ preventScroll: true });
-        refreshLayout();
     }
     listen(find('[data-action="keyboard-toggle"]'), 'click', () => {
         if (keyboardRunning) stopKeyboard();
@@ -389,11 +335,6 @@ function mount(root) {
     listen(stage, 'contextmenu', event => { if (keyboardRunning) event.preventDefault(); });
     listen(find('#dt-layout'), 'change', () => { pressed.clear(); buildKeyboard(); startKeyboard(); });
     listen(find('#dt-platform'), 'change', () => { pressed.clear(); buildKeyboard(); startKeyboard(); });
-    listen(find('#dt-auto-layout'), 'change', refreshLayout);
-    listen(find('#dt-letter-layout'), 'change', () => {
-        find('#dt-auto-layout').checked = find('#dt-letter-layout').value === 'auto';
-        refreshLayout();
-    });
     listen(find('#dt-key-sound'), 'change', prepareSound);
 
     function renderMouseButtons() {

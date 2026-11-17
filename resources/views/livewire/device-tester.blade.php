@@ -1,7 +1,7 @@
 <div class="device-test-page">
     @livewire('inc.header')
     <link rel="stylesheet" href="{{ asset('css/device-tester.css') }}?v={{ filemtime(public_path('css/device-tester.css')) }}">
-    <main class="dt-container" id="device-tester" data-key-sound="{{ asset('audio/device-test/key.wav') }}?v={{ filemtime(public_path('audio/device-test/key.wav')) }}" data-bark-sound="{{ asset('audio/device-test/bark.wav') }}" wire:ignore>
+    <main class="dt-container" id="device-tester" data-key-sound="{{ asset('audio/device-test/key.wav') }}?v={{ filemtime(public_path('audio/device-test/key.wav')) }}" wire:ignore>
         <div class="dt-intro">
             <div><p class="dt-eyebrow">BABU TOOLS</p><h1>Kiểm tra chuột & bàn phím</h1><p>Thử phím bấm, nút chuột và chuyển động ngay trên trình duyệt.</p></div>
             <button class="dt-button dt-secondary" type="button" data-action="reset">Đặt lại kết quả</button>
@@ -22,13 +22,9 @@
                     </div>
                 </div>
                 <div class="dt-keyboard-options">
-                    <label><input id="dt-auto-layout" type="checkbox" checked> Tự nhận diện bố trí chữ</label>
                     <label><input id="dt-key-sound" type="checkbox" checked> Bật âm thanh</label>
-                    <label class="dt-select-label">Âm nhấn <select id="dt-sound-type"><option value="bark">Gâu · một tiếng</option><option value="click">Click ngắn</option></select></label>
                     <label><input id="dt-reset-shortcut" type="checkbox" checked> Ctrl + Space đặt lại</label>
-                    <label class="dt-select-label">Bố trí chữ <select id="dt-letter-layout"><option value="us">US · QWERTY</option><option value="auto">Theo hệ điều hành</option></select></label>
                 </div>
-                <p id="dt-layout-status" class="dt-option-note">Đang nhận diện bố trí chữ.</p>
                 <p id="dt-sound-status" class="dt-option-note" hidden></p>
                 <div class="dt-keyboard-scroll" id="dt-keyboard-stage" tabindex="0" role="region" aria-label="Vùng nhận phím bàn phím">
                     <div class="dt-media-heading"><span>Phím media & trình duyệt</span><span id="dt-media-tested">0 / 18</span></div>
