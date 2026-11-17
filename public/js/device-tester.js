@@ -104,8 +104,6 @@ function mount(root) {
     const tested = new Set();
     const keyElements = new Map();
     const stage = find('#dt-keyboard-stage');
-    const keyboardPanel = find('#dt-keyboard');
-    const lockOption = find('#dt-keyboard-lock');
     const visual = find('#dt-keyboard-visual');
     const mediaVisual = find('#dt-media-visual');
     const pad = find('#dt-mouse-pad');
@@ -116,8 +114,6 @@ function mount(root) {
     const mousePressed = new Set();
     let activeTab = 'keyboard';
     let keyboardRunning = false;
-    let keyboardSession = 0;
-    let keyboardLocked = false;
     let keyCount = 0;
     let maxHeld = 0;
     let wheelUp = 0;
@@ -137,8 +133,10 @@ function mount(root) {
         const element = document.createElement('kbd');
         element.className = 'dt-key';
         element.dataset.code = data.code;
-        element.textContent = data.label;
-        element.dataset.defaultLabel = data.label;
+        const macLabels = { MetaLeft: '⌘ Cmd', MetaRight: '⌘ Cmd', AltLeft: '⌥ Option', AltRight: '⌥ Option', ControlLeft: '⌃ Ctrl', ControlRight: '⌃ Ctrl', Backspace: '⌫ Delete', Enter: 'Return' };
+        const label = find('#dt-platform').value === 'mac' ? (macLabels[data.code] || data.label) : data.label;
+        element.textContent = label;
+        element.dataset.defaultLabel = label;
         element.title = data.code;
         element.style.setProperty('--key-units', data.units);
         keyElements.set(data.code, element);
@@ -159,7 +157,12 @@ function mount(root) {
         stage.dataset.layout = visual.dataset.layout;
         const main = document.createElement('div');
         main.className = 'dt-key-main';
-        mainRows.forEach(row => main.append(makeRow(row)));
+        mainRows.forEach((row, index) => {
+            if (find('#dt-platform').value === 'mac' && index === mainRows.length - 1) {
+                row = [key('ControlLeft', 'Ctrl', 1.25), key('AltLeft', 'Option', 1.25), key('MetaLeft', 'Cmd', 1.25), key('Space', 'Space', 6.25), key('MetaRight', 'Cmd', 1.25), key('AltRight', 'Option', 1.25), key('ControlRight', 'Ctrl', 1.25)];
+            }
+            main.append(makeRow(row));
+        });
         const navigation = document.createElement('div');
         navigation.className = 'dt-key-nav';
         navigation.append(makeRow(navTop));
@@ -201,56 +204,14 @@ function mount(root) {
         set('#dt-key-max', maxHeld);
         set('#dt-key-count', keyCount);
     }
-    function stopKeyboard(message = 'Đã dừng. Chọn bắt đầu để tiếp tục.') {
+    function stopKeyboard(message = 'Đã tạm dừng. Bấm vào khung để tiếp tục.') {
         keyboardRunning = false;
-        keyboardSession += 1;
-        releaseKeyboardLock();
-        lockOption.disabled = !supportsKeyboardLock;
         pressed.clear();
         stage.classList.remove('is-recording');
-        set('[data-action="keyboard-toggle"]', 'Bắt đầu test');
+        set('[data-action="keyboard-toggle"]', 'Tiếp tục nhận phím');
         set('#dt-keyboard-status', message);
         renderKeyboard();
     }
-    const supportsKeyboardLock = Boolean(navigator.keyboard?.lock && keyboardPanel.requestFullscreen);
-    if (!supportsKeyboardLock) {
-        lockOption.checked = false;
-        lockOption.disabled = true;
-        set('#dt-keyboard-lock-status', 'Trình duyệt này chưa hỗ trợ khóa phím toàn màn hình. Phiên test vẫn được giữ khi tạm mất focus.');
-    }
-    function releaseKeyboardLock() {
-        if (keyboardLocked) navigator.keyboard?.unlock();
-        keyboardLocked = false;
-        if (document.fullscreenElement === keyboardPanel) document.exitFullscreen().catch(() => {});
-    }
-    async function requestKeyboardLock(session) {
-        if (!lockOption.checked || !supportsKeyboardLock) return;
-        set('#dt-keyboard-lock-status', 'Đang yêu cầu toàn màn hình và quyền khóa bàn phím…');
-        try {
-            await keyboardPanel.requestFullscreen();
-            if (!keyboardRunning || session !== keyboardSession) {
-                if ((!keyboardRunning || !lockOption.checked) && document.fullscreenElement === keyboardPanel) await document.exitFullscreen();
-                return;
-            }
-            await navigator.keyboard.lock();
-            keyboardLocked = true;
-            if (!keyboardRunning || session !== keyboardSession) {
-                if (!keyboardRunning || !lockOption.checked) releaseKeyboardLock();
-                return;
-            }
-            stage.focus({ preventScroll: true });
-            set('#dt-keyboard-lock-status', 'Đã bật khóa phím trong giới hạn trình duyệt. Bấm ngoài khung hoặc Dừng test để kết thúc.');
-        } catch {
-            if (!keyboardRunning || session !== keyboardSession) return;
-            set('#dt-keyboard-lock-status', 'Chưa khóa được bàn phím. Vùng test vẫn bật; phím do Windows giữ có thể mở công cụ hệ thống.');
-        }
-    }
-    listen(document, 'fullscreenchange', () => {
-        if (!keyboardRunning || document.fullscreenElement === keyboardPanel) return;
-        if (keyboardLocked) navigator.keyboard?.unlock();
-        keyboardLocked = false;
-        set('#dt-keyboard-lock-status', 'Đã rời toàn màn hình. Kết quả và phiên test vẫn được giữ.');
-    });
     function renderKeyLabels() {
         for (const [code, element] of keyElements) {
             const mapped = nativeLabels?.get(code);
@@ -302,7 +263,7 @@ function mount(root) {
                 return response.arrayBuffer();
             }).then(data => audioContext.decodeAudioData(data));
             audioBuffer = await audioLoading;
-            status.textContent = 'Đã bật tiếng nhấn phím từ app gốc.';
+            status.textContent = 'Đã bật tiếng click ngắn khi nhấn phím.';
         } catch {
             audioLoading = null;
             status.textContent = 'Chưa bật được âm thanh. Thử tắt rồi bật lại tùy chọn.';
@@ -359,18 +320,17 @@ function mount(root) {
         for (const field of ['code', 'number', 'location', 'flags']) set(`#dt-event-${field}`, '—');
         renderKeyboard();
     }
-    listen(find('[data-action="keyboard-toggle"]'), 'click', () => {
-        if (keyboardRunning) return stopKeyboard();
+    function startKeyboard() {
         keyboardRunning = true;
-        keyboardSession += 1;
-        lockOption.disabled = true;
-        requestKeyboardLock(keyboardSession);
         stage.classList.add('is-recording');
-        set('[data-action="keyboard-toggle"]', 'Dừng test');
-        set('#dt-keyboard-status', 'Đang nhận phím · Bấm ngoài khung để kết thúc');
+        set('[data-action="keyboard-toggle"]', 'Tạm dừng');
+        set('#dt-keyboard-status', 'Đang nhận phím · Bấm ngoài khung để tạm dừng');
         stage.focus({ preventScroll: true });
         refreshLayout();
-        prepareSound();
+    }
+    listen(find('[data-action="keyboard-toggle"]'), 'click', () => {
+        if (keyboardRunning) stopKeyboard();
+        else startKeyboard();
     });
     listen(window, 'keydown', event => {
         if (!keyboardRunning || activeTab !== 'keyboard') return;
@@ -389,7 +349,7 @@ function mount(root) {
         keyCount += 1;
         maxHeld = Math.max(maxHeld, pressed.size);
         logKey(event, code, 'Nhấn');
-        playKeySound();
+        prepareSound().then(playKeySound);
         renderKeyboard();
     }, { capture: true });
     listen(window, 'keyup', event => {
@@ -402,7 +362,7 @@ function mount(root) {
         const hadKeyDown = pressed.delete(code);
         tested.add(code);
         logKey(event, code, hadKeyDown ? 'Thả' : 'Thả (keyup)');
-        if (!hadKeyDown) playKeySound();
+        if (!hadKeyDown) prepareSound().then(playKeySound);
         renderKeyboard();
     }, { capture: true });
     listen(document, 'pointerdown', event => {
@@ -410,9 +370,10 @@ function mount(root) {
             stopKeyboard('Đã kết thúc khi bấm ngoài khung test.');
         }
     }, { capture: true });
-    listen(stage, 'pointerdown', () => { if (keyboardRunning) stage.focus({ preventScroll: true }); });
+    listen(stage, 'pointerdown', () => startKeyboard());
     listen(stage, 'contextmenu', event => { if (keyboardRunning) event.preventDefault(); });
-    listen(find('#dt-layout'), 'change', () => { stopKeyboard('Đã đổi layout. Chọn bắt đầu để thử.'); buildKeyboard(); });
+    listen(find('#dt-layout'), 'change', () => { pressed.clear(); buildKeyboard(); startKeyboard(); });
+    listen(find('#dt-platform'), 'change', () => { pressed.clear(); buildKeyboard(); startKeyboard(); });
     listen(find('#dt-auto-layout'), 'change', refreshLayout);
     listen(find('#dt-letter-layout'), 'change', () => {
         find('#dt-auto-layout').checked = find('#dt-letter-layout').value === 'auto';
@@ -582,6 +543,7 @@ function mount(root) {
             button.setAttribute('aria-selected', String(name === tab));
             button.tabIndex = name === tab ? 0 : -1;
         }
+        if (tab === 'keyboard') startKeyboard();
         resizeCanvas();
     }
     root.querySelectorAll('[data-tab]').forEach(button => {
@@ -595,7 +557,7 @@ function mount(root) {
         });
     });
     listen(find('[data-action="reset"]'), 'click', () => {
-        stopKeyboard('Đã xóa kết quả. Chọn bắt đầu để thử lại.');
+        stopKeyboard('Đã xóa kết quả. Bấm vào khung để tiếp tục.');
         resetKeyboard();
         buttonCounts.fill(0); mousePressed.clear(); wheelUp = 0; wheelDown = 0;
         movementTimes = []; lastMovementTime = -1; points = [];
@@ -606,6 +568,7 @@ function mount(root) {
         renderMouseButtons();
         renderMovementStats();
         drawTrail();
+        if (activeTab === 'keyboard') startKeyboard();
     });
     function renderMovementStats() {
         const now = performance.now();
@@ -627,11 +590,12 @@ function mount(root) {
         if (event.persisted) return;
         clearInterval(timer);
         observer.disconnect();
-        if (keyboardLocked) navigator.keyboard?.unlock();
         audioContext?.close();
         controller.abort();
     });
+    find('#dt-platform').value = /mac/i.test(navigator.userAgentData?.platform || navigator.platform) ? 'mac' : 'win';
     buildKeyboard();
+    startKeyboard();
 }
 
 const root = typeof document === 'undefined' ? null : document.getElementById('device-tester');

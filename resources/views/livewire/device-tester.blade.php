@@ -14,21 +14,20 @@
         <section id="dt-keyboard" role="tabpanel" aria-labelledby="dt-tab-keyboard">
             <div class="dt-card">
                 <div class="dt-card-heading">
-                    <div><h2>Test bàn phím</h2><p>Chọn bắt đầu rồi nhấn phím. Bấm chuột ra ngoài khung để kết thúc.</p></div>
+                    <div><h2>Test bàn phím</h2><p>Nhấn phím để kiểm tra ngay. Bấm ngoài khung để tạm dừng, bấm vào khung để tiếp tục.</p></div>
                     <div class="dt-toolbar">
-                        <label class="dt-select-label">Layout <select id="dt-layout"><option value="full">Full-size · 104 phím</option><option value="tkl">TKL · 87 phím</option></select></label>
-                        <button class="dt-button" type="button" data-action="keyboard-toggle">Bắt đầu test</button>
+                        <label class="dt-select-label">Layout <select id="dt-layout"><option value="full">Full-size</option><option value="tkl">TKL</option></select></label>
+                        <label class="dt-select-label">Hệ phím <select id="dt-platform"><option value="win">Windows</option><option value="mac">Mac</option></select></label>
+                        <button class="dt-button" type="button" data-action="keyboard-toggle">Tạm dừng</button>
                     </div>
                 </div>
                 <div class="dt-keyboard-options">
                     <label><input id="dt-auto-layout" type="checkbox" checked> Tự nhận diện bố trí chữ</label>
-                    <label><input id="dt-keyboard-lock" type="checkbox" checked> Khóa phím khi toàn màn hình</label>
-                    <label><input id="dt-key-sound" type="checkbox"> Âm thanh app gốc</label>
+                    <label><input id="dt-key-sound" type="checkbox" checked> Tiếng click khi nhấn</label>
                     <label><input id="dt-reset-shortcut" type="checkbox" checked> Ctrl + Space đặt lại</label>
                     <label class="dt-select-label">Bố trí chữ <select id="dt-letter-layout"><option value="us">US · QWERTY</option><option value="auto">Theo hệ điều hành</option></select></label>
                 </div>
-                <p id="dt-keyboard-lock-status" class="dt-option-note">Khóa phím cần quyền trình duyệt. Print Screen vẫn có thể được Windows giữ để chụp màn hình.</p>
-                <p id="dt-layout-status" class="dt-option-note">Chọn bắt đầu để nhận diện bố trí chữ.</p>
+                <p id="dt-layout-status" class="dt-option-note">Đang nhận diện bố trí chữ.</p>
                 <p id="dt-sound-status" class="dt-option-note" hidden></p>
                 <div class="dt-keyboard-scroll" id="dt-keyboard-stage" tabindex="0" role="region" aria-label="Vùng nhận phím bàn phím">
                     <div class="dt-media-heading"><span>Phím media & trình duyệt</span><span id="dt-media-tested">0 / 18</span></div>
@@ -38,7 +37,7 @@
                 </div>
                 <div class="dt-keyboard-footer">
                     <div class="dt-legend"><span><i class="dt-dot dt-dot-pressed"></i>Đang giữ</span><span><i class="dt-dot dt-dot-tested"></i>Đã nhận</span><span><i class="dt-dot"></i>Chưa thử</span></div>
-                    <p id="dt-keyboard-status" role="status">Sẵn sàng kiểm tra</p>
+                    <p id="dt-keyboard-status" role="status">Đang nhận phím · Bấm ngoài khung để tạm dừng</p>
                 </div>
             </div>
             <div class="dt-stat-grid">
