@@ -129,7 +129,7 @@ function mount(root) {
     let audioBuffer = null;
     let audioLoading = null;
     let soundRequest = 0;
-    let roosterSource = null;
+    let barkSource = null;
 
     function makeKey(data) {
         const element = document.createElement('kbd');
@@ -262,14 +262,14 @@ function mount(root) {
             if (!Audio) throw new Error('Audio unavailable');
             audioContext ??= new Audio();
             await audioContext.resume();
-            audioLoading ??= fetch(selectedSound === 'rooster' ? root.dataset.roosterSound : root.dataset.keySound).then(response => {
+            audioLoading ??= fetch(selectedSound === 'bark' ? root.dataset.barkSound : root.dataset.keySound).then(response => {
                 if (!response.ok) throw new Error('Sound unavailable');
                 return response.arrayBuffer();
             }).then(data => audioContext.decodeAudioData(data));
             const buffer = await audioLoading;
             if (request !== soundRequest) return;
             audioBuffer = buffer;
-            status.textContent = selectedSound === 'rooster' ? 'Đã bật tiếng gà gáy mô phỏng.' : 'Đã bật tiếng click ngắn khi nhấn phím.';
+            status.textContent = selectedSound === 'bark' ? 'Đã bật một tiếng gâu mô phỏng khi nhấn phím.' : 'Đã bật tiếng click ngắn khi nhấn phím.';
         } catch {
             audioLoading = null;
             status.textContent = 'Chưa bật được âm thanh. Thử tắt rồi bật lại tùy chọn.';
@@ -277,21 +277,21 @@ function mount(root) {
     }
     function playKeySound() {
         if (!find('#dt-key-sound').checked || !audioBuffer || audioContext?.state !== 'running') return;
-        const rooster = find('#dt-sound-type').value === 'rooster';
-        if (rooster && roosterSource) return;
+        const bark = find('#dt-sound-type').value === 'bark';
+        if (bark && barkSource) return;
         const source = audioContext.createBufferSource();
         const gain = audioContext.createGain();
         source.buffer = audioBuffer;
         gain.gain.value = 0.5;
         source.connect(gain).connect(audioContext.destination);
-        if (rooster) roosterSource = source;
-        source.onended = () => { if (roosterSource === source) roosterSource = null; source.disconnect(); gain.disconnect(); };
+        if (bark) barkSource = source;
+        source.onended = () => { if (barkSource === source) barkSource = null; source.disconnect(); gain.disconnect(); };
         source.start();
     }
     listen(find('#dt-sound-type'), 'change', () => {
         soundRequest += 1;
         audioLoading = null; audioBuffer = null;
-        roosterSource?.stop(); roosterSource = null;
+        barkSource?.stop(); barkSource = null;
         prepareSound().then(playKeySound);
     });
     function updateKeyDetails(event, code, action) {
