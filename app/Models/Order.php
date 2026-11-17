@@ -9,6 +9,9 @@ class Order extends Model
 {
     use HasFactory;
     protected $guarded = [];
+    protected $hidden = ['activation_token_hash'];
+    protected $casts = ['purchase_date'=>'date','activation_token_expires_at'=>'datetime'];
+    public function warrantyActivations() { return $this->hasMany(WarrantyActivation::class); }
 
     public function user()
     {

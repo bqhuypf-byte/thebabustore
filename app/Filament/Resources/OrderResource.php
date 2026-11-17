@@ -124,12 +124,13 @@ class OrderResource extends Resource
                                 ->dehydrated()
                                 ->extraInputAttributes(['style' => 'font-family: monospace; font-weight: 800; color: #2563eb; font-size: 14px;']),
 
+                            Forms\Components\DatePicker::make('purchase_date')->label('Ngày mua đã xác nhận (bảo hành)')->maxDate(today())->disabled(fn (?Order $record)=>$record?->warrantyActivations()->exists())->helperText('Đơn cũ cần nhân viên xác nhận. Không thay ngày sau khi đã ghi nhận kích hoạt.'),
                             Select::make('user_id')
                                 ->label('Khách Hàng') // Đổi nhãn sang tiếng Việt
                                 ->relationship('user', 'name')
                                 ->searchable()
                                 ->preload()
-                                ->required(),
+                                ->required(fn (?Order $record)=>$record?->order_source !== 'offline'),
 
                             Select::make('payment_method')
                                 ->label('Phương Thức Thanh Toán') // Đổi nhãn sang tiếng Việt
