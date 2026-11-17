@@ -1,3 +1,16 @@
+export class WheelDirectionSession {
+    constructor() { this.reset(); }
+    reset() { this.active = false; this.count = 0; this.reversed = 0; }
+    start(direction = 'down') { this.reset(); this.direction = direction; this.active = true; }
+    record(deltaY, deltaMode = 0, ctrlKey = false) {
+        if (!this.active || ctrlKey || !Number.isFinite(deltaY) || deltaY === 0 || ![0,1,2].includes(deltaMode)) return null;
+        this.count += 1;
+        const reversed = (deltaY < 0 ? 'up' : 'down') !== this.direction;
+        if (reversed) this.reversed += 1;
+        return { reversed, deltaY, deltaMode };
+    }
+}
+
 export class ClickAnomalySession {
     constructor() { this.reset(); }
     reset() { this.active = false; this.previous = null; this.count = 0; this.suspects = 0; }
@@ -148,6 +161,7 @@ function mount(root) {
     let maxHeld = 0;
     const scroll = new ScrollStats();
     const clickCheck = new ClickAnomalySession();
+    const wheelCheck = new WheelDirectionSession();
     let wheelFlashTimer;
     let points = [];
     let movementTimes = [];
@@ -511,6 +525,24 @@ function mount(root) {
     listen(window, 'pointercancel', () => { mousePressed.clear(); renderMouseButtons(); });
     listen(pad, 'mouseleave', () => { mousePressed.clear(); renderMouseButtons(); });
     for (const type of ['contextmenu', 'auxclick']) listen(pad, type, event => event.preventDefault());
+    function renderWheelCheck() {
+        set('#dt-wheel-samples', wheelCheck.count);
+        set('#dt-wheel-reversed', wheelCheck.reversed);
+        set('[data-action="wheel-check"]', wheelCheck.active ? 'Kết thúc lượt thử' : 'Bắt đầu lượt mới');
+        find('#dt-check-direction').disabled = wheelCheck.active;
+        find('#dt-wheel-reversed').classList.toggle('is-suspect', wheelCheck.reversed > 0);
+    }
+    listen(find('[data-action="wheel-check"]'), 'click', () => {
+        if (wheelCheck.active) {
+            wheelCheck.active = false;
+            set('#dt-wheel-check-status', 'Đã kết thúc. Hãy thử lại cùng chiều để xác nhận dấu hiệu bất thường.');
+        } else {
+            wheelCheck.start(find('#dt-check-direction').value);
+            find('#dt-wheel-check-log').replaceChildren();
+            set('#dt-wheel-check-status', `Đang thử: chỉ cuộn ${wheelCheck.direction === 'up' ? 'lên' : 'xuống'} đều một chiều trong khung chuột.`);
+        }
+        renderWheelCheck();
+    });
     function renderScroll() {
         const units = ['px', 'dòng', 'trang'];
         const format = value => value.toLocaleString('vi-VN', { maximumFractionDigits: 2 });
@@ -524,6 +556,12 @@ function mount(root) {
     listen(pad, 'wheel', event => {
         event.preventDefault();
         if (!scroll.record(event.deltaY, event.deltaMode)) return;
+        const result = wheelCheck.record(event.deltaY, event.deltaMode, event.ctrlKey);
+        if (result) {
+            const units = ['px', 'dòng', 'trang'];
+            addDiagnosticLog('#dt-wheel-check-log', `${event.deltaY < 0 ? '▲ Lên' : '▼ Xuống'} · deltaY ${result.deltaY} ${units[result.deltaMode]}${result.reversed ? ' · Ngược chiều đã chọn' : ''}`, result.reversed);
+            renderWheelCheck();
+        }
         renderScroll();
         pad.dataset.scrollDirection = event.deltaY < 0 ? 'up' : 'down';
         const wheel = find('#dt-mouse-wheel');
@@ -586,6 +624,11 @@ function mount(root) {
     const observer = new ResizeObserver(resizeCanvas);
     observer.observe(pad);
     function pauseInput() {
+        if (wheelCheck.active) {
+            wheelCheck.active = false;
+            renderWheelCheck();
+            set('#dt-wheel-check-status', 'Đã dừng khi rời vùng kiểm tra. Bắt đầu lượt mới để thử lại.');
+        }
         if (clickCheck.active) {
             clickCheck.active = false;
             renderClickCheck();
@@ -640,6 +683,10 @@ function mount(root) {
         stopKeyboard('Đã xóa kết quả. Bấm vào khung để tiếp tục.');
         resetKeyboard();
         buttonCounts.fill(0); mousePressed.clear(); touchPointer = null;
+        wheelCheck.reset();
+        renderWheelCheck();
+        find('#dt-wheel-check-log').replaceChildren();
+        set('#dt-wheel-check-status', 'Chọn chiều và bắt đầu, dùng con lăn chuột thật để thử.');
         clickCheck.reset();
         renderClickCheck();
         find('#dt-click-check-log').replaceChildren();

@@ -107,6 +107,15 @@
                     <div id="dt-click-check-log" class="dt-check-log" aria-label="Lịch sử kiểm tra click đúp"></div>
                     <p class="dt-check-note">Ngưỡng là bộ lọc tham khảo, không phải chuẩn kết luận hỏng switch. Bấm nhanh chủ động vẫn có thể bị đánh dấu. Chạm màn hình không được tính trong bài thử này.</p>
                 </section>
+                <section class="dt-card dt-diagnostic-card" aria-labelledby="dt-wheel-check-title">
+                    <div class="dt-check-heading"><div><p class="dt-check-eyebrow">CUỘN MỘT CHIỀU</p><h2 id="dt-wheel-check-title">Kiểm tra tín hiệu cuộn ngược</h2></div><button type="button" class="dt-button" data-action="wheel-check">Bắt đầu lượt mới</button></div>
+                    <p>Cuộn đều theo chiều đã chọn trong khung chuột. Tín hiệu ngược chiều được tô màu để bạn đối chiếu với thao tác thực tế.</p>
+                    <div class="dt-check-controls"><label class="dt-select-label">Chiều thử <select id="dt-check-direction"><option value="down">Chỉ cuộn xuống</option><option value="up">Chỉ cuộn lên</option></select></label></div>
+                    <div class="dt-check-metrics dt-wheel-check-metrics"><div><span>Sự kiện đã nhận</span><strong id="dt-wheel-samples">0</strong></div><div><span>Ngược chiều đã chọn</span><strong id="dt-wheel-reversed">0</strong></div></div>
+                    <p id="dt-wheel-check-status" role="status">Chọn chiều và bắt đầu, dùng con lăn chuột thật để thử.</p>
+                    <div id="dt-wheel-check-log" class="dt-check-log" aria-label="Lịch sử kiểm tra cuộn ngược"></div>
+                    <p class="dt-check-note">Đổi chiều chủ động và touchpad có thể tạo cảnh báo. Bỏ qua thao tác Ctrl + cuộn để thu phóng. Bản web không xác nhận hỏng encoder hay phát hiện chắc chắn nấc cuộn bị mất.</p>
+                </section>
             </div>
             <div class="dt-stat-grid dt-mouse-stats">
                 <div class="dt-stat"><span>Tần suất sự kiện ước tính</span><strong id="dt-mouse-hz">—</strong><small>Hz · trong 2 giây gần nhất</small></div>

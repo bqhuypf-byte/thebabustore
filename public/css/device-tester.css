@@ -286,3 +286,5 @@
 #dt-mouse .dt-check-row { font-size:11px; padding:7px 0; border-bottom:1px solid #302738; margin:0; font-variant-numeric:tabular-nums; }
 #dt-mouse .dt-check-note { font-size:10px; color:#8f819d; margin-top:12px; }
 @media(max-width:760px) { .dt-check-heading { flex-wrap:wrap; } .dt-check-metrics { gap:6px; } .dt-check-metrics > div { padding:10px 8px; } .dt-check-metrics strong { font-size:18px; } }
+
+.dt-wheel-check-metrics { grid-template-columns:1fr 1fr; }

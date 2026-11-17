@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { ClickAnomalySession, ScrollStats, ClickSession, summarizeIntervals, countsForSession, resolveKeyCode } from '../../public/js/device-tester.js';
+import { WheelDirectionSession, ClickAnomalySession, ScrollStats, ClickSession, summarizeIntervals, countsForSession, resolveKeyCode } from '../../public/js/device-tester.js';
 
 test('click timing starts on the first click and excludes the exact deadline', () => {
     const session = new ClickSession();
@@ -112,4 +112,20 @@ test('single-click check isolates selected button and flags close presses withou
     assert.deepEqual(check.record(2,3000),{interval:null,suspect:false});
     assert.equal(check.record(2,NaN),null);
     assert.equal(check.record(2,2900),null);
+});
+
+test('one-way wheel check flags opposing signs and excludes zoom and empty events', () => {
+    const check = new WheelDirectionSession();
+    assert.equal(check.record(100),null);
+    check.start('down');
+    assert.equal(check.record(120).reversed,false);
+    assert.equal(check.record(-3,1).reversed,true);
+    assert.equal(check.record(1,2).reversed,false);
+    for (const args of [[0], [NaN], [Infinity], [-120,0,true], [1,4]]) assert.equal(check.record(...args),null);
+    assert.equal(check.count,3);assert.equal(check.reversed,1);
+    check.active=false; assert.equal(check.record(-120),null);
+    check.start('up'); assert.equal(check.count,0);assert.equal(check.reversed,0);
+    assert.equal(check.record(-120).reversed,false);
+    assert.equal(check.record(120).reversed,true);
+    check.reset();assert.equal(check.active,false);assert.equal(check.count,0);assert.equal(check.reversed,0);
 });
