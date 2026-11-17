@@ -104,6 +104,8 @@ function mount(root) {
     const tested = new Set();
     const keyElements = new Map();
     const stage = find('#dt-keyboard-stage');
+    const keyboardPanel = find('#dt-keyboard');
+    const lockOption = find('#dt-keyboard-lock');
     const visual = find('#dt-keyboard-visual');
     const mediaVisual = find('#dt-media-visual');
     const pad = find('#dt-mouse-pad');
@@ -114,6 +116,8 @@ function mount(root) {
     const mousePressed = new Set();
     let activeTab = 'keyboard';
     let keyboardRunning = false;
+    let keyboardSession = 0;
+    let keyboardLocked = false;
     let keyCount = 0;
     let maxHeld = 0;
     let wheelUp = 0;
@@ -199,12 +203,54 @@ function mount(root) {
     }
     function stopKeyboard(message = 'Đã dừng. Chọn bắt đầu để tiếp tục.') {
         keyboardRunning = false;
+        keyboardSession += 1;
+        releaseKeyboardLock();
+        lockOption.disabled = !supportsKeyboardLock;
         pressed.clear();
         stage.classList.remove('is-recording');
         set('[data-action="keyboard-toggle"]', 'Bắt đầu test');
         set('#dt-keyboard-status', message);
         renderKeyboard();
     }
+    const supportsKeyboardLock = Boolean(navigator.keyboard?.lock && keyboardPanel.requestFullscreen);
+    if (!supportsKeyboardLock) {
+        lockOption.checked = false;
+        lockOption.disabled = true;
+        set('#dt-keyboard-lock-status', 'Trình duyệt này chưa hỗ trợ khóa phím toàn màn hình. Phiên test vẫn được giữ khi tạm mất focus.');
+    }
+    function releaseKeyboardLock() {
+        if (keyboardLocked) navigator.keyboard?.unlock();
+        keyboardLocked = false;
+        if (document.fullscreenElement === keyboardPanel) document.exitFullscreen().catch(() => {});
+    }
+    async function requestKeyboardLock(session) {
+        if (!lockOption.checked || !supportsKeyboardLock) return;
+        set('#dt-keyboard-lock-status', 'Đang yêu cầu toàn màn hình và quyền khóa bàn phím…');
+        try {
+            await keyboardPanel.requestFullscreen();
+            if (!keyboardRunning || session !== keyboardSession) {
+                if ((!keyboardRunning || !lockOption.checked) && document.fullscreenElement === keyboardPanel) await document.exitFullscreen();
+                return;
+            }
+            await navigator.keyboard.lock();
+            keyboardLocked = true;
+            if (!keyboardRunning || session !== keyboardSession) {
+                if (!keyboardRunning || !lockOption.checked) releaseKeyboardLock();
+                return;
+            }
+            stage.focus({ preventScroll: true });
+            set('#dt-keyboard-lock-status', 'Đã bật khóa phím trong giới hạn trình duyệt. Bấm ngoài khung hoặc Dừng test để kết thúc.');
+        } catch {
+            if (!keyboardRunning || session !== keyboardSession) return;
+            set('#dt-keyboard-lock-status', 'Chưa khóa được bàn phím. Vùng test vẫn bật; phím do Windows giữ có thể mở công cụ hệ thống.');
+        }
+    }
+    listen(document, 'fullscreenchange', () => {
+        if (!keyboardRunning || document.fullscreenElement === keyboardPanel) return;
+        if (keyboardLocked) navigator.keyboard?.unlock();
+        keyboardLocked = false;
+        set('#dt-keyboard-lock-status', 'Đã rời toàn màn hình. Kết quả và phiên test vẫn được giữ.');
+    });
     function renderKeyLabels() {
         for (const [code, element] of keyElements) {
             const mapped = nativeLabels?.get(code);
@@ -316,6 +362,9 @@ function mount(root) {
     listen(find('[data-action="keyboard-toggle"]'), 'click', () => {
         if (keyboardRunning) return stopKeyboard();
         keyboardRunning = true;
+        keyboardSession += 1;
+        lockOption.disabled = true;
+        requestKeyboardLock(keyboardSession);
         stage.classList.add('is-recording');
         set('[data-action="keyboard-toggle"]', 'Dừng test');
         set('#dt-keyboard-status', 'Đang nhận phím · Bấm ngoài khung để kết thúc');
@@ -349,9 +398,11 @@ function mount(root) {
         event.stopImmediatePropagation();
         const code = resolveKeyCode(event);
         updateKeyDetails(event, code, 'Thả');
-        if (!pressed.has(code)) return;
-        pressed.delete(code);
-        logKey(event, code, 'Thả');
+        if (!code) return;
+        const hadKeyDown = pressed.delete(code);
+        tested.add(code);
+        logKey(event, code, hadKeyDown ? 'Thả' : 'Thả (keyup)');
+        if (!hadKeyDown) playKeySound();
         renderKeyboard();
     }, { capture: true });
     listen(document, 'pointerdown', event => {
@@ -423,12 +474,12 @@ function mount(root) {
         renderCps();
     });
     // Side buttons must not trigger browser history while the mouse tester is open.
-    for (const type of ['pointerdown', 'pointerup', 'mousedown', 'mouseup', 'auxclick']) {
+    for (const type of ['pointerup', 'mousedown', 'mouseup', 'auxclick']) {
         listen(window, type, event => {
             if (activeTab !== 'mouse' || (event.button !== 3 && event.button !== 4)) return;
             event.preventDefault();
             // Let the pad's mousedown handler count the press, then stop site-level shortcuts.
-            if (type !== 'mousedown' && type !== 'pointerdown' && type !== 'pointerup') event.stopPropagation();
+            if (type !== 'mousedown' && type !== 'pointerup') event.stopPropagation();
         }, { capture: true });
     }
     listen(window, 'mouseup', event => {
@@ -436,6 +487,7 @@ function mount(root) {
         mousePressed.delete(event.button);
         renderMouseButtons();
     }, { capture: true });
+    listen(window, 'pointerup', event => { mousePressed.delete(event.button); renderMouseButtons(); }, { capture: true });
     listen(window, 'pointercancel', () => { mousePressed.clear(); renderMouseButtons(); });
     for (const type of ['contextmenu', 'auxclick']) listen(pad, type, event => event.preventDefault());
     listen(pad, 'wheel', event => {
@@ -511,7 +563,15 @@ function mount(root) {
         if (session.phase === 'armed' || session.phase === 'running') cancelCps('Đã dừng khi rời cửa sổ. Chọn bắt đầu để đo lại.');
     }
     listen(window, 'blur', pauseInput);
-    listen(document, 'visibilitychange', () => { if (document.hidden) pauseInput(); });
+    listen(window, 'focus', () => {
+        if (!keyboardRunning || activeTab !== 'keyboard') return;
+        stage.focus({ preventScroll: true });
+        set('#dt-keyboard-status', 'Đã trở lại vùng test · Bấm ngoài khung để kết thúc');
+    });
+    listen(document, 'visibilitychange', () => {
+        if (document.hidden) pauseInput();
+        else if (keyboardRunning && activeTab === 'keyboard') stage.focus({ preventScroll: true });
+    });
     function switchTab(tab) {
         stopKeyboard('Sẵn sàng kiểm tra');
         pauseInput();
@@ -567,6 +627,7 @@ function mount(root) {
         if (event.persisted) return;
         clearInterval(timer);
         observer.disconnect();
+        if (keyboardLocked) navigator.keyboard?.unlock();
         audioContext?.close();
         controller.abort();
     });

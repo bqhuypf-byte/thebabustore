@@ -22,10 +22,12 @@
                 </div>
                 <div class="dt-keyboard-options">
                     <label><input id="dt-auto-layout" type="checkbox" checked> Tự nhận diện bố trí chữ</label>
+                    <label><input id="dt-keyboard-lock" type="checkbox" checked> Khóa phím khi toàn màn hình</label>
                     <label><input id="dt-key-sound" type="checkbox"> Âm thanh app gốc</label>
                     <label><input id="dt-reset-shortcut" type="checkbox" checked> Ctrl + Space đặt lại</label>
                     <label class="dt-select-label">Bố trí chữ <select id="dt-letter-layout"><option value="us">US · QWERTY</option><option value="auto">Theo hệ điều hành</option></select></label>
                 </div>
+                <p id="dt-keyboard-lock-status" class="dt-option-note">Khóa phím cần quyền trình duyệt. Print Screen vẫn có thể được Windows giữ để chụp màn hình.</p>
                 <p id="dt-layout-status" class="dt-option-note">Chọn bắt đầu để nhận diện bố trí chữ.</p>
                 <p id="dt-sound-status" class="dt-option-note" hidden></p>
                 <div class="dt-keyboard-scroll" id="dt-keyboard-stage" tabindex="0" role="region" aria-label="Vùng nhận phím bàn phím">

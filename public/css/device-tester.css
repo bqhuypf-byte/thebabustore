@@ -125,3 +125,7 @@
     .dt-key-details { grid-template-columns:1fr; }
     .dt-cps-card .dt-select-label select { max-width:180px; }
 }
+#dt-keyboard:fullscreen { overflow:auto; width:100%; height:100%; padding:32px; background:#f7f8fc; }
+#dt-keyboard::backdrop { background:#f7f8fc; }
+#dt-keyboard:fullscreen > .dt-card, #dt-keyboard:fullscreen > .dt-stat-grid { max-width:1296px; margin-left:auto; margin-right:auto; }
+@media(max-width:760px) { #dt-keyboard:fullscreen { padding:16px; } }
