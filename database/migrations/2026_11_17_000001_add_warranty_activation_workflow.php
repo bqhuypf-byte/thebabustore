@@ -1,9 +1,13 @@
 <?php
+
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
-return new class extends Migration {
-    public function up(): void {
+
+return new class extends Migration
+{
+    public function up(): void
+    {
         Schema::table('orders', function (Blueprint $table) {
             $table->unsignedBigInteger('user_id')->nullable()->change();
             $table->date('purchase_date')->nullable();
@@ -34,9 +38,9 @@ return new class extends Migration {
             $table->foreignId('product_variant_id')->constrained()->restrictOnDelete();
             $table->string('customer_phone', 20)->index();
             $table->string('customer_name', 120);
-            $table->string('serial',255)->nullable();
+            $table->string('serial', 255)->nullable();
             $table->text('notes')->nullable();
-            $table->string('status',20)->default('pending')->index();
+            $table->string('status', 20)->default('pending')->index();
             $table->date('purchase_date')->nullable();
             $table->text('review_notes')->nullable();
             $table->foreignId('reviewed_by')->nullable()->constrained('users')->nullOnDelete();
@@ -45,10 +49,12 @@ return new class extends Migration {
             $table->timestamps();
         });
     }
-    public function down(): void {
+
+    public function down(): void
+    {
         Schema::dropIfExists('warranty_requests');
         Schema::dropIfExists('warranty_activations');
-        Schema::table('orders', fn (Blueprint $table) => $table->dropColumn(['purchase_date','order_source','activation_token_hash','activation_token_expires_at']));
+        Schema::table('orders', fn (Blueprint $table) => $table->dropColumn(['purchase_date', 'order_source', 'activation_token_hash', 'activation_token_expires_at']));
         // Keep user_id nullable: offline orders must not be assigned to an invented account.
     }
 };
