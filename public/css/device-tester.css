@@ -125,3 +125,60 @@
     .dt-key-details { grid-template-columns:1fr; }
     .dt-cps-card .dt-select-label select { max-width:180px; }
 }
+
+/* Keyboard workspace: compact controls above a dark, full-width keyboard. */
+#dt-keyboard { --dt-panel:#1b1724; --dt-edge:#393044; --dt-text:#eeeaf5; --dt-muted:#afa6bd; }
+#dt-keyboard > .dt-card:first-child { background:#131018; border-color:#302738; color:var(--dt-text); padding:24px; }
+#dt-keyboard .dt-card-heading { display:grid; grid-template-columns:1fr; gap:18px; margin-bottom:14px; }
+#dt-keyboard .dt-card-heading h2 { font-size:21px; }
+#dt-keyboard .dt-card-heading p { color:var(--dt-muted); }
+#dt-keyboard .dt-toolbar { justify-content:flex-start; padding:14px 16px; background:var(--dt-panel); border:1px solid var(--dt-edge); border-radius:10px; gap:12px 24px; }
+#dt-keyboard .dt-toolbar > .dt-button { margin-left:auto; }
+#dt-keyboard .dt-select-label { color:var(--dt-muted); font-size:12px; }
+#dt-keyboard .dt-toolbar select, #dt-keyboard .dt-keyboard-options select { background:#272130; color:var(--dt-text); border-color:#463a53; min-height:36px; border-radius:7px; }
+#dt-keyboard .dt-toolbar .dt-button { background:#9461db; border-color:#a879e4; min-height:36px; padding:8px 18px; border-radius:7px; }
+#dt-keyboard .dt-keyboard-options { gap:12px 20px; padding:0 2px; }
+#dt-keyboard .dt-keyboard-options > label { color:var(--dt-muted); font-size:12px; }
+#dt-keyboard .dt-keyboard-options input { accent-color:#ac7bf0; }
+#dt-keyboard > .dt-card:first-child .dt-option-note { color:#9e94ad; font-size:11px; margin:8px 2px 12px; }
+#dt-keyboard .dt-keyboard-scroll { background:var(--dt-panel); border-color:var(--dt-edge); padding:20px; border-radius:10px; }
+#dt-keyboard .dt-keyboard-scroll.is-recording { border-color:#8b60bc; box-shadow:0 0 0 2px #ac7bf014; }
+#dt-keyboard .dt-key { height:45px; background:#282231; border:1px solid #44384f; border-bottom-width:3px; border-radius:5px; color:#d9d2e5; font-size:11px; box-shadow:0 1px 2px #0003; }
+#dt-keyboard .dt-key.is-tested { background:#493063; border-color:#79539b; color:#e6ceff; }
+#dt-keyboard .dt-key.is-pressed { background:#b684f1; color:#1b1026; border-color:#d7b6ff; box-shadow:0 0 14px #b684f133; }
+#dt-keyboard .dt-key-numpad { grid-template-rows:repeat(5,45px); margin-top:63px; }
+#dt-keyboard .dt-key-numpad .dt-key { height:auto; }
+#dt-keyboard .dt-arrow-grid { margin-top:56px; }
+#dt-keyboard .dt-media-heading { color:var(--dt-muted); font-size:10px; text-transform:uppercase; letter-spacing:.06em; }
+#dt-keyboard .dt-media-row { margin-bottom:16px; }
+#dt-keyboard .dt-media-row .dt-key { font-size:9px; height:36px; background:#211c29; }
+#dt-keyboard .dt-media-row .dt-key.is-tested { background:#493063; }
+#dt-keyboard .dt-media-row .dt-key.is-pressed { background:#b684f1; }
+#dt-keyboard .dt-keyboard-footer { margin-top:16px; gap:12px; }
+#dt-keyboard .dt-keyboard-footer :is(p,.dt-legend) { color:var(--dt-muted); font-size:11px; }
+#dt-keyboard .dt-dot { background:#282231; border-color:#44384f; }
+#dt-keyboard .dt-dot-tested { background:#493063; border-color:#79539b; }
+#dt-keyboard .dt-dot-pressed { background:#b684f1; border-color:#d7b6ff; }
+#dt-keyboard .dt-stat-grid { gap:12px; margin:16px 0; }
+#dt-keyboard .dt-stat { padding:18px 22px; }
+#dt-keyboard .dt-stat strong { margin-top:8px; font-size:26px; }
+#dt-keyboard .dt-event-card { gap:24px; padding:24px; }
+@media(max-width:760px) {
+    #dt-keyboard > .dt-card:first-child { padding:14px; }
+    #dt-keyboard .dt-toolbar { gap:12px; padding:12px; }
+    #dt-keyboard .dt-toolbar > .dt-button { margin-left:0; }
+    #dt-keyboard .dt-keyboard-scroll { padding:14px; }
+    #dt-keyboard .dt-event-card { padding:18px; }
+    #dt-keyboard .dt-stat { padding:16px; }
+}
+
+.dt-container { padding-top:28px; }
+.dt-intro { margin-bottom:20px; }
+.dt-eyebrow { margin-bottom:8px!important; }
+.dt-intro h1 { font-size:30px; }
+.dt-intro p:last-child { margin-top:8px; font-size:14px; }
+.dt-tabs { margin-bottom:18px; }
+#dt-keyboard .dt-card-heading { gap:12px; }
+#dt-keyboard .dt-card-heading h2 { font-size:18px; }
+#dt-keyboard .dt-card-heading p { font-size:12px; }
+#dt-keyboard .dt-toolbar { padding:10px 14px; }

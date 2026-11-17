@@ -1,7 +1,7 @@
 <div class="device-test-page">
     @livewire('inc.header')
     <link rel="stylesheet" href="{{ asset('css/device-tester.css') }}?v={{ filemtime(public_path('css/device-tester.css')) }}">
-    <main class="dt-container" id="device-tester" data-key-sound="{{ asset('audio/device-test/key.wav') }}?v={{ filemtime(public_path('audio/device-test/key.wav')) }}" wire:ignore>
+    <main class="dt-container" id="device-tester" data-key-sound="{{ asset('audio/device-test/key.wav') }}?v={{ filemtime(public_path('audio/device-test/key.wav')) }}" data-rooster-sound="{{ asset('audio/device-test/rooster.wav') }}" wire:ignore>
         <div class="dt-intro">
             <div><p class="dt-eyebrow">BABU TOOLS</p><h1>Kiểm tra chuột & bàn phím</h1><p>Thử phím bấm, nút chuột và chuyển động ngay trên trình duyệt.</p></div>
             <button class="dt-button dt-secondary" type="button" data-action="reset">Đặt lại kết quả</button>
@@ -16,14 +16,15 @@
                 <div class="dt-card-heading">
                     <div><h2>Test bàn phím</h2><p>Nhấn phím để kiểm tra ngay. Bấm ngoài khung để tạm dừng, bấm vào khung để tiếp tục.</p></div>
                     <div class="dt-toolbar">
-                        <label class="dt-select-label">Layout <select id="dt-layout"><option value="full">Full-size</option><option value="tkl">TKL</option></select></label>
+                        <label class="dt-select-label">Layout <select id="dt-layout"><option value="full">100% · Full-size</option><option value="tkl">80% · TKL</option></select></label>
                         <label class="dt-select-label">Hệ phím <select id="dt-platform"><option value="win">Windows</option><option value="mac">Mac</option></select></label>
                         <button class="dt-button" type="button" data-action="keyboard-toggle">Tạm dừng</button>
                     </div>
                 </div>
                 <div class="dt-keyboard-options">
                     <label><input id="dt-auto-layout" type="checkbox" checked> Tự nhận diện bố trí chữ</label>
-                    <label><input id="dt-key-sound" type="checkbox" checked> Tiếng click khi nhấn</label>
+                    <label><input id="dt-key-sound" type="checkbox" checked> Bật âm thanh</label>
+                    <label class="dt-select-label">Âm nhấn <select id="dt-sound-type"><option value="rooster">Gà gáy · mô phỏng</option><option value="click">Click ngắn</option></select></label>
                     <label><input id="dt-reset-shortcut" type="checkbox" checked> Ctrl + Space đặt lại</label>
                     <label class="dt-select-label">Bố trí chữ <select id="dt-letter-layout"><option value="us">US · QWERTY</option><option value="auto">Theo hệ điều hành</option></select></label>
                 </div>
