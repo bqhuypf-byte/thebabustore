@@ -33,27 +33,46 @@ class Account extends Component
     #[Url(as: 'claim_status', except: 'all', history: true)]
     public string $warrantyClaimFilter = 'all';
 
+    public string $warrantyInput = '';
+
+    public string $warrantyQuery = '';
+
+    public string $warrantySearchType = 'phone';
+
     // Profile edit form
     public string $name = '';
+
     public string $phone = '';
+
     public string $detailed_address = '';
+
     public string $province = '';
+
     public string $district = '';
+
     public string $ward = '';
+
     public bool $profileUpdated = false;
 
     // Password change form
     public string $current_password = '';
+
     public string $new_password = '';
+
     public string $new_password_confirmation = '';
+
     public bool $passwordUpdated = false;
 
     public function mount(): void
     {
         $validTabs = ['overview', 'orders', 'warranty', 'profile', 'password'];
         $requestedTab = request()->query('tab', $this->activeTab);
-        if (in_array($requestedTab, $validTabs, true)) {
-            $this->activeTab = $requestedTab;
+        $this->activeTab = in_array($requestedTab, $validTabs, true) ? $requestedTab : 'overview';
+        if (! in_array($this->orderStatusFilter, ['all', 'new', 'processing', 'shipping', 'delivered', 'cancelled'], true)) {
+            $this->orderStatusFilter = 'all';
+        }
+        if (! in_array($this->warrantyClaimFilter, ['all', 'received', 'dispatching', 'repairing', 'fixed', 'returned'], true)) {
+            $this->warrantyClaimFilter = 'all';
         }
 
         $user = Auth::user();
@@ -95,6 +114,7 @@ class Account extends Component
         $validTabs = ['overview', 'orders', 'warranty', 'profile', 'password'];
         if (in_array($tab, $validTabs, true)) {
             $this->activeTab = $tab;
+            $this->resetErrorBag();
             $this->profileUpdated = false;
             $this->passwordUpdated = false;
         }
@@ -102,17 +122,22 @@ class Account extends Component
 
     public function setOrderStatusFilter(string $status): void
     {
-        $this->orderStatusFilter = $status;
+        if (in_array($status, ['all', 'new', 'processing', 'shipping', 'delivered', 'cancelled'], true)) {
+            $this->orderStatusFilter = $status;
+        }
     }
 
     public function setWarrantyClaimFilter(string $status): void
     {
-        $this->warrantyClaimFilter = $status;
+        if (in_array($status, ['all', 'received', 'dispatching', 'repairing', 'fixed', 'returned'], true)) {
+            $this->warrantyClaimFilter = $status;
+        }
     }
 
     public static function mapClaimStatus(Order $order): string
     {
         $st = strtolower((string) $order->status);
+
         return match ($st) {
             'delivered', 'completed' => 'returned',
             'fixed', 'resolved' => 'fixed',
@@ -170,8 +195,9 @@ class Account extends Component
         ]);
 
         $user = Auth::user();
-        if (!$user || !Hash::check($this->current_password, $user->password)) {
+        if (! $user || ! Hash::check($this->current_password, $user->password)) {
             $this->addError('current_password', 'Mật khẩu hiện tại không chính xác.');
+
             return;
         }
 
@@ -190,9 +216,9 @@ class Account extends Component
         $order = $item->order;
         $isDelivered = $order && in_array(strtolower((string) $order->status), ['delivered', 'completed'], true);
         $isManualBH = $order && str_starts_with((string) $order->order_code, 'BH');
-        $hasWarranty = !empty($item->warranty);
+        $hasWarranty = ! empty($item->warranty);
 
-        if (!$hasWarranty && !$isDelivered && !$isManualBH) {
+        if (! $hasWarranty && ! $isDelivered && ! $isManualBH) {
             return [
                 'state' => 'pending',
                 'label' => 'Chưa kích hoạt',
@@ -205,6 +231,7 @@ class Account extends Component
         $end = $hasWarranty ? \Illuminate\Support\Carbon::parse($item->warranty) : null;
         if ($end && $end->isFuture()) {
             $days = max(0, (int) now()->diffInDays($end, false));
+
             return [
                 'state' => 'active',
                 'label' => 'Đang bảo hành',
@@ -226,6 +253,7 @@ class Account extends Component
     public function render()
     {
         $user = Auth::user();
+        abort_unless($user, 403);
         $userPhone = $user ? preg_replace('/\D+/', '', (string) $user->phone) : '';
         $corePhone = strlen($userPhone) >= 9 ? substr($userPhone, -9) : null;
 
@@ -236,7 +264,7 @@ class Account extends Component
                     $q->where('user_id', $user->id);
                 }
                 if ($corePhone) {
-                    $q->orWhereHas('address', fn ($a) => $a->where('phone', 'like', '%' . $corePhone));
+                    $q->orWhereHas('address', fn ($a) => $a->where('phone', 'like', '%'.$corePhone));
                 }
             })
             ->latest('created_at');
@@ -257,6 +285,7 @@ class Account extends Component
                     'processing' => 'processing',
                     default => 'new',
                 };
+
                 return $group === $this->orderStatusFilter;
             });
         }
@@ -264,22 +293,31 @@ class Account extends Component
             try {
                 $from = \Illuminate\Support\Carbon::parse($this->dateFrom)->startOfDay();
                 $filteredOrders = $filteredOrders->filter(fn (Order $o) => $o->created_at && $o->created_at->gte($from));
-            } catch (\Throwable $e) {}
+            } catch (\Throwable $e) {
+            }
         }
         if ($this->dateTo !== '') {
             try {
                 $to = \Illuminate\Support\Carbon::parse($this->dateTo)->endOfDay();
                 $filteredOrders = $filteredOrders->filter(fn (Order $o) => $o->created_at && $o->created_at->lte($to));
-            } catch (\Throwable $e) {}
+            } catch (\Throwable $e) {
+            }
         }
         if (trim($this->orderSearch) !== '') {
             $term = mb_strtolower(trim($this->orderSearch));
             $filteredOrders = $filteredOrders->filter(function (Order $order) use ($term) {
-                if (str_contains(mb_strtolower((string) $order->order_code), $term)) return true;
-                foreach ($order->items as $item) {
-                    if (str_contains(mb_strtolower((string) ($item->product_variant?->product?->name ?? '')), $term)) return true;
-                    if (str_contains(mb_strtolower((string) ($item->product_variant?->sku ?? '')), $term)) return true;
+                if (str_contains(mb_strtolower((string) $order->order_code), $term)) {
+                    return true;
                 }
+                foreach ($order->items as $item) {
+                    if (str_contains(mb_strtolower((string) ($item->product_variant?->product?->name ?? '')), $term)) {
+                        return true;
+                    }
+                    if (str_contains(mb_strtolower((string) ($item->product_variant?->sku ?? '')), $term)) {
+                        return true;
+                    }
+                }
+
                 return false;
             });
         }

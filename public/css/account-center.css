@@ -1,0 +1,1133 @@
+.cp-page, .cp-page *, .cp-page input, .cp-page button, .cp-page select, .cp-page textarea {
+            box-sizing: border-box;
+            font-family: Roboto, Arial, sans-serif !important;
+        }
+        .cp-page {
+            background: #f4f6f8;
+            color: #1e293b;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        .cp-container {
+            width: 100%;
+            max-width: 1240px;
+            margin: 0 auto;
+            padding: 20px 20px 72px;
+            flex: 1;
+        }
+        /* TOP USER BANNER (CELLPHONES STYLE) */
+        .cp-user-banner {
+            background: #ffffff;
+            border-radius: 16px;
+            border: 1px solid #e2e8f0;
+            padding: 18px 24px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 10px rgba(15, 23, 42, 0.03);
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+        .cp-user-main {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+        .cp-avatar {
+            width: 58px;
+            height: 58px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #1240f7, #0c2fbf);
+            color: #ffffff;
+            display: grid;
+            place-items: center;
+            font-size: 24px !important;
+            font-weight: 800 !important;
+            flex-shrink: 0;
+            box-shadow: 0 4px 14px rgba(18, 64, 247, 0.25);
+        }
+        .cp-user-meta h2 {
+            margin: 0;
+            font-size: 20px !important;
+            font-weight: 800 !important;
+            color: #0f172a;
+        }
+        .cp-user-name-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        .cp-tier-badge {
+            padding: 2px 9px;
+            border-radius: 99px;
+            background: #fef3c7;
+            border: 1px solid #fde68a;
+            color: #b45309;
+            font-size: 11.5px !important;
+            font-weight: 700 !important;
+        }
+        .cp-user-sub {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            flex-wrap: wrap;
+            margin-top: 4px;
+            font-size: 13px !important;
+            color: #64748b;
+        }
+        .cp-user-pills {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+            border-top: 1px solid #f1f5f9;
+            padding-top: 14px;
+        }
+        .cp-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 7px 14px;
+            border-radius: 99px;
+            border: 1px solid #e2e8f0;
+            background: #f8fafc;
+            color: #334155;
+            font-size: 13px !important;
+            font-weight: 600 !important;
+            text-decoration: none;
+            cursor: pointer;
+            transition: all .15s;
+        }
+        .cp-pill:hover, .cp-pill.active {
+            border-color: #1240f7;
+            background: #eff6ff;
+            color: #1240f7;
+        }
+        /* 2-COLUMN LAYOUT */
+        .cp-layout {
+            display: grid;
+            grid-template-columns: 260px minmax(0, 1fr);
+            gap: 20px;
+            align-items: start;
+        }
+        @media (max-width: 900px) {
+            .cp-layout {
+                grid-template-columns: 1fr;
+            }
+        }
+        /* SIDEBAR (CELLPHONES STYLE) */
+        .cp-sidebar {
+            background: #ffffff;
+            border-radius: 16px;
+            border: 1px solid #e2e8f0;
+            padding: 12px;
+            box-shadow: 0 2px 10px rgba(15, 23, 42, 0.03);
+        }
+        .cp-nav-list {
+            display: flex;
+            flex-direction: column;
+            gap: 3px;
+        }
+        .cp-nav-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 11px 14px;
+            border-radius: 12px;
+            border: 0;
+            background: transparent;
+            color: #334155;
+            font-size: 14px !important;
+            font-weight: 600 !important;
+            text-align: left;
+            text-decoration: none;
+            cursor: pointer;
+            width: 100%;
+            transition: all .15s;
+            position: relative;
+        }
+        .cp-nav-item:hover {
+            background: #f8fafc;
+            color: #1240f7;
+        }
+        .cp-nav-item.is-active {
+            background: #eef1ff;
+            color: #182abb !important;
+            font-weight: 700 !important;
+            border-left: 3px solid #182abb;
+        }
+        .cp-nav-ic {
+            font-size: 16px;
+            flex-shrink: 0;
+        }
+        .cp-nav-text {
+            flex: 1;
+        }
+        .cp-nav-count {
+            padding: 1px 7px;
+            border-radius: 99px;
+            background: #e2e8f0;
+            color: #475569;
+            font-size: 11px !important;
+            font-weight: 700 !important;
+        }
+        .cp-nav-count.is-green {
+            background: #dcfce7;
+            color: #15803d;
+        }
+        .cp-nav-divider {
+            height: 1px;
+            background: #f1f5f9;
+            margin: 8px 6px;
+        }
+        .cp-nav-item.is-logout {
+            color: #dc2626;
+        }
+        .cp-nav-item.is-logout:hover {
+            background: #fef2f2;
+        }
+        /* NOTIFICATION BANNERS (STYLE CELLPHONES) */
+        .cp-notif-banners {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            margin-bottom: 18px;
+        }
+        .cp-notif-box {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            padding: 10px 14px;
+            background: #f0f7ff;
+            border: 1px solid #d0e6ff;
+            border-radius: 6px;
+            color: #1e40af;
+            font-size: 13px !important;
+        }
+        .cp-notif-content {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            line-height: 1.4;
+        }
+        .cp-notif-icon {
+            color: #2563eb;
+            flex-shrink: 0;
+        }
+        .cp-notif-actions {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-shrink: 0;
+        }
+        .cp-notif-link {
+            color: #2563eb;
+            font-weight: 600 !important;
+            font-size: 12.5px !important;
+            text-decoration: none;
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            padding: 0;
+            white-space: nowrap;
+        }
+        .cp-notif-link:hover {
+            text-decoration: underline;
+        }
+        .cp-notif-close {
+            background: transparent;
+            border: none;
+            color: #64748b;
+            font-size: 18px !important;
+            line-height: 1;
+            cursor: pointer;
+            padding: 0 4px;
+        }
+        .cp-notif-close:hover {
+            color: #0f172a;
+        }
+        /* OVERVIEW GRID */
+        .cp-overview-grid {
+            display: grid;
+            grid-template-columns: 1fr 280px;
+            gap: 20px;
+            align-items: start;
+        }
+        @media (max-width: 1080px) {
+            .cp-overview-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+        .cp-card {
+            background: #ffffff;
+            border-radius: 16px;
+            border: 1px solid #e2e8f0;
+            padding: 20px 24px;
+            box-shadow: 0 2px 10px rgba(15, 23, 42, 0.03);
+        }
+        .cp-card-head {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding-bottom: 14px;
+            margin-bottom: 14px;
+            border-bottom: 1px solid #f1f5f9;
+        }
+        .cp-card-head h3, .cp-card-head h2 {
+            margin: 0;
+            font-size: 17px !important;
+            font-weight: 700 !important;
+            color: #0f172a;
+        }
+        .cp-card-head p {
+            margin: 3px 0 0;
+            font-size: 13px !important;
+            color: #64748b;
+        }
+        .cp-link-btn {
+            background: none;
+            border: 0;
+            color: #1240f7;
+            font-size: 13px !important;
+            font-weight: 700 !important;
+            cursor: pointer;
+            padding: 0;
+        }
+        /* ORDER ROW (CELLPHONES STYLE) */
+        .cp-orders-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        .cp-order-row {
+            padding: 12px 14px;
+            border-radius: 12px;
+            border: 1px solid #e2e8f0;
+            background: #ffffff;
+            transition: border-color .15s;
+        }
+        .cp-order-row:hover {
+            border-color: #cbd5e1;
+        }
+        .cp-order-head-bar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-size: 12.5px !important;
+            color: #64748b;
+            padding-bottom: 8px;
+            border-bottom: 1px solid #f8fafc;
+        }
+        .cp-order-head-bar b {
+            color: #1240f7;
+        }
+        .cp-status-pill {
+            padding: 2px 8px;
+            border-radius: 99px;
+            font-size: 11.5px !important;
+            font-weight: 700 !important;
+        }
+        .cp-status-pill.is-delivered {
+            background: #ecfdf5;
+            color: #047857;
+        }
+        .cp-status-pill.is-shipping {
+            background: #eef2ff;
+            color: #1240f7;
+        }
+        .cp-status-pill.is-pending, .cp-status-pill.is-processing {
+            background: #fffbeb;
+            color: #b45309;
+        }
+        .cp-status-pill.is-cancelled {
+            background: #fef2f2;
+            color: #dc2626;
+        }
+        .cp-order-body-bar {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            padding-top: 10px;
+        }
+        .cp-order-thumb {
+            width: 58px;
+            height: 58px;
+            border-radius: 10px;
+            border: 1px solid #e2e8f0;
+            background: #f8fafc;
+            overflow: hidden;
+            flex-shrink: 0;
+            display: grid;
+            place-items: center;
+            font-size: 10px !important;
+            color: #94a3b8;
+        }
+        .cp-order-thumb img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .cp-order-info-text {
+            flex: 1;
+            min-width: 0;
+        }
+        .cp-order-info-text h4 {
+            margin: 0 0 2px;
+            font-size: 14px !important;
+            font-weight: 700 !important;
+            color: #0f172a;
+            display: -webkit-box;
+            -webkit-line-clamp: 1;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+        .cp-order-info-text p {
+            margin: 0;
+            font-size: 12px !important;
+            color: #64748b;
+        }
+        .cp-order-info-text small {
+            font-size: 11.5px !important;
+            color: #94a3b8;
+        }
+        .cp-order-price-bar {
+            text-align: right;
+            flex-shrink: 0;
+        }
+        .cp-order-price-bar span {
+            display: block;
+            font-size: 12.5px !important;
+            color: #475569;
+        }
+        .cp-order-price-bar strong {
+            color: #d92332 !important;
+            font-weight: 800 !important;
+            font-size: 14px !important;
+        }
+        .cp-view-order-btn {
+            background: none;
+            border: 0;
+            color: #1240f7;
+            font-size: 12px !important;
+            font-weight: 700 !important;
+            cursor: pointer;
+            padding: 2px 0 0;
+        }
+        /* WARRANTY ROW */
+        .cp-warranty-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .cp-warranty-row {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 10px 12px;
+            border-radius: 12px;
+            border: 1px solid #e2e8f0;
+            background: #ffffff;
+        }
+        .cp-warranty-thumb {
+            width: 50px;
+            height: 50px;
+            border-radius: 8px;
+            border: 1px solid #e2e8f0;
+            background: #f8fafc;
+            overflow: hidden;
+            flex-shrink: 0;
+            display: grid;
+            place-items: center;
+            font-size: 10px !important;
+            color: #94a3b8;
+        }
+        .cp-warranty-thumb img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .cp-warranty-meta {
+            flex: 1;
+            min-width: 0;
+        }
+        .cp-warranty-meta h4 {
+            margin: 0 0 3px;
+            font-size: 13.5px !important;
+            font-weight: 700 !important;
+            color: #0f172a;
+            display: -webkit-box;
+            -webkit-line-clamp: 1;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+        .cp-warranty-tags {
+            display: flex;
+            gap: 6px;
+            flex-wrap: wrap;
+        }
+        .cp-sku-tag {
+            display: inline-block;
+            padding: 2px 7px;
+            border-radius: 4px;
+            background: #eff6ff;
+            color: #1d4ed8;
+            font-size: 11.5px !important;
+            font-weight: 700 !important;
+        }
+        .cp-var-tag {
+            padding: 1px 6px;
+            border-radius: 5px;
+            background: #f1f5f9;
+            color: #475569;
+            font-size: 11px !important;
+            font-weight: 600 !important;
+        }
+        .cp-warranty-badge-box {
+            text-align: right;
+            padding: 6px 12px;
+            border-radius: 8px;
+            flex-shrink: 0;
+        }
+        .cp-warranty-badge-box.is-active {
+            background: #ecfdf5;
+            color: #047857;
+        }
+        .cp-warranty-badge-box.is-expired {
+            background: #f1f5f9;
+            color: #64748b;
+        }
+        .cp-warranty-badge-box span {
+            display: block;
+            font-size: 11.5px !important;
+        }
+        .cp-warranty-badge-box small {
+            font-size: 11px !important;
+            font-weight: 800 !important;
+        }
+        /* WIDGETS */
+        .cp-widget-card h3 {
+            margin: 0 0 10px;
+            font-size: 15px !important;
+            font-weight: 800 !important;
+        }
+        .cp-gift-box {
+            text-align: center;
+            padding: 16px 10px;
+            border-radius: 12px;
+            background: #f8fafc;
+            border: 1px solid #f1f5f9;
+        }
+        .cp-gift-icon {
+            font-size: 32px;
+            margin-bottom: 6px;
+        }
+        .cp-gift-box p {
+            font-size: 12.5px !important;
+            color: #64748b;
+            margin: 0 0 12px;
+            line-height: 1.5;
+        }
+        .cp-gift-btn {
+            display: inline-block;
+            padding: 7px 16px;
+            border-radius: 99px;
+            background: #1240f7;
+            color: #fff !important;
+            font-size: 12.5px !important;
+            font-weight: 700 !important;
+            text-decoration: none;
+        }
+        .cp-support-line {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 9px 12px;
+            border-radius: 8px;
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            color: #0f172a;
+            text-decoration: none;
+            font-size: 12.5px !important;
+            margin-bottom: 6px;
+        }
+        .cp-support-line strong {
+            color: #1240f7;
+        }
+        /* TAB 2 & 3: FULL VIEWS */
+        .cp-filter-head {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 16px;
+        }
+        .cp-search-wrap {
+            min-width: 280px;
+            max-width: 380px;
+            width: 100%;
+        }
+        .cp-search-wrap input {
+            width: 100%;
+            height: 40px;
+            padding: 0 16px;
+            border-radius: 99px;
+            border: 1px solid #cbd5e1;
+            font-size: 13.5px !important;
+            outline: none;
+            background: #fff;
+            transition: border-color 0.15s ease, box-shadow 0.15s ease;
+        }
+        .cp-search-wrap input:focus, .cp-warranty-search-bar input:focus {
+            border-color: #182abb;
+            box-shadow: 0 0 0 3px rgba(24, 42, 187, 0.12);
+        }
+        .cp-warranty-search-bar {
+            margin-bottom: 18px;
+            width: 100%;
+        }
+        .cp-warranty-search-bar input {
+            width: 100%;
+            height: 42px;
+            padding: 0 16px;
+            border-radius: 99px;
+            border: 1px solid #cbd5e1;
+            font-size: 13.5px !important;
+            outline: none;
+            background: #fff;
+            transition: border-color 0.15s ease, box-shadow 0.15s ease;
+        }
+        /* CELLPHONES MODERN ORDERS & WARRANTY STYLES */
+        .cp-cell-panel {
+            background: #ffffff;
+            border-radius: 16px;
+            border: 1px solid #e2e8f0;
+            box-shadow: 0 2px 10px rgba(15, 23, 42, 0.03);
+            overflow: hidden;
+        }
+        .cp-cell-tabs-bar {
+            display: flex;
+            align-items: center;
+            border-bottom: 1px solid #e2e8f0;
+            background: #ffffff;
+            padding: 0 16px;
+            gap: 4px;
+            overflow-x: auto;
+            scrollbar-width: none;
+        }
+        .cp-cell-tabs-bar::-webkit-scrollbar {
+            display: none;
+        }
+        .cp-cell-tab-item {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 14px 16px;
+            background: transparent;
+            border: 0;
+            border-bottom: 2px solid transparent;
+            color: #475569;
+            font-size: 14px !important;
+            font-weight: 500 !important;
+            cursor: pointer;
+            white-space: nowrap;
+            transition: all 0.15s ease;
+            text-decoration: none !important;
+        }
+        .cp-cell-tab-item:hover {
+            color: #182abb;
+        }
+        .cp-cell-tab-item.is-active {
+            color: #182abb !important;
+            font-weight: 700 !important;
+            border-bottom: 2px solid #182abb !important;
+        }
+        .cp-cell-tab-badge {
+            font-size: 12px !important;
+            color: #94a3b8;
+            font-weight: 600 !important;
+        }
+        .cp-cell-tab-item.is-active .cp-cell-tab-badge {
+            color: #182abb;
+        }
+        .cp-cell-subhead-row {
+            padding: 16px 20px 14px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 12px;
+            border-bottom: 1px solid #f8fafc;
+        }
+        .cp-cell-section-title {
+            margin: 0;
+            font-size: 17px !important;
+            font-weight: 700 !important;
+            color: #0f172a;
+        }
+        .cp-cell-filter-controls {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+        .cp-cell-datepicker {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            border: 1px solid #cbd5e1;
+            border-radius: 8px;
+            padding: 5px 10px;
+            background: #ffffff;
+        }
+        .cp-cell-date-field {
+            border: 0;
+            outline: none;
+            font-size: 12.5px !important;
+            color: #334155;
+            background: transparent;
+            cursor: pointer;
+        }
+        .cp-cell-date-sep {
+            color: #94a3b8;
+            font-size: 12px !important;
+        }
+        .cp-cell-date-icon {
+            color: #64748b;
+            flex-shrink: 0;
+        }
+        .cp-cell-search-box {
+            position: relative;
+            display: inline-flex;
+            align-items: center;
+        }
+        .cp-cell-search-input {
+            width: 220px;
+            height: 34px;
+            padding: 0 12px 0 32px;
+            border-radius: 8px;
+            border: 1px solid #cbd5e1;
+            font-size: 12.5px !important;
+            outline: none;
+            background: #ffffff;
+            transition: all 0.15s ease;
+        }
+        .cp-cell-search-input:focus {
+            border-color: #182abb;
+            box-shadow: 0 0 0 2px rgba(24, 42, 187, 0.12);
+        }
+        .cp-cell-search-icon {
+            position: absolute;
+            left: 10px;
+            color: #94a3b8;
+            pointer-events: none;
+        }
+        .cp-cell-orders-container {
+            padding: 16px 20px 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+        }
+        .cp-cell-order-card {
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            background: #ffffff;
+            overflow: hidden;
+            padding: 14px 16px;
+            margin-bottom: 12px;
+            transition: border-color 0.15s ease;
+        }
+        .cp-cell-order-card:hover {
+            border-color: #cbd5e1;
+        }
+        .cp-cell-order-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding-bottom: 12px;
+            background: transparent;
+            border-bottom: 1px solid #f3f4f6;
+            margin-bottom: 12px;
+            font-size: 13.5px !important;
+            color: #4b5563;
+        }
+        .cp-cell-order-meta b {
+            color: #111827;
+            font-weight: 700 !important;
+        }
+        .cp-cell-dot {
+            margin: 0 6px;
+            color: #9ca3af;
+        }
+        .cp-cell-status-pill {
+            font-size: 12px !important;
+            font-weight: 500 !important;
+            padding: 2px 8px;
+            border-radius: 4px;
+            white-space: nowrap;
+        }
+        .cp-cell-status-pill.is-delivered {
+            background: #ecfdf5;
+            color: #16a34a;
+        }
+        .cp-cell-status-pill.is-shipping {
+            background: #eff6ff;
+            color: #2563eb;
+        }
+        .cp-cell-status-pill.is-processing {
+            background: #fffbeb;
+            color: #d97706;
+        }
+        .cp-cell-status-pill.is-cancelled {
+            background: #fef2f2;
+            color: #dc2626;
+        }
+        .cp-cell-status-pill.is-pending {
+            background: #f3f4f6;
+            color: #4b5563;
+        }
+        .cp-cell-order-body {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+        .cp-cell-order-items {
+            flex: 1;
+            min-width: 240px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            padding: 0;
+        }
+        .cp-cell-item-row {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            padding: 0;
+            border: none;
+        }
+        .cp-cell-item-thumb {
+            width: 60px;
+            height: 60px;
+            border-radius: 4px;
+            border: 1px solid #f3f4f6;
+            background: #ffffff;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+        .cp-cell-item-thumb img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+        .cp-cell-item-info {
+            flex: 1;
+            min-width: 0;
+        }
+        .cp-cell-item-name {
+            margin: 0 0 4px;
+            font-size: 14px !important;
+            font-weight: 600 !important;
+            color: #111827;
+            line-height: 1.35;
+        }
+        .cp-cell-item-var {
+            font-size: 12px !important;
+            color: #6b7280;
+            margin-bottom: 4px;
+        }
+        .cp-cell-item-price {
+            font-size: 13.5px !important;
+            font-weight: 500 !important;
+            color: #111827;
+        }
+        .cp-cell-order-actions {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            gap: 4px;
+            flex-shrink: 0;
+            text-align: right;
+        }
+        .cp-cell-total-row {
+            display: flex;
+            align-items: baseline;
+            gap: 6px;
+            font-size: 13.5px !important;
+        }
+        .cp-cell-total-lbl {
+            color: #4b5563;
+        }
+        .cp-cell-total-amt {
+            font-size: 15px !important;
+            font-weight: 700 !important;
+            color: #182abb !important;
+        }
+        .cp-cell-detail-link {
+            font-size: 13px !important;
+            font-weight: 500 !important;
+            color: #4b5563 !important;
+            text-decoration: none !important;
+        }
+        .cp-cell-detail-link:hover {
+            color: #182abb !important;
+            text-decoration: underline !important;
+        }
+        /* TAB 3 SPECIFIC: NOTICE BANNER, EMPTY STATE, CLAIM PROGRESS */
+        .cp-warranty-notice-banner {
+            margin: 16px 20px;
+            padding: 12px 16px;
+            background: #fef2f2;
+            border: 1px solid #fee2e2;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+        .cp-warranty-notice-content {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 13px !important;
+            color: #991b1b;
+        }
+        .cp-warranty-notice-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 6px 14px;
+            border-radius: 6px;
+            background: #182abb;
+            color: #ffffff !important;
+            font-size: 12.5px !important;
+            font-weight: 600 !important;
+            text-decoration: none !important;
+            transition: background 0.15s ease;
+        }
+        .cp-warranty-notice-btn:hover {
+            background: #b91c1c;
+        }
+        .cp-cell-empty-rma {
+            padding: 56px 24px 64px;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 12px;
+        }
+        .cp-cell-empty-icon-wrap {
+            margin-bottom: 4px;
+        }
+        .cp-cell-empty-title {
+            margin: 0;
+            font-size: 15px !important;
+            font-weight: 600 !important;
+            color: #64748b;
+        }
+        .cp-cell-empty-actions {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 13.5px !important;
+        }
+        .cp-cell-empty-home-link {
+            color: #182abb;
+            font-weight: 600 !important;
+            text-decoration: none !important;
+        }
+        .cp-cell-empty-home-link:hover {
+            text-decoration: underline !important;
+        }
+        .cp-cell-empty-sec-link {
+            color: #475569;
+            text-decoration: none !important;
+        }
+        .cp-cell-empty-sec-link:hover {
+            color: #0f172a;
+            text-decoration: underline !important;
+        }
+        .cp-cell-claim-progress-box {
+            padding: 14px 20px;
+            background: #f8fafc;
+            border-top: 1px solid #f1f5f9;
+        }
+        .cp-cell-progress-bar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 8px;
+        }
+        .cp-cell-progress-step {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            flex: 1;
+            text-align: center;
+        }
+        .cp-cell-step-dot {
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            background: #e2e8f0;
+            color: #64748b;
+            font-size: 11px !important;
+            font-weight: 700 !important;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .cp-cell-progress-step.is-done .cp-cell-step-dot {
+            background: #182abb;
+            color: #ffffff;
+        }
+        .cp-cell-step-title {
+            font-size: 11px !important;
+            color: #64748b;
+            font-weight: 500 !important;
+        }
+        .cp-cell-progress-step.is-done .cp-cell-step-title {
+            color: #0f172a;
+            font-weight: 700 !important;
+        }
+        /* FORMS */
+        .cp-form {
+            max-width: 520px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            margin-top: 8px;
+        }
+        .cp-form-group label {
+            display: block;
+            font-size: 13.5px !important;
+            font-weight: 700 !important;
+            color: #1e293b;
+            margin-bottom: 6px;
+        }
+        .cp-form-group label b {
+            color: #dc2626;
+        }
+        .cp-form-group input {
+            width: 100%;
+            height: 44px;
+            padding: 0 14px;
+            border-radius: 10px;
+            border: 1px solid #cbd5e1;
+            font-size: 14px !important;
+            outline: none;
+            background: #fff;
+        }
+        .cp-form-group input:focus {
+            border-color: #1240f7;
+            box-shadow: 0 0 0 3px #eef1ff;
+        }
+        .cp-err {
+            color: #dc2626;
+            font-size: 12px !important;
+            margin-top: 3px;
+            display: block;
+        }
+        .cp-alert-success {
+            padding: 11px 16px;
+            border-radius: 10px;
+            background: #ecfdf5;
+            border: 1px solid #a7f3d0;
+            color: #065f46;
+            font-size: 13.5px !important;
+            font-weight: 700 !important;
+            margin-bottom: 14px;
+        }
+        /* BUTTONS */
+        .cp-cta-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            height: 42px;
+            padding: 0 20px;
+            border-radius: 99px;
+            background: #1240f7;
+            color: #fff !important;
+            font-size: 13.5px !important;
+            font-weight: 700 !important;
+            text-decoration: none;
+            border: 0;
+            cursor: pointer;
+            box-shadow: 0 4px 14px rgba(18, 64, 247, 0.25);
+            transition: all .15s;
+        }
+        .cp-cta-btn:hover {
+            background: #0c2fbf;
+        }
+        .cp-secondary-btn {
+            display: inline-flex;
+            align-items: center;
+            height: 42px;
+            padding: 0 16px;
+            border-radius: 99px;
+            border: 1px solid #cbd5e1;
+            background: #fff;
+            color: #334155 !important;
+            font-size: 13px !important;
+            font-weight: 700 !important;
+            text-decoration: none;
+        }
+        .cp-actions-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        .cp-empty-state {
+            padding: 36px 18px;
+            border: 1px dashed #cbd5e1;
+            border-radius: 12px;
+            text-align: center;
+            color: #64748b;
+            font-size: 13.5px !important;
+        }
+
+/* Each Livewire tab has its own keyed root; lists and filters cannot widen the page. */
+.cp-page .cp-main,.cp-page .cp-cell-panel,.cp-page .cp-overview-left { min-width:0; width:100%; }
+.cp-page .cp-cell-orders-container { display:grid; grid-template-columns:minmax(0,1fr); align-items:stretch; width:100%; }
+.cp-page .cp-cell-order-card { width:100%; min-width:0; margin-bottom:0; }
+.cp-page .cp-cell-order-header { flex-wrap:wrap; gap:10px; }
+.cp-page .cp-cell-order-meta { min-width:0; overflow-wrap:anywhere; line-height:1.7; }
+.cp-page .cp-cell-order-items { min-width:0; flex-basis:240px; }
+.cp-page .cp-cell-item-name,.cp-page .cp-cell-item-var { overflow-wrap:anywhere; }
+.cp-page .cp-cell-filter-controls { min-width:0; max-width:100%; }
+.cp-page .cp-cell-datepicker { min-width:0; max-width:100%; }
+.cp-page .cp-cell-date-field { min-width:0; width:135px; }
+.cp-page .cp-cell-search-box { min-width:0; max-width:100%; }
+.cp-page .cp-cell-tabs-bar { max-width:100%; }
+.cp-page .cp-cell-tab-item { flex-shrink:0; }
+.cp-page .cp-cell-order-actions,.cp-page .cp-cell-total-row { max-width:100%; flex-wrap:wrap; }
+.cp-page .cp-user-meta { min-width:0; overflow-wrap:anywhere; }
+.cp-page .cp-cell-progress-bar { min-width:0; overflow-x:auto; padding-bottom:8px; }
+.cp-page .cp-cell-progress-step { flex:1 0 105px; }
+@media(max-width:650px) {
+    .cp-page .cp-container { padding-left:12px; padding-right:12px; }
+    .cp-page .cp-user-banner { padding:16px; }
+    .cp-page .cp-cell-subhead-row { align-items:stretch; padding:16px; }
+    .cp-page .cp-cell-filter-controls { width:100%; flex-direction:column; align-items:stretch; }
+    .cp-page .cp-cell-datepicker { width:100%; padding:8px; gap:5px; }
+    .cp-page .cp-cell-date-field { flex:1; width:0; font-size:11px!important; }
+    .cp-page .cp-cell-date-icon { display:none; }
+    .cp-page .cp-cell-search-box,.cp-page .cp-cell-search-input { width:100%; }
+    .cp-page .cp-cell-orders-container { padding:12px; }
+    .cp-page .cp-cell-order-card { padding:14px; }
+    .cp-page .cp-cell-order-body { align-items:stretch; }
+    .cp-page .cp-cell-order-items,.cp-page .cp-cell-order-actions { flex-basis:100%; width:100%; }
+    .cp-page .cp-cell-order-actions { align-items:flex-start; text-align:left; }
+    .cp-page .cp-card { padding:18px 16px; min-width:0; }
+    .cp-page .cp-notif-box { flex-wrap:wrap; }
+    .cp-page .cp-notif-content { min-width:0; }
+}
