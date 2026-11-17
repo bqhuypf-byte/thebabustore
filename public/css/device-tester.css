@@ -204,3 +204,11 @@
 .dt-mouse-ripple[data-button="1"] { border-color:var(--mouse-middle); }
 @keyframes dt-mouse-ripple { from { opacity:.7; transform:scale(.5); } to { opacity:0; transform:scale(3.5); } }
 @media(prefers-reduced-motion:reduce) { .dt-mouse-svg [data-mouse-zone] { transition:none; } .dt-mouse-svg [data-mouse-zone].active { transform:none; filter:none; } .dt-mouse-ripple { display:none; animation:none; } }
+
+#dt-mouse-wheel.is-scrolling { fill:var(--mouse-middle); stroke:var(--mouse-middle); }
+.dt-scroll-readouts { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:10px; margin-top:16px; }
+.dt-scroll-readouts > div { padding:12px; border:1px solid #e5e9f1; border-radius:9px; background:#f7f8fc; min-width:0; }
+.dt-scroll-readouts span { display:block; color:#647084; font-size:11px; }
+.dt-scroll-readouts strong { display:block; font-size:17px; color:#18202f; margin-top:8px; font-variant-numeric:tabular-nums; overflow-wrap:anywhere; }
+.dt-card .dt-scroll-note { font-size:11px; margin-top:12px; }
+@media(max-width:760px) { .dt-scroll-readouts { grid-template-columns:repeat(2,minmax(0,1fr)); } }

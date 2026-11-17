@@ -73,6 +73,13 @@
                         <span data-mouse-button="0">Trái <b>0</b></span><span data-mouse-button="2">Phải <b>0</b></span><span data-mouse-button="1">Giữa <b>0</b></span><span data-mouse-button="3" title="Back">Hông 1 <b>0</b></span><span data-mouse-button="4" title="Forward">Hông 2 <b>0</b></span>
                     </div>
                     <div class="dt-mouse-summary"><p class="dt-wheel-status" id="dt-wheel-status" role="status">Con lăn chưa có sự kiện</p><span id="dt-mouse-total">Tổng 0 lượt bấm</span></div>
+                    <div class="dt-scroll-readouts" aria-label="Kết quả test con lăn">
+                        <div><span>Cuộn lên</span><strong id="dt-scroll-up">0</strong></div>
+                        <div><span>Cuộn xuống</span><strong id="dt-scroll-down">0</strong></div>
+                        <div><span>deltaY gần nhất</span><strong id="dt-scroll-delta">—</strong></div>
+                        <div><span>Tổng quãng cuộn</span><strong id="dt-scroll-distance">0</strong></div>
+                    </div>
+                    <p class="dt-scroll-note">Tổng cộng độ lớn mỗi lượt cuộn, tách theo đơn vị trình duyệt: pixel, dòng hoặc trang. Số lượt là số sự kiện wheel, không phải số nấc vật lý.</p>
                 </div>
                 <aside class="dt-card dt-cps-card">
                     <h2>Tốc độ click</h2><p>Đo nút được chọn, bao gồm cả hai nút hông. Mặc định tính tất cả 5 nút.</p>

@@ -1,3 +1,16 @@
+export class ScrollStats {
+    constructor() { this.reset(); }
+    reset() { this.up = 0; this.down = 0; this.distance = [0, 0, 0]; this.last = null; }
+    record(deltaY, deltaMode = 0) {
+        if (!Number.isFinite(deltaY) || ![0, 1, 2].includes(deltaMode) || deltaY === 0) return false;
+        if (deltaY < 0) this.up += 1;
+        else this.down += 1;
+        this.distance[deltaMode] += Math.abs(deltaY);
+        this.last = { deltaY, deltaMode };
+        return true;
+    }
+}
+
 export function countsForSession(button, selected = 'all') {
     return Number.isInteger(button) && button >= 0 && button <= 4 && (selected === 'all' || button === Number(selected));
 }
@@ -116,8 +129,8 @@ function mount(root) {
     let keyboardRunning = false;
     let keyCount = 0;
     let maxHeld = 0;
-    let wheelUp = 0;
-    let wheelDown = 0;
+    const scroll = new ScrollStats();
+    let wheelFlashTimer;
     let points = [];
     let movementTimes = [];
     let lastMovementTime = -1;
@@ -442,11 +455,24 @@ function mount(root) {
     listen(window, 'pointercancel', () => { mousePressed.clear(); renderMouseButtons(); });
     listen(pad, 'mouseleave', () => { mousePressed.clear(); renderMouseButtons(); });
     for (const type of ['contextmenu', 'auxclick']) listen(pad, type, event => event.preventDefault());
+    function renderScroll() {
+        const units = ['px', 'dòng', 'trang'];
+        const format = value => value.toLocaleString('vi-VN', { maximumFractionDigits: 2 });
+        set('#dt-wheel-status', scroll.last ? (scroll.last.deltaY < 0 ? '▲ Cuộn lên' : '▼ Cuộn xuống') : 'Con lăn chưa có sự kiện');
+        set('#dt-scroll-up', scroll.up);
+        set('#dt-scroll-down', scroll.down);
+        set('#dt-scroll-delta', scroll.last ? `${scroll.last.deltaY} ${units[scroll.last.deltaMode]}` : '—');
+        const totals = scroll.distance.map((value, mode) => value ? `${format(value)} ${units[mode]}` : null).filter(Boolean);
+        set('#dt-scroll-distance', totals.length ? totals.join(' · ') : '0');
+    }
     listen(pad, 'wheel', event => {
         event.preventDefault();
-        if (event.deltaY < 0) wheelUp += 1;
-        if (event.deltaY > 0) wheelDown += 1;
-        set('#dt-wheel-status', `Cuộn lên ${wheelUp} · Cuộn xuống ${wheelDown}${event.deltaX ? ' · Có cuộn ngang' : ''}`);
+        if (!scroll.record(event.deltaY, event.deltaMode)) return;
+        renderScroll();
+        const wheel = find('#dt-mouse-wheel');
+        wheel.classList.add('is-scrolling');
+        clearTimeout(wheelFlashTimer);
+        wheelFlashTimer = window.setTimeout(() => wheel.classList.remove('is-scrolling'), 150);
     }, { passive: false });
 
     const movementEvent = window.isSecureContext && 'onpointerrawupdate' in window ? 'pointerrawupdate' : 'pointermove';
@@ -551,7 +577,11 @@ function mount(root) {
     listen(find('[data-action="reset"]'), 'click', () => {
         stopKeyboard('Đã xóa kết quả. Bấm vào khung để tiếp tục.');
         resetKeyboard();
-        buttonCounts.fill(0); mousePressed.clear(); wheelUp = 0; wheelDown = 0;
+        buttonCounts.fill(0); mousePressed.clear(); touchPointer = null;
+        scroll.reset();
+        clearTimeout(wheelFlashTimer);
+        find('#dt-mouse-wheel').classList.remove('is-scrolling');
+        renderScroll();
         movementTimes = []; lastMovementTime = -1; points = [];
         pad.querySelectorAll('.dt-mouse-ripple').forEach(ripple => ripple.remove());
         pad.classList.remove('has-movement');
@@ -582,6 +612,7 @@ function mount(root) {
         pauseInput();
         if (event.persisted) return;
         clearInterval(timer);
+        clearTimeout(wheelFlashTimer);
         observer.disconnect();
         audioContext?.close();
         controller.abort();

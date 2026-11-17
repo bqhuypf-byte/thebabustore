@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { ClickSession, summarizeIntervals, countsForSession, resolveKeyCode } from '../../public/js/device-tester.js';
+import { ScrollStats, ClickSession, summarizeIntervals, countsForSession, resolveKeyCode } from '../../public/js/device-tester.js';
 
 test('click timing starts on the first click and excludes the exact deadline', () => {
     const session = new ClickSession();
@@ -82,4 +82,18 @@ test('media keys without a physical code use the observed media key value', () =
     assert.equal(resolveKeyCode({code:'Unidentified',key:'MediaPlayPause'}), 'MediaPlayPause');
     assert.equal(resolveKeyCode({code:'KeyQ',key:'a'}), 'KeyQ');
     assert.equal(resolveKeyCode({code:'',key:'a'}), null);
+});
+
+test('scroll distance keeps units separate, counts direction and resets completely', () => {
+    const scroll = new ScrollStats();
+    scroll.record(-120, 0); scroll.record(80, 0);
+    scroll.record(-3, 1); scroll.record(1, 2);
+    assert.equal(scroll.up, 2); assert.equal(scroll.down, 2);
+    assert.deepEqual(scroll.distance, [200, 3, 1]);
+    assert.deepEqual(scroll.last, { deltaY: 1, deltaMode: 2 });
+    for (const [delta, mode] of [[0,0], [NaN,0], [Infinity,0], [10,3]]) assert.equal(scroll.record(delta,mode), false);
+    assert.deepEqual(scroll.distance, [200, 3, 1]);
+    scroll.reset();
+    assert.deepEqual([scroll.up,scroll.down,scroll.last], [0,0,null]);
+    assert.deepEqual(scroll.distance,[0,0,0]);
 });
