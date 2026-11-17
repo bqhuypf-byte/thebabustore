@@ -469,6 +469,7 @@ function mount(root) {
         event.preventDefault();
         if (!scroll.record(event.deltaY, event.deltaMode)) return;
         renderScroll();
+        pad.dataset.scrollDirection = event.deltaY < 0 ? 'up' : 'down';
         const wheel = find('#dt-mouse-wheel');
         wheel.classList.add('is-scrolling');
         clearTimeout(wheelFlashTimer);
@@ -579,6 +580,7 @@ function mount(root) {
         resetKeyboard();
         buttonCounts.fill(0); mousePressed.clear(); touchPointer = null;
         scroll.reset();
+        delete pad.dataset.scrollDirection;
         clearTimeout(wheelFlashTimer);
         find('#dt-mouse-wheel').classList.remove('is-scrolling');
         renderScroll();

@@ -60,8 +60,10 @@
                             <path id="dt-mouse-body" d="M120 20 C55 20 28 66 28 135 V196 C28 251 61 280 120 280 S212 251 212 196 V135 C212 66 185 20 120 20Z"/>
                             <path id="dt-mouse-left" data-mouse-zone="0" d="M114 28 C62 30 36 68 36 128 V138 H104 V90 Q104 76 114 72Z"/>
                             <path id="dt-mouse-right" data-mouse-zone="2" d="M126 28 C178 30 204 68 204 128 V138 H136 V90 Q136 76 126 72Z"/>
-                            <rect id="dt-mouse-wheel" data-mouse-zone="1" x="110" y="81" width="20" height="48" rx="10"/>
-                            <path class="dt-wheel-lines" d="M115 94H125 M115 103H125 M115 112H125"/>
+                            <rect id="dt-mouse-wheel" data-mouse-zone="1" x="107" y="78" width="26" height="56" rx="12"/>
+                            <path class="dt-wheel-lines" d="M113 91H127 M113 101H127 M113 111H127 M113 121H127"/>
+                            <path class="dt-wheel-arrow dt-wheel-up" d="M114 61L120 55L126 61"/>
+                            <path class="dt-wheel-arrow dt-wheel-down" d="M114 151L120 157L126 151"/>
                             <rect id="dt-mouse-back" data-mouse-zone="3" x="20" y="145" width="13" height="35" rx="6"/>
                             <rect id="dt-mouse-forward" data-mouse-zone="4" x="20" y="187" width="13" height="35" rx="6"/>
                             <text x="120" y="225" text-anchor="middle">BABU</text>
@@ -70,7 +72,7 @@
                         <span class="dt-pad-position" id="dt-mouse-position">X — · Y —</span>
                     </div>
                     <div class="dt-mouse-buttons" aria-label="Trạng thái nút chuột">
-                        <span data-mouse-button="0">Trái <b>0</b></span><span data-mouse-button="2">Phải <b>0</b></span><span data-mouse-button="1">Giữa <b>0</b></span><span data-mouse-button="3" title="Back">Hông 1 <b>0</b></span><span data-mouse-button="4" title="Forward">Hông 2 <b>0</b></span>
+                        <span data-mouse-button="0">Trái <b>0</b></span><span data-mouse-button="2">Phải <b>0</b></span><span data-mouse-button="1">Nút cuộn <b>0</b></span><span data-mouse-button="3" title="Back">Hông 1 <b>0</b></span><span data-mouse-button="4" title="Forward">Hông 2 <b>0</b></span>
                     </div>
                     <div class="dt-mouse-summary"><p class="dt-wheel-status" id="dt-wheel-status" role="status">Con lăn chưa có sự kiện</p><span id="dt-mouse-total">Tổng 0 lượt bấm</span></div>
                     <div class="dt-scroll-readouts" aria-label="Kết quả test con lăn">
