@@ -1,0 +1,30 @@
+.wl-page { --wl-brand:#182abb; --wl-brand-dark:#111f8f; --wl-soft:#eef1ff; --wl-line:#dfe4ee; --wl-text:#18202f; }
+.wl-page .wl-container { max-width:1100px; padding-top:22px; }
+.wl-page .wl-breadcrumb { color:#647084; font-size:12px!important; margin-bottom:24px; }
+.wl-page .wl-top-tabs { background:#fff; border:1px solid var(--wl-line); padding:6px; border-radius:14px; box-shadow:0 3px 12px #182abb05; }
+.wl-page .wl-top-tab { padding:12px 20px; font-size:13px!important; border-radius:9px; }
+.wl-page .wl-top-tab.is-active { background:var(--wl-brand)!important; box-shadow:0 3px 10px #182abb26; }
+.wl-page .wl-center-card { border:1px solid var(--wl-line); border-radius:20px; box-shadow:0 8px 28px #182abb06; padding:32px; }
+.wl-page .wl-main-title { font-size:24px!important; line-height:1.3; letter-spacing:-.02em!important; }
+.wl-page .wl-search-submit-btn:hover,.wl-page .wa-submit-action-btn:hover { background:var(--wl-brand-dark); }
+.wl-page .wa-activation-v2 { max-width:880px; margin:0 auto; }
+.wa-activation-v2 .wa-activation-header { text-align:center; padding:4px 12px 24px; margin-bottom:24px; border-bottom:1px solid #edf0f6; }
+.wa-header-icon { display:grid;place-items:center;width:52px;height:52px;margin:0 auto 12px;background:var(--wl-soft);color:var(--wl-brand);border:1px solid #d9defb;border-radius:15px; }
+.wa-activation-v2 .wa-header-eyebrow { color:var(--wl-brand);font-size:10px;font-weight:700;letter-spacing:.13em;margin:0 0 8px; }
+.wl-page .wa-activation-header .wl-main-sub { margin:0 auto; max-width:600px; }
+.wl-page .wa-activation-v2 .wa-fields-form { gap:18px; }
+.wl-page .wa-step-header { align-items:center;padding-bottom:16px;border-bottom:0; }
+.wl-page .wa-step-num { background:var(--wl-soft);color:var(--wl-brand);box-shadow:none; }
+.wa-activation-v2 .wa-field-group label { font-size:13px!important;color:#334155; }
+.wl-page .wa-field-group input,.wl-page .wa-field-group textarea { min-height:46px;border-color:var(--wl-line);border-radius:9px;padding:11px 13px;background:#fff; }
+.wl-page .wa-field-group input:focus,.wl-page .wa-field-group textarea:focus { border-color:var(--wl-brand);box-shadow:0 0 0 3px #182abb10; }
+.wl-page .wa-submit-action-btn { min-height:46px;border-radius:9px;background:var(--wl-brand);border-color:var(--wl-brand);font-size:13px!important; }
+.wl-page .wa-selected-order-box { background:var(--wl-soft);border-color:#d9defb;border-radius:12px;padding:18px; }
+.wl-page .wa-activation-item { border-radius:12px;transition:border-color .15s,background .15s; }
+.wl-page .wa-activation-item:has(input:checked) { border-color:#aeb9f5;background:#f8f9ff; }
+.wl-page .wa-fallback-panel { background:#f8f9fc;border:1px solid #e5e9f1;border-radius:12px;padding:18px;margin-top:26px; }
+.wl-page .wa-fallback-panel summary { color:var(--wl-brand);font-size:13px; }
+.wl-page .wa-inline-search-btn { border-radius:8px;color:var(--wl-brand);border-color:#d5dcf4; }
+.wl-page .wa-success-panel { border-radius:12px; }
+@media(max-width:650px) { .wl-page .wl-center-card { padding:22px 16px;border-radius:15px; } .wl-page .wl-main-title { font-size:20px!important; } .wl-page .wl-top-tabs { width:100%; } .wl-page .wl-top-tab { padding:11px 8px;font-size:11px!important;flex:1; } .wl-page .wl-top-tab .tab-icon { display:none; } .wl-page .wa-activation-header { padding:0 0 20px; } }
+@media(prefers-reduced-motion:reduce) { .wl-page .wa-activation-item { transition:none; } }

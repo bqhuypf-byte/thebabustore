@@ -13,6 +13,11 @@ use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Livewire\Attributes\Url;
+use Livewire\Attributes\Locked;
+use App\Services\WarrantyService;
+use App\Models\WarrantyRequest;
+use Illuminate\Support\Facades\RateLimiter;
+use Illuminate\Validation\ValidationException;
 use Livewire\Component;
 
 class WarrantyLookup extends Component
@@ -33,6 +38,7 @@ class WarrantyLookup extends Component
 
     // ================= TAB 3: KÍCH HOẠT BẢO HÀNH =================
     public string $activateCode = '';
+    #[Locked]
     public ?int $activateOrderId = null;
     public ?int $activateVariantId = null;
     public string $activateFullName = '';
@@ -42,6 +48,16 @@ class WarrantyLookup extends Component
     public bool $activateSuccess = false;
     public ?string $activateSuccessCode = null;
     public bool $isAlreadyActivated = false;
+    #[Locked]
+    public string $activationToken = '';
+    #[Locked]
+    public string $activationLinkError = '';
+    #[Locked]
+    public string $verifiedPhone = '';
+    public array $selectedVariants = [];
+    public string $fallbackSearch = '';
+    public string $activateSerial = '';
+    public bool $fallbackSuccess = false;
 
     public function mount(?string $code = null): void
     {
@@ -80,11 +96,12 @@ class WarrantyLookup extends Component
             $this->orderSearchInput = $orderQ;
         }
 
+        $this->activationToken = (string) request()->query('token', '');
         // 4. Initial code for activation
         $actCode = trim((string) ($code ?: request()->query('code', request()->query('sku', ''))));
         if ($actCode !== '') {
             $this->activateCode = $actCode;
-            $this->lookupActivationCode($actCode);
+            if ($this->activationToken !== '') $this->lookupActivationCode($actCode);
         }
     }
 
@@ -123,6 +140,12 @@ class WarrantyLookup extends Component
     public static function getWarrantyStatus(OrderItem $item): array
     {
         $order = $item->order;
+        $activation = $order?->warrantyActivations->firstWhere('product_variant_id',$item->product_variant_id);
+        if ($activation) {
+            $end=$activation->expires_at->endOfDay(); $active=$end->isFuture();
+            return ['state'=>$active ? 'active':'expired','label'=>$active ? 'Đang bảo hành':'Hết hạn bảo hành','badge_class'=>$active ? 'status-active':'status-expired','end_formatted'=>$end->format('d/m/Y'),'days_left'=>max(0,(int)now()->diffInDays($end,false)),'order_code'=>$order->order_code];
+        }
+        if ($order?->order_source==='offline') return ['state'=>'pending','label'=>'Chưa kích hoạt','badge_class'=>'status-pending','end_formatted'=>null,'days_left'=>0,'order_code'=>$order->order_code];
         $notes = (string) ($order?->notes ?? '');
         $phone = trim((string) ($order?->address?->phone ?? ''));
         $fullName = trim((string) ($order?->address?->full_name ?? ''));
@@ -186,11 +209,11 @@ class WarrantyLookup extends Component
             return collect();
         }
 
-        return OrderItem::with(['order.address', 'product_variant.product'])
+        return OrderItem::with(['order.address', 'order.warrantyActivations', 'product_variant.product'])
             ->whereHas('order', fn ($o) => $o->where('status', '!=', 'cancelled'))
             ->where(function ($b) use ($q, $isPhone, $corePhone) {
                 if ($isPhone) {
-                    $b->whereHas('order.address', fn ($a) => $a->where('phone', 'like', '%' . $corePhone));
+                    $b->whereHas('order.address', fn ($a) => $a->where('phone', 'like', '%' . $corePhone))->orWhereHas('order.warrantyActivations', fn ($a)=>$a->where('customer_phone','like','%'.$corePhone));
                 } else {
                     $b->whereHas('order', fn ($o) => $o->where('order_code', $q))
                         ->orWhereHas('product_variant', fn ($v) => $v->where('sku', 'like', '%' . $q . '%'));
@@ -288,346 +311,69 @@ class WarrantyLookup extends Component
             ->get();
     }
 
-    // ---------- TAB 3 METHODS (WARRANTY ACTIVATION) ----------
-    public function updatedActivateCode(string $value): void
-    {
-        $this->resetErrorBag('activateLookup');
-        $clean = ltrim(trim($value), '#');
-        if ($clean === '') {
-            $this->activateOrderId = null;
-            $this->activateVariantId = null;
-            $this->isAlreadyActivated = false;
-            return;
-        }
-
-        if ($this->activateOrderId) {
-            $currentOrder = Order::find($this->activateOrderId);
-            if (!$currentOrder || strcasecmp((string) $currentOrder->order_code, $clean) !== 0) {
-                $this->activateOrderId = null;
-                $this->isAlreadyActivated = false;
-            }
-        }
+    // ---------- TAB 3: verified order activation and pending fallback ----------
+    public function updatedActivateCode(): void {
+        $this->activateOrderId = null; $this->verifiedPhone = ''; $this->selectedVariants = [];
+        $this->activateSuccess = false; $this->resetErrorBag('activateLookup');
     }
-
-    public function clearActivationSearch(): void
-    {
-        $this->activateCode = '';
-        $this->activateOrderId = null;
-        $this->activateVariantId = null;
-        $this->isAlreadyActivated = false;
-        $this->resetErrorBag('activateLookup');
+    public function openOrderActivation(string $code): void {
+        $this->resetActivation();
+        $this->activateCode=ltrim(trim($code),'#');
+        $this->setTab('activate');
     }
-
-    public function clearSelectedActivationVariant(): void
-    {
-        $this->activateVariantId = null;
-        $this->resetErrorBag('activateLookup');
+    public function searchActivationCode(): void {
+        $this->resetErrorBag(); $this->activateSuccess = false;
+        $this->lookupActivationCode($this->activateCode);
     }
-
-    public function changeOrderItemVariant(int $orderItemId, int $newVariantId): void
-    {
-        if (!$this->activateOrderId || $this->isAlreadyActivated) {
-            return;
-        }
-
-        $order = Order::with('items')->find($this->activateOrderId);
-        if (!$order || $this->isOrderAlreadyActivated($order)) {
-            return;
-        }
-
-        $item = $order->items->firstWhere('id', $orderItemId);
-        $newVariant = ProductVariant::with('product')->find($newVariantId);
-        if ($item && $newVariant) {
-            $unitPrice = (float) ($newVariant->price ?: ($newVariant->discount_price ?? $item->unit_amount));
-            $qty = max(1, (int) $item->quantity);
-            $item->update([
-                'product_variant_id' => $newVariant->id,
-                'unit_amount' => $unitPrice,
-                'total_amount' => $unitPrice * $qty,
-            ]);
-            $order->update([
-                'grand_total' => $order->items()->sum('total_amount'),
-            ]);
-        }
-    }
-
-    public function searchActivationCode(): void
-    {
-        $this->resetErrorBag();
-        $this->activateSuccess = false;
-        $input = trim($this->activateCode);
-        if ($input === '') {
-            $this->addError('activateLookup', 'Vui lòng nhập mã đơn hàng hoặc mã SKU.');
-            return;
-        }
-
-        $this->lookupActivationCode($input);
-    }
-
-    protected function lookupActivationCode(string $rawInput): void
-    {
-        $clean = ltrim(trim($rawInput), '#');
-        if ($clean === '') {
-            return;
-        }
-
-        $order = Order::with(['items.product_variant.product.variants', 'address'])
-            ->where('order_code', $clean)
-            ->first();
-
-        if ($order) {
-            $this->bindActivationOrder($order);
-            return;
-        }
-
-        $matchedVariants = ProductVariant::with(['product.variants'])
-            ->where(function ($q) use ($clean) {
-                $q->where('sku', 'like', '%' . $clean . '%')
-                    ->orWhere('name', 'like', '%' . $clean . '%')
-                    ->orWhereHas('product', fn ($pq) => $pq->where('name', 'like', '%' . $clean . '%'));
-            })
-            ->orderByRaw('CASE WHEN sku = ? THEN 0 WHEN sku LIKE ? THEN 1 ELSE 2 END', [$clean, $clean . '%'])
-            ->limit(20)
-            ->get();
-
-        if ($matchedVariants->isNotEmpty()) {
-            $first = $matchedVariants->first();
-            $this->activateOrderId = null;
-            $this->activateVariantId = $first->id;
-            $this->isAlreadyActivated = false;
-            return;
-        }
-
-        $this->addError('activateLookup', 'Không tìm thấy sản phẩm hoặc đơn hàng với mã "' . $clean . '".');
-    }
-
-    public function selectActivationVariant(int $variantId): void
-    {
-        $variant = ProductVariant::with('product')->find($variantId);
-        if ($variant) {
-            $this->activateVariantId = $variant->id;
-            $this->activateOrderId = null;
-            $this->isAlreadyActivated = false;
-            $this->resetErrorBag('activateLookup');
-        }
-    }
-
-    protected function bindActivationOrder(Order $order): void
-    {
-        $this->activateOrderId = $order->id;
-        $this->activateVariantId = null;
-        $this->activateCode = (string) $order->order_code;
-        $this->isAlreadyActivated = $this->isOrderAlreadyActivated($order);
-
-        if ($order->address) {
-            $name = trim((string) $order->address->full_name);
-            if ($name !== '' && !str_contains(mb_strtolower($name), 'chờ kích hoạt')) {
-                $this->activateFullName = $name;
-            }
-            $phone = trim((string) $order->address->phone);
-            if ($phone !== '' && !preg_match('/^0+$/', $phone)) {
-                $this->activatePhone = $phone;
-            } else {
-                $this->activatePhone = '';
-            }
-            $addr = trim((string) $order->address->detailed_address);
-            if ($addr !== '' && !str_contains(mb_strtolower($addr), 'chờ khách điền')) {
-                $this->activateAddress = $addr;
-            }
-        }
-    }
-
-    public function isOrderAlreadyActivated(?Order $order): bool
-    {
+    protected function lookupActivationCode(string $rawInput): void {
+        $this->activateOrderId = null; $this->selectedVariants = []; $this->verifiedPhone = '';
+        $key = 'warranty-order-lookup:'.request()->ip();
+        if (RateLimiter::tooManyAttempts($key, 20)) { $this->addError('activateLookup','Bạn đã tra cứu nhiều lần. Vui lòng thử lại sau một phút.'); return; }
+        RateLimiter::hit($key,60);
+        $order = Order::with(['items.product_variant.product','address'])->where('order_code',ltrim(trim($rawInput),'#'))->first();
         if (!$order) {
-            return false;
-        }
-
-        $notes = (string) ($order->notes ?? '');
-        $phone = trim((string) ($order->address?->phone ?? ''));
-        $fullName = trim((string) ($order->address?->full_name ?? ''));
-
-        $isAllZeroPhone = $phone === '' || preg_match('/^0+$/', $phone);
-        $isPlaceholderName = str_contains(mb_strtolower($fullName), 'chờ kích hoạt');
-        $isPlaceholderNote = str_contains($notes, 'Tạo link kích hoạt');
-
-        if (($isAllZeroPhone || $isPlaceholderName || $isPlaceholderNote) && !str_contains($notes, 'Đã kích hoạt')) {
-            return false;
-        }
-
-        if (str_contains($notes, 'Đã kích hoạt')) {
-            return true;
-        }
-
-        $hasFutureWarranty = false;
-        foreach ($order->items as $item) {
-            if ($item->warranty && Carbon::parse($item->warranty)->isFuture()) {
-                $hasFutureWarranty = true;
-                break;
-            }
-        }
-
-        return $hasFutureWarranty && !$isAllZeroPhone && strlen($phone) >= 9;
-    }
-
-    public function submitActivation(): void
-    {
-        $this->validate([
-            'activateFullName' => ['required', 'string', 'min:2', 'max:120'],
-            'activatePhone' => [
-                'required',
-                'string',
-                function ($attribute, $value, $fail) {
-                    $digits = preg_replace('/\D+/', '', (string) $value);
-                    if (strlen($digits) < 9 || strlen($digits) > 11) {
-                        $fail('Số điện thoại phải từ 9 đến 11 chữ số.');
-                        return;
-                    }
-                    if (preg_match('/^0+$/', $digits) || preg_match('/^(\d)\1{7,}$/', $digits)) {
-                        $fail('Vui lòng nhập số điện thoại thực tế.');
-                        return;
-                    }
-                    $normalized = preg_replace('/[\s.-]/', '', (string) $value);
-                    if (!preg_match('/^(0|\+?84)(3|5|7|8|9)[0-9]{8}$/', $normalized) && !preg_match('/^0[1-9][0-9]{8,9}$/', $digits)) {
-                        $fail('Số điện thoại không đúng định dạng di động Việt Nam (VD: 0912345678).');
-                    }
-                },
-            ],
-            'activateAddress' => ['nullable', 'string', 'max:255'],
-            'activateNotes' => ['nullable', 'string', 'max:500'],
-        ], [
-            'activateFullName.required' => 'Vui lòng nhập họ và tên của bạn.',
-            'activateFullName.min' => 'Họ và tên cần ít nhất 2 ký tự.',
-            'activatePhone.required' => 'Vui lòng nhập số điện thoại để kích hoạt bảo hành.',
-        ]);
-
-        $cleanPhone = preg_replace('/[\s.-]+/', '', trim($this->activatePhone));
-        $cleanName = trim($this->activateFullName);
-        $cleanAddress = trim($this->activateAddress) !== '' ? trim($this->activateAddress) : 'Kích hoạt bảo hành điện tử';
-
-        if ($this->activateOrderId) {
-            $order = Order::with(['items.product_variant', 'address'])->find($this->activateOrderId);
-            if (!$order) {
-                $this->addError('activateLookup', 'Đơn hàng không tồn tại.');
-                return;
-            }
-
-            DB::transaction(function () use ($order, $cleanName, $cleanPhone, $cleanAddress) {
-                Address::updateOrCreate(
-                    ['order_id' => $order->id],
-                    [
-                        'full_name' => $cleanName,
-                        'phone' => $cleanPhone,
-                        'province' => $order->address?->province ?: '',
-                        'district' => $order->address?->district ?: '',
-                        'ward' => $order->address?->ward ?: '',
-                        'detailed_address' => $cleanAddress,
-                    ]
-                );
-
-                foreach ($order->items as $item) {
-                    $variant = $item->product_variant;
-                    $wDays = (int) ($variant?->warranty_days ?: 365);
-                    if ($wDays <= 0) $wDays = 365;
-
-                    $currW = $item->warranty ? Carbon::parse($item->warranty) : null;
-                    $created = $order->created_at ? Carbon::parse($order->created_at) : now();
-
-                    if (!$currW || $currW->lessThanOrEqualTo($created->copy()->addDay())) {
-                        $item->update(['warranty' => now()->addDays($wDays)]);
-                    }
-                }
-
-                $noteAppend = 'Đã kích hoạt BH bởi ' . $cleanName . ' (' . $cleanPhone . ') lúc ' . now()->format('H:i d/m/Y');
-                if (trim($this->activateNotes) !== '') {
-                    $noteAppend .= ' | Ghi chú: ' . trim($this->activateNotes);
-                }
-
-                $order->update([
-                    'status' => $order->status === 'new' ? 'delivered' : $order->status,
-                    'notes' => trim(($order->notes ? $order->notes . "\n" : '') . $noteAppend),
-                ]);
-            });
-
-            $this->activateSuccess = true;
-            $this->activateSuccessCode = $order->order_code;
-            $this->isAlreadyActivated = true;
+            if ($this->activationToken !== '') $this->activationLinkError='Link kích hoạt không hợp lệ hoặc đã hết hạn. Vui lòng liên hệ cửa hàng để nhận link mới.';
+            $this->addError('activateLookup', $this->activationToken !== '' ? 'Link kích hoạt không hợp lệ hoặc đã hết hạn. Vui lòng liên hệ cửa hàng để nhận link mới.' : 'Không tìm thấy đơn hàng hoặc số điện thoại chưa khớp.');
             return;
         }
-
-        if ($this->activateVariantId) {
-            $variant = ProductVariant::with('product')->find($this->activateVariantId);
-            if (!$variant) {
-                $this->addError('activateLookup', 'Không tìm thấy sản phẩm.');
-                return;
-            }
-
-            $order = DB::transaction(function () use ($variant, $cleanName, $cleanPhone, $cleanAddress) {
-                $fallbackUserId = Auth::id() ?: (User::query()->value('id') ?: 1);
-                $orderCode = 'BH' . now()->format('ymdHis') . random_int(10, 99);
-                $unitPrice = (float) ($variant->price ?: ($variant->discount_price ?? 0));
-                $costPrice = (float) ($variant->discount_price ?? 0);
-                $profit = $costPrice > 0 ? ($unitPrice - $costPrice) : 0;
-                $wDays = (int) ($variant->warranty_days ?: 365);
-                if ($wDays <= 0) $wDays = 365;
-
-                $newOrder = Order::create([
-                    'user_id' => $fallbackUserId,
-                    'order_code' => $orderCode,
-                    'grand_total' => $unitPrice,
-                    'payment_method' => 'cod',
-                    'payment_status' => 'paid',
-                    'status' => 'delivered',
-                    'currency' => 'VND',
-                    'shipping_amount' => 0,
-                    'shipping_method' => 'in_store_pickup',
-                    'profit_loss' => $profit,
-                    'deposit_amount' => 0,
-                    'deposit_status' => 'paid',
-                    'notes' => 'Kích hoạt bảo hành qua SKU [' . $variant->sku . '] lúc ' . now()->format('H:i d/m/Y')
-                        . (trim($this->activateNotes) !== '' ? ' | Ghi chú: ' . trim($this->activateNotes) : ''),
-                ]);
-
-                Address::create([
-                    'order_id' => $newOrder->id,
-                    'full_name' => $cleanName,
-                    'phone' => $cleanPhone,
-                    'province' => '',
-                    'district' => '',
-                    'ward' => '',
-                    'detailed_address' => $cleanAddress,
-                ]);
-
-                OrderItem::create([
-                    'order_id' => $newOrder->id,
-                    'product_variant_id' => $variant->id,
-                    'quantity' => 1,
-                    'unit_amount' => $unitPrice,
-                    'total_amount' => $unitPrice,
-                    'profit_loss' => $profit,
-                    'warranty' => now()->addDays($wDays),
-                ]);
-
-                return $newOrder;
-            });
-
-            $this->activateOrderId = $order->id;
-            $this->activateVariantId = null;
-            $this->activateCode = $order->order_code;
-            $this->activateSuccess = true;
-            $this->activateSuccessCode = $order->order_code;
-            $this->isAlreadyActivated = true;
+        try { app(WarrantyService::class)->authorizeCustomer($order,$this->activationToken,$this->activatePhone); }
+        catch (ValidationException $e) { if ($this->activationToken !== '') $this->activationLinkError=$e->errors()['activateLookup'][0] ?? $e->getMessage(); foreach ($e->errors() as $field=>$messages) $this->addError($field,$messages[0]); return; }
+        $this->activateOrderId=$order->id;
+        $this->activateCode=$order->order_code;
+        $this->verifiedPhone=WarrantyService::phone((string)$order->address?->phone);
+        if ($this->activationToken !== '') {
+            $this->activateFullName=(string)$order->address?->full_name;
+            $this->activatePhone=(string)$order->address?->phone;
+        }
+        $this->selectedVariants=$order->items->pluck('product_variant_id')->filter()->unique()->values()->all();
+    }
+    public function selectActivationVariant(int $variantId): void {
+        if (ProductVariant::find($variantId)) {
+            $this->activateVariantId=$variantId; $this->fallbackSuccess=false; $this->resetErrorBag();
         }
     }
-
-    public function resetActivation(): void
-    {
-        $this->activateOrderId = null;
-        $this->activateVariantId = null;
-        $this->activateCode = '';
-        $this->activateSuccess = false;
-        $this->activateSuccessCode = null;
-        $this->isAlreadyActivated = false;
+    public function submitActivation(): void {
+        $this->validate(['activateFullName'=>'required|string|min:2|max:120','activatePhone'=>WarrantyService::phoneRules(),'activateSerial'=>'nullable|string|max:255','selectedVariants'=>'required|array|min:1','selectedVariants.*'=>'integer']);
+        $order=$this->activateOrderId ? Order::find($this->activateOrderId) : null;
+        if (!$order) { $this->addError('activateLookup','Tra cứu và xác nhận đơn hàng trước khi kích hoạt.'); return; }
+        try {
+            app(WarrantyService::class)->activate($order,$this->selectedVariants,$this->activateFullName,$this->activatePhone,$this->activateSerial,'customer',null,$this->activationToken);
+            $this->activateSuccess=true; $this->activateSuccessCode=$order->order_code;
+        } catch (ValidationException $e) { foreach ($e->errors() as $field=>$messages) $this->addError($field,$messages[0]); }
+    }
+    public function submitFallback(): void {
+        $this->validate(['activateVariantId'=>'required|integer|exists:product_variants,id','activateFullName'=>'required|string|min:2|max:120','activatePhone'=>WarrantyService::phoneRules(),'activateSerial'=>'nullable|string|max:255','activateNotes'=>'nullable|string|max:500']);
+        $key='warranty-request:'.request()->ip();
+        if (RateLimiter::tooManyAttempts($key,5)) { $this->addError('fallback','Bạn đã gửi nhiều yêu cầu. Vui lòng liên hệ cửa hàng hoặc thử lại sau.'); return; }
+        RateLimiter::hit($key,3600);
+        WarrantyRequest::firstOrCreate(['product_variant_id'=>$this->activateVariantId,'customer_phone'=>WarrantyService::phone($this->activatePhone),'status'=>'pending'],['customer_name'=>trim($this->activateFullName),'serial'=>$this->activateSerial,'notes'=>$this->activateNotes]);
+        $this->fallbackSuccess=true;
+    }
+    public function resetActivation(): void {
+        $this->activateOrderId=null; $this->activateVariantId=null; $this->activateCode='';
+        $this->activationToken=''; $this->activationLinkError=''; $this->verifiedPhone=''; $this->selectedVariants=[];
+        $this->activateSuccess=false; $this->fallbackSuccess=false;
+        $this->activateFullName=''; $this->activatePhone=''; $this->activateSerial=''; $this->activateNotes='';
         $this->resetErrorBag();
     }
 
@@ -651,40 +397,15 @@ class WarrantyLookup extends Component
             ? $allOrders
             : $allOrders->filter(fn (Order $o) => self::normalizeStatusGroup($o->status) === $this->orderStatusFilter)->values();
 
-        // 3. Warranty Activation Data
-        $activateOrder = $this->activateOrderId
-            ? Order::with(['items.product_variant.product.variants', 'address'])->find($this->activateOrderId)
-            : null;
-
-        $activateVariant = (!$activateOrder && $this->activateVariantId)
-            ? ProductVariant::with(['product.variants'])->find($this->activateVariantId)
-            : null;
-
-        if (!$activateOrder) {
-            $term = ltrim(trim($this->activateCode), '#');
-            if ($term !== '') {
-                $matchingVariants = ProductVariant::with(['product.variants'])
-                    ->where(function ($sub) use ($term) {
-                        $sub->where('sku', 'like', '%' . $term . '%')
-                            ->orWhere('name', 'like', '%' . $term . '%')
-                            ->orWhereHas('product', fn ($pq) => $pq->where('name', 'like', '%' . $term . '%'));
-                    })
-                    ->orderByRaw('CASE WHEN sku = ? THEN 0 WHEN sku LIKE ? THEN 1 ELSE 2 END', [$term, $term . '%'])
-                    ->limit(16)
-                    ->get();
-            } else {
-                $matchingVariants = ProductVariant::with(['product.variants'])
-                    ->where('stock', 'in_stock')
-                    ->latest('id')
-                    ->limit(40)
-                    ->get()
-                    ->unique('product_id')
-                    ->take(10)
-                    ->values();
-            }
-        } else {
-            $matchingVariants = collect();
+        // Only verified orders are rendered, including after a Livewire update.
+        $activateOrder = $this->activateOrderId ? Order::with(['items.product_variant.product','address','warrantyActivations'])->find($this->activateOrderId) : null;
+        if ($activateOrder) {
+            try { app(WarrantyService::class)->authorizeCustomer($activateOrder,$this->activationToken,$this->verifiedPhone); }
+            catch (ValidationException $e) { if ($this->activationToken !== '') $this->activationLinkError=$e->errors()['activateLookup'][0] ?? $e->getMessage(); $activateOrder=null; $this->activateOrderId=null; foreach ($e->errors() as $field=>$messages) $this->addError($field,$messages[0]); }
         }
+        $activateVariant = $this->activateVariantId ? ProductVariant::with('product')->find($this->activateVariantId) : null;
+        $term=trim($this->fallbackSearch);
+        $matchingVariants = mb_strlen($term)>=2 ? ProductVariant::with('product')->whereHas('product',fn ($q)=>$q->where('name','like','%'.$term.'%'))->limit(12)->get() : collect();
 
         return view('livewire.warranty-lookup', [
             'settings' => $settings,

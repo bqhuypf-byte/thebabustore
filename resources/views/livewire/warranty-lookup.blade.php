@@ -1,17 +1,9 @@
 <div class="wl-page">
-    <head>
-        <title>
-            @if ($activeTab === 'orders')
-                Tra Cứu Tiến Trình Đơn Hàng | The BABU Store
-            @elseif ($activeTab === 'activate')
-                Kích Hoạt Bảo Hành Điện Tử Chính Hãng | The BABU Store
-            @else
-                Tra Cứu Tình Trạng Bảo Hành Sản Phẩm | The BABU Store
-            @endif
-        </title>
-    </head>
+    @php $warrantyPageTitle = match($activeTab) { 'orders' => 'Tra Cứu Tiến Trình Đơn Hàng', 'activate' => 'Kích Hoạt Bảo Hành Điện Tử', default => 'Tra Cứu Tình Trạng Bảo Hành' }; @endphp
+    <title>{{ $warrantyPageTitle }} | The BABU Store</title>
     @livewire('inc.header')
 
+    <link rel="stylesheet" href="{{ asset('css/warranty-workflow.css') }}?v={{ filemtime(public_path('css/warranty-workflow.css')) }}">
     <main class="wl-container">
         {{-- BREADCRUMB --}}
         <nav class="wl-breadcrumb" aria-label="Breadcrumb">
@@ -260,7 +252,7 @@
                 @else
                     <div style="margin-top: 24px; padding: 24px; background: #f8fafc; border: 1px dashed #cbd5e1; border-radius: 12px; text-align: center;">
                         <p style="margin: 0 0 6px; font-size: 14.5px !important; font-weight: 700 !important; color: #0f172a;">Nhập Số điện thoại hoặc Mã đơn hàng để kiểm tra thông tin bảo hành</p>
-                        <span style="font-size: 13px !important; color: #64748b;">Hoặc <a href="/account/login" style="color: #d70018; font-weight: 700; text-decoration: underline;">Đăng nhập tài khoản</a> để quản lý tự động toàn bộ sản phẩm bạn sở hữu.</span>
+                        <span style="font-size: 13px !important; color: #64748b;">Hoặc <a href="/account/login" style="color: var(--wl-brand); font-weight: 700; text-decoration: underline;">Đăng nhập tài khoản</a> để quản lý tự động toàn bộ sản phẩm bạn sở hữu.</span>
                     </div>
                 @endif
             </section>
@@ -407,7 +399,7 @@
                                                             </div>
                                                         @elseif ($order->status === 'delivered' || $order->status === 'completed' || str_starts_with($order->order_code, 'BH'))
                                                             <div style="margin-top: 4px;">
-                                                                <button type="button" wire:click="setTab('activate'); lookupActivationCode('{{ $order->order_code }}');" style="display: inline-flex; align-items: center; gap: 4px; padding: 2px 8px; border-radius: 4px; background: #fee2e2; color: #dc2626; border: 1px solid #fecaca; font-size: 11.5px; font-weight: 700; cursor: pointer;">
+                                                                <button type="button" wire:click="openOrderActivation('{{ $order->order_code }}')" style="display: inline-flex; align-items: center; gap: 4px; padding: 2px 8px; border-radius: 4px; background: #fee2e2; color: #dc2626; border: 1px solid #fecaca; font-size: 11.5px; font-weight: 700; cursor: pointer;">
                                                                     ⚡ Kích hoạt bảo hành ngay →
                                                                 </button>
                                                             </div>
@@ -441,423 +433,14 @@
                 @else
                     <div style="margin-top: 24px; padding: 24px; background: #f8fafc; border: 1px dashed #cbd5e1; border-radius: 12px; text-align: center;">
                         <p style="margin: 0 0 6px; font-size: 14.5px !important; font-weight: 700 !important; color: #0f172a;">Nhập Mã đơn hàng hoặc Số điện thoại để theo dõi đơn hàng</p>
-                        <span style="font-size: 13px !important; color: #64748b;">Hoặc <a href="/account/login" style="color: #d70018; font-weight: 700; text-decoration: underline;">Đăng nhập tài khoản</a> để xem toàn bộ lịch sử đơn hàng của bạn.</span>
+                        <span style="font-size: 13px !important; color: #64748b;">Hoặc <a href="/account/login" style="color: var(--wl-brand); font-weight: 700; text-decoration: underline;">Đăng nhập tài khoản</a> để xem toàn bộ lịch sử đơn hàng của bạn.</span>
                     </div>
                 @endif
             </section>
 
         {{-- ================= TAB 3: KÍCH HOẠT BẢO HÀNH ================= --}}
         @elseif ($activeTab === 'activate')
-            <section class="wl-center-card" style="text-align: left;">
-                <div style="text-align: center; margin-bottom: 24px;">
-                    <h1 class="wl-main-title">KÍCH HOẠT BẢO HÀNH ĐIỆN TỬ</h1>
-                    <p class="wl-main-sub" style="margin-bottom: 0;">
-                        Nhập mã đơn hàng (#WEB..., #BH...) hoặc mã SKU sản phẩm để kích hoạt bảo hành chính hãng tại The BABU Store.
-                    </p>
-                </div>
-
-                @if ($activateSuccess && $activateOrder)
-                    {{-- MÀN HÌNH XÁC NHẬN KÍCH HOẠT THÀNH CÔNG --}}
-                    <div class="wa-success-panel">
-                        <div class="wa-success-header">
-                            <div class="wa-success-badge-icon">
-                                <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="#16a34a" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                                    <polyline points="20 6 9 17 4 12"/>
-                                </svg>
-                            </div>
-                            <div>
-                                <h2 style="margin: 0 0 4px; font-size: 18px !important; font-weight: 700 !important; color: #0f172a;">Kích Hoạt Bảo Hành Thành Công</h2>
-                                <p style="margin: 0; font-size: 13.5px !important; color: #475569;">Sản phẩm đã được lưu vào hệ thống bảo hành chính hãng theo số điện thoại <b>{{ $activateOrder->address?->phone }}</b>.</p>
-                            </div>
-                        </div>
-
-                        <div class="wa-info-cards-grid">
-                            <div class="wa-info-card">
-                                <span class="info-label">MÃ ĐƠN HÀNG</span>
-                                <strong class="info-val code">#{{ $activateOrder->order_code }}</strong>
-                            </div>
-                            <div class="wa-info-card">
-                                <span class="info-label">KHÁCH HÀNG</span>
-                                <strong class="info-val">{{ $activateOrder->address?->full_name }}</strong>
-                            </div>
-                            <div class="wa-info-card">
-                                <span class="info-label">SỐ ĐIỆN THOẠI</span>
-                                <strong class="info-val code">{{ $activateOrder->address?->phone }}</strong>
-                            </div>
-                            <div class="wa-info-card">
-                                <span class="info-label">TRẠNG THÁI</span>
-                                <strong class="info-val" style="color: #16a34a;">Đang có hiệu lực</strong>
-                            </div>
-                        </div>
-
-                        <div style="display: flex; gap: 10px; margin-top: 20px;">
-                            <button type="button" class="wl-search-submit-btn" wire:click="setTab('warranty'); $set('searchInput', '{{ $activateOrder->address?->phone }}'); checkWarranty()">
-                                <span>Tra cứu bảo hành của tôi</span>
-                            </button>
-                            <button type="button" class="wl-top-tab" wire:click="resetActivation">
-                                <span>Kích hoạt sản phẩm khác</span>
-                            </button>
-                        </div>
-                    </div>
-                @else
-                    {{-- 2 CỘT KÍCH HOẠT --}}
-                    <div class="wa-two-col-layout">
-                        {{-- CỘT 1: CHỌN SẢN PHẨM / ĐƠN HÀNG --}}
-                        <div class="wa-form-col">
-                            <div class="wa-step-header">
-                                <span class="wa-step-badge">1</span>
-                                <div>
-                                    <h2 style="margin: 0 0 4px; font-size: 16px !important; font-weight: 700 !important; color: #0f172a;">Chọn Sản Phẩm / Mã Đơn</h2>
-                                    <p style="margin: 0; font-size: 12.5px !important; color: #64748b;">Nhập tên sản phẩm, Mã SKU (A5D9939...) hoặc Mã đơn (#WEB..., #BH...).</p>
-                                </div>
-                            </div>
-
-                            <form wire:submit.prevent="searchActivationCode" class="wa-search-inline-form">
-                                <div class="wa-inline-search-box">
-                                    <svg class="wa-search-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
-                                        <circle cx="11" cy="11" r="8"/>
-                                        <path d="m21 21-4.3-4.3"/>
-                                    </svg>
-                                    <input
-                                        type="text"
-                                        wire:model.live.debounce.300ms="activateCode"
-                                        placeholder="Gõ tên sản phẩm (VD: nut75), mã đơn hoặc mã SKU..."
-                                        autocomplete="off"
-                                    >
-                                    @if (trim($activateCode) !== '')
-                                        <button type="button" class="wa-inline-clear-btn" wire:click="clearActivationSearch" title="Xóa tìm kiếm">×</button>
-                                    @endif
-                                </div>
-                                <button type="submit" class="wa-inline-search-btn">Tìm mã</button>
-                            </form>
-
-                            @error('activateLookup')
-                                <div class="wa-alert-warning">{{ $message }}</div>
-                            @enderror
-
-                            @if ($activateOrder)
-                                <div class="wa-selected-order-box">
-                                    <div class="order-code-row">
-                                        <div>
-                                            <span class="label">Đơn hàng:</span>
-                                            <strong class="code">#{{ $activateOrder->order_code }}</strong>
-                                        </div>
-                                        <div style="display: flex; align-items: center; gap: 10px;">
-                                            <span class="date">{{ optional($activateOrder->created_at)->format('d/m/Y H:i') }}</span>
-                                            <button type="button" class="wa-change-product-btn" wire:click="clearActivationSearch">Đổi mã khác</button>
-                                        </div>
-                                    </div>
-
-                                    @foreach ($activateOrder->items as $item)
-                                        @php
-                                            $v = $item->product_variant;
-                                            $p = $v?->product;
-                                            $thumb = $v?->image ?: (($p?->images ?: [])[0] ?? null);
-                                            $wDays = (int) ($v?->warranty_days ?: 365);
-                                            if ($wDays <= 0) $wDays = 365;
-                                            $orderSiblingVariants = $p?->variants ?? collect();
-                                        @endphp
-                                        <div class="wa-item-pill is-active">
-                                            <div class="wa-thumb-box small">
-                                                @if ($thumb)
-                                                    <img src="{{ asset('storage/' . ltrim($thumb, '/')) }}" alt="">
-                                                @else
-                                                    <span class="wa-thumb-fallback">BABU</span>
-                                                @endif
-                                            </div>
-                                            <div class="wa-item-details">
-                                                <h4 style="margin: 0 0 4px; font-size: 13.5px !important; font-weight: 600 !important; color: #0f172a;">{{ $p?->name ?? 'Sản phẩm' }}</h4>
-                                                <div class="wa-tags-row">
-                                                    <span class="wa-tag sku">SKU: {{ $v?->sku }}</span>
-                                                    @if ($v?->name)<span class="wa-tag variant">Phân loại: {{ $v->name }}</span>@endif
-                                                    <span class="wa-tag warranty">BH {{ $wDays === 365 ? '12 tháng' : $wDays . ' ngày' }}</span>
-                                                </div>
-                                            </div>
-                                        </div>
-
-                                        @if (!$isAlreadyActivated && $orderSiblingVariants->count() > 1)
-                                            <div class="wa-variant-picker-wrap">
-                                                <div class="wa-variant-picker-label">
-                                                    Chọn đúng phân loại / màu sắc bạn đã đặt ({{ $orderSiblingVariants->count() }} phân loại):
-                                                </div>
-                                                <div class="wa-variant-chips-grid">
-                                                    @foreach ($orderSiblingVariants as $sib)
-                                                        @php
-                                                            $isCurrSib = $v && $sib->id === $v->id;
-                                                            $sibThumb = $sib->image ?: (($p?->images ?: [])[0] ?? null);
-                                                        @endphp
-                                                        <button
-                                                            type="button"
-                                                            wire:click="changeOrderItemVariant({{ $item->id }}, {{ $sib->id }})"
-                                                            class="wa-variant-chip {{ $isCurrSib ? 'is-selected' : '' }}"
-                                                        >
-                                                            @if ($sibThumb)
-                                                                <span class="chip-thumb">
-                                                                    <img src="{{ asset('storage/' . ltrim($sibThumb, '/')) }}" alt="">
-                                                                </span>
-                                                            @endif
-                                                            <span class="chip-info">
-                                                                <span class="chip-name">{{ $sib->name ?: 'Mặc định' }}</span>
-                                                                <span class="chip-sku">SKU: {{ $sib->sku }}</span>
-                                                            </span>
-                                                            @if ($isCurrSib)
-                                                                <span class="chip-check">✓</span>
-                                                            @endif
-                                                        </button>
-                                                    @endforeach
-                                                </div>
-                                            </div>
-                                        @endif
-                                    @endforeach
-                                </div>
-                            @else
-                                @if ($activateVariant)
-                                    @php
-                                        $p = $activateVariant->product;
-                                        $thumb = $activateVariant->image ?: (($p?->images ?: [])[0] ?? null);
-                                        $wDays = (int) ($activateVariant->warranty_days ?: 365);
-                                        if ($wDays <= 0) $wDays = 365;
-                                        $siblingVariants = $p?->variants ?? collect();
-                                    @endphp
-                                    <div class="wa-selected-product-box">
-                                        <div class="wa-selected-product-head">
-                                            <span class="head-status">
-                                                <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="#16a34a" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                                                    <polyline points="20 6 9 17 4 12"/>
-                                                </svg>
-                                                Sản phẩm đang chọn kích hoạt
-                                            </span>
-                                            <button type="button" class="wa-change-product-btn" wire:click="clearSelectedActivationVariant">
-                                                Đổi sản phẩm khác
-                                            </button>
-                                        </div>
-
-                                        <div class="wa-item-pill is-active">
-                                            <div class="wa-thumb-box small">
-                                                @if ($thumb)<img src="{{ asset('storage/' . ltrim($thumb, '/')) }}" alt="">@else<span class="wa-thumb-fallback">BABU</span>@endif
-                                            </div>
-                                            <div class="wa-item-details">
-                                                <h4 style="margin: 0 0 4px; font-size: 13.5px !important; font-weight: 600 !important; color: #0f172a;">{{ $p?->name ?? 'Sản phẩm' }}</h4>
-                                                <div class="wa-tags-row">
-                                                    <span class="wa-tag sku">SKU: {{ $activateVariant->sku }}</span>
-                                                    @if ($activateVariant->name)<span class="wa-tag variant">Phân loại: {{ $activateVariant->name }}</span>@endif
-                                                    <span class="wa-tag warranty">BH {{ $wDays === 365 ? '12 tháng' : $wDays . ' ngày' }}</span>
-                                                </div>
-                                            </div>
-                                        </div>
-
-                                        @if ($siblingVariants->count() > 1)
-                                            <div class="wa-variant-picker-wrap">
-                                                <div class="wa-variant-picker-label">
-                                                    Chọn đúng phân loại / màu sắc bạn đã đặt ({{ $siblingVariants->count() }} phân loại):
-                                                </div>
-                                                <div class="wa-variant-chips-grid">
-                                                    @foreach ($siblingVariants as $sib)
-                                                        @php
-                                                            $isCurrSib = $sib->id === $activateVariant->id;
-                                                            $sibThumb = $sib->image ?: (($p?->images ?: [])[0] ?? null);
-                                                        @endphp
-                                                        <button
-                                                            type="button"
-                                                            wire:click="selectActivationVariant({{ $sib->id }})"
-                                                            class="wa-variant-chip {{ $isCurrSib ? 'is-selected' : '' }}"
-                                                        >
-                                                            @if ($sibThumb)
-                                                                <span class="chip-thumb">
-                                                                    <img src="{{ asset('storage/' . ltrim($sibThumb, '/')) }}" alt="">
-                                                                </span>
-                                                            @endif
-                                                            <span class="chip-info">
-                                                                <span class="chip-name">{{ $sib->name ?: 'Mặc định' }}</span>
-                                                                <span class="chip-sku">SKU: {{ $sib->sku }}</span>
-                                                            </span>
-                                                            @if ($isCurrSib)
-                                                                <span class="chip-check">✓</span>
-                                                            @endif
-                                                        </button>
-                                                    @endforeach
-                                                </div>
-                                            </div>
-                                        @endif
-                                    </div>
-                                @endif
-
-                                @if ($matchingVariants->isNotEmpty())
-                                    <div style="font-size: 12.5px !important; font-weight: 600 !important; color: #475569; margin-bottom: 8px; margin-top: {{ $activateVariant ? '14px' : '0' }};">
-                                        {{ trim($activateCode) !== '' ? 'Kết quả tìm kiếm sản phẩm (bấm để chọn):' : 'Gợi ý sản phẩm phổ biến (bấm để chọn):' }}
-                                    </div>
-                                    <div class="wa-variants-list-scroll">
-                                        @foreach ($matchingVariants as $mv)
-                                            @php
-                                                $mp = $mv->product;
-                                                $mThumb = $mv->image ?: (($mp?->images ?: [])[0] ?? null);
-                                                $variantCount = $mp?->variants?->count() ?? 1;
-                                                $isRowSelected = $activateVariant && $activateVariant->id === $mv->id;
-                                            @endphp
-                                            <button type="button" wire:click="selectActivationVariant({{ $mv->id }})" class="wa-variant-select-item {{ $isRowSelected ? 'is-selected' : '' }}">
-                                                <div class="wa-thumb-box small">
-                                                    @if ($mThumb)<img src="{{ asset('storage/' . ltrim($mThumb, '/')) }}" alt="">@else<span class="wa-thumb-fallback">BABU</span>@endif
-                                                </div>
-                                                <div class="wa-item-details" style="text-align: left;">
-                                                    <h4 style="margin: 0 0 4px; font-size: 13.5px !important; font-weight: 600 !important; color: #0f172a;">{{ $mp?->name }}</h4>
-                                                    <div class="wa-tags-row">
-                                                        <span class="wa-tag sku">{{ $mv->sku }}</span>
-                                                        @if ($mv->name)<span class="wa-tag variant">{{ $mv->name }}</span>@endif
-                                                        @if (trim($activateCode) === '' && $variantCount > 1)
-                                                            <span class="wa-tag count">+{{ $variantCount }} phân loại</span>
-                                                        @endif
-                                                    </div>
-                                                </div>
-                                                <div class="wa-pick-indicator">
-                                                    <span class="{{ $isRowSelected ? 'picked' : 'unpicked' }}">
-                                                        {{ $isRowSelected ? 'Đã chọn ✓' : 'Chọn' }}
-                                                    </span>
-                                                </div>
-                                            </button>
-                                        @endforeach
-                                    </div>
-                                @endif
-                            @endif
-                        </div>
-
-                        {{-- CỘT 2: NẾU ĐÃ KÍCH HOẠT -> KHÔNG HIỆN Ô KÍCH HOẠT NỮA --}}
-                        @if ($isAlreadyActivated && $activateOrder)
-                            <div class="wa-form-col wa-already-active-col">
-                                <div class="wa-active-badge-card">
-                                    <div class="wa-active-icon-circle">
-                                        <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="#16a34a" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                                            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
-                                            <polyline points="9 12 11 14 15 10"/>
-                                        </svg>
-                                    </div>
-                                    <h3 style="margin: 0 0 6px; font-size: 17px !important; font-weight: 700 !important; color: #0f172a;">Sản Phẩm Đã Được Kích Hoạt</h3>
-                                    <p class="wa-active-badge-desc">
-                                        Đơn hàng này đã hoàn tất kích hoạt bảo hành điện tử chính hãng trên hệ thống. Bạn không cần phải kích hoạt lại.
-                                    </p>
-                                </div>
-
-                                <div class="wa-active-details-list">
-                                    <div class="wa-active-detail-row">
-                                        <span class="label">Trạng thái:</span>
-                                        <span class="val-badge active">
-                                            <span class="badge-dot"></span>
-                                            <span>Đang có hiệu lực</span>
-                                        </span>
-                                    </div>
-                                    <div class="wa-active-detail-row">
-                                        <span class="label">Khách hàng:</span>
-                                        <strong class="val">{{ $activateOrder->address?->full_name }}</strong>
-                                    </div>
-                                    <div class="wa-active-detail-row">
-                                        <span class="label">SĐT tra cứu:</span>
-                                        <strong class="val code">{{ strlen($activateOrder->address?->phone ?? '') > 6 ? substr($activateOrder->address->phone, 0, 3) . '***' . substr($activateOrder->address->phone, -3) : $activateOrder->address?->phone }}</strong>
-                                    </div>
-                                    <div class="wa-active-detail-row">
-                                        <span class="label">Mã đơn / Mã BH:</span>
-                                        <code class="val code">#{{ $activateOrder->order_code }}</code>
-                                    </div>
-                                    @php
-                                        $fItem = $activateOrder->items->first();
-                                        $fW = $fItem?->warranty ? \Illuminate\Support\Carbon::parse($fItem->warranty) : null;
-                                        $dLeft = $fW ? max(0, (int) now()->diffInDays($fW, false)) : 0;
-                                    @endphp
-                                    @if ($fW)
-                                        <div class="wa-active-detail-row">
-                                            <span class="label">Hạn bảo hành:</span>
-                                            <strong class="val" style="color: #16a34a;">Hạn đến {{ $fW->format('d/m/Y') }} (Còn {{ $dLeft }} ngày)</strong>
-                                        </div>
-                                    @endif
-                                </div>
-
-                                <div class="wa-already-actions">
-                                    <button
-                                        type="button"
-                                        class="wl-search-submit-btn"
-                                        style="width: 100%; justify-content: center;"
-                                        wire:click="setTab('warranty'); $set('searchInput', '{{ $activateOrder->order_code }}'); checkWarranty()"
-                                    >
-                                        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
-                                            <circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/>
-                                        </svg>
-                                        <span>Tra cứu chi tiết bảo hành</span>
-                                    </button>
-                                    <button
-                                        type="button"
-                                        class="wl-top-tab"
-                                        style="width: 100%; justify-content: center; margin-top: 8px; border: 1px solid #cbd5e1;"
-                                        wire:click="resetActivation"
-                                    >
-                                        <span>Kích hoạt sản phẩm khác</span>
-                                    </button>
-                                </div>
-                            </div>
-                        @else
-                            {{-- CỘT 2: FORM THÔNG TIN KHÁCH HÀNG (CHỈ HIỆN KHI CHƯA KÍCH HOẠT) --}}
-                            <div class="wa-form-col">
-                                <div class="wa-step-header">
-                                    <span class="wa-step-badge">2</span>
-                                    <div>
-                                        <h2 style="margin: 0 0 4px; font-size: 16px !important; font-weight: 700 !important; color: #0f172a;">Thông Tin Khách Hàng</h2>
-                                        <p style="margin: 0; font-size: 12.5px !important; color: #64748b;">Điền họ tên và số điện thoại của bạn để kích hoạt bảo hành.</p>
-                                    </div>
-                                </div>
-
-                                <form wire:submit.prevent="submitActivation" class="wa-fields-form">
-                                    <div class="wa-field-group">
-                                        <label for="act-name">Họ và tên khách hàng <span class="req">*</span></label>
-                                        <input
-                                            id="act-name"
-                                            type="text"
-                                            wire:model="activateFullName"
-                                            placeholder="Ví dụ: Nguyễn Văn A"
-                                            required
-                                        >
-                                        @error('activateFullName') <span class="wa-field-error">{{ $message }}</span> @enderror
-                                    </div>
-
-                                    <div class="wa-field-group">
-                                        <label for="act-phone">Số điện thoại kích hoạt &amp; tra cứu <span class="req">*</span></label>
-                                        <input
-                                            id="act-phone"
-                                            type="tel"
-                                            wire:model="activatePhone"
-                                            placeholder="Ví dụ: 0912345678"
-                                            required
-                                        >
-                                        <div class="wa-field-hint">Số điện thoại dùng để nhận tin nhắn và tra cứu thông tin bảo hành.</div>
-                                        @error('activatePhone') <span class="wa-field-error">{{ $message }}</span> @enderror
-                                    </div>
-
-                                    <div class="wa-field-group">
-                                        <label for="act-addr">Địa chỉ / Khu vực (Không bắt buộc)</label>
-                                        <input
-                                            id="act-addr"
-                                            type="text"
-                                            wire:model="activateAddress"
-                                            placeholder="Ví dụ: Quận 1, TP. Hồ Chí Minh"
-                                        >
-                                    </div>
-
-                                    <div class="wa-field-group">
-                                        <label for="act-notes">Ghi chú hoặc Số Serial trên hộp (Không bắt buộc)</label>
-                                        <textarea
-                                            id="act-notes"
-                                            rows="2"
-                                            wire:model="activateNotes"
-                                            placeholder="Nhập ghi chú thêm hoặc số Serial nếu có..."
-                                        ></textarea>
-                                    </div>
-
-                                    <button type="submit" class="wa-submit-action-btn" wire:loading.attr="disabled">
-                                        <span wire:loading.remove>Xác Nhận Kích Hoạt Bảo Hành</span>
-                                        <span wire:loading>Đang xử lý kích hoạt...</span>
-                                    </button>
-                                </form>
-                            </div>
-                        @endif
-                    </div>
-                @endif
-            </section>
+            @include('livewire.partials.warranty-activation-form')
         @endif
     </main>
 
@@ -866,7 +449,7 @@
     <style>
         .wl-page, .wl-page *, .wl-page input, .wl-page button, .wl-page select, .wl-page textarea {
             box-sizing: border-box;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif !important;
+            font-family: Roboto, Arial, sans-serif !important;
         }
         .wl-page {
             background: #f8fafc;
@@ -957,10 +540,10 @@
             text-decoration: none !important;
         }
         .wl-top-tab.is-active {
-            background: #d70018 !important;
+            background: var(--wl-brand) !important;
             color: #ffffff !important;
             text-decoration: none !important;
-            box-shadow: 0 2px 6px rgba(215, 0, 24, 0.25);
+            box-shadow: 0 2px 6px rgba(24, 42, 187, 0.25);
         }
         .wl-top-tab.is-active .tab-label {
             color: #ffffff !important;
@@ -982,7 +565,7 @@
             font-weight: 700 !important;
             color: #1e293b !important;
             letter-spacing: normal !important;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif !important;
+            font-family: Roboto, Arial, sans-serif !important;
         }
         .wl-main-sub {
             margin: 0 auto 24px;
@@ -992,7 +575,7 @@
             max-width: 720px;
         }
         .wl-hl {
-            color: #d70018;
+            color: var(--wl-brand);
             font-weight: 600 !important;
             text-decoration: none;
         }
@@ -1036,11 +619,11 @@
             width: 8px;
             height: 8px;
             border-radius: 50%;
-            background: #d70018;
+            background: var(--wl-brand);
             display: none;
         }
         .wl-radio-pill.is-selected .radio-dot {
-            border-color: #d70018;
+            border-color: var(--wl-brand);
         }
         .wl-radio-pill.is-selected .radio-dot::after {
             display: block;
@@ -1076,8 +659,8 @@
         }
         .wl-input-wrap input:focus {
             background: #ffffff;
-            border-color: #d70018;
-            box-shadow: 0 0 0 3px rgba(215, 0, 24, 0.12);
+            border-color: var(--wl-brand);
+            box-shadow: 0 0 0 3px rgba(24, 42, 187, 0.12);
         }
         .wl-input-clear {
             position: absolute;
@@ -1102,8 +685,8 @@
             gap: 6px;
             height: 46px;
             padding: 0 22px;
-            background: #d70018;
-            border: 1px solid #d70018;
+            background: var(--wl-brand);
+            border: 1px solid var(--wl-brand);
             border-radius: 8px;
             color: #ffffff;
             font-size: 14.5px !important;
@@ -1113,8 +696,8 @@
             white-space: nowrap;
         }
         .wl-search-submit-btn:hover {
-            background: #b90014;
-            border-color: #b90014;
+            background: var(--wl-brand-dark);
+            border-color: var(--wl-brand-dark);
         }
 
         .wl-example-note {
@@ -1156,8 +739,8 @@
             transition: all 0.15s ease;
         }
         .wl-filter-pill.is-active {
-            background: #d70018;
-            border-color: #d70018;
+            background: var(--wl-brand);
+            border-color: var(--wl-brand);
             color: #ffffff !important;
         }
         .pill-count {
@@ -1211,14 +794,14 @@
             color: #64748b;
         }
         .wl-step.is-done .wl-step-circle {
-            background: #d70018;
-            border-color: #d70018;
+            background: var(--wl-brand);
+            border-color: var(--wl-brand);
             color: #ffffff;
         }
         .wl-step.is-curr .wl-step-circle {
-            border-color: #d70018;
-            color: #d70018;
-            box-shadow: 0 0 0 3px rgba(215, 0, 24, 0.15);
+            border-color: var(--wl-brand);
+            color: var(--wl-brand);
+            box-shadow: 0 0 0 3px rgba(24, 42, 187, 0.15);
         }
         .wl-step-label {
             font-size: 11.5px !important;
@@ -1304,7 +887,7 @@
         .wl-order-total strong {
             display: block;
             font-size: 16px !important;
-            color: #d70018;
+            color: var(--wl-brand);
         }
 
         /* Results section */
@@ -1512,7 +1095,7 @@
             gap: 4px;
             margin-top: 4px;
             padding: 6px 12px;
-            background: #d70018;
+            background: var(--wl-brand);
             color: #ffffff !important;
             border: none;
             border-radius: 5px;
@@ -1522,7 +1105,7 @@
             transition: background 0.15s ease;
         }
         .wl-activate-btn:hover {
-            background: #b90014;
+            background: var(--wl-brand-dark);
         }
 
         .wl-status-pill {
@@ -1585,7 +1168,7 @@
             width: 26px;
             height: 26px;
             border-radius: 50%;
-            background: #d70018;
+            background: var(--wl-brand);
             color: #ffffff;
             font-size: 13px !important;
             font-weight: 700 !important;
@@ -1699,8 +1282,8 @@
             transition: all 0.15s ease;
         }
         .wa-change-product-btn:hover {
-            border-color: #d70018;
-            color: #d70018;
+            border-color: var(--wl-brand);
+            color: var(--wl-brand);
         }
         .order-code-row {
             display: flex;
@@ -1762,9 +1345,9 @@
             background: #f8fafc;
         }
         .wa-variant-chip.is-selected {
-            border-color: #d70018;
+            border-color: var(--wl-brand);
             background: #fff5f5;
-            box-shadow: 0 0 0 1px #d70018;
+            box-shadow: 0 0 0 1px var(--wl-brand);
         }
         .wa-variant-chip .chip-thumb {
             width: 28px !important;
@@ -1807,7 +1390,7 @@
             width: 16px;
             height: 16px;
             border-radius: 50%;
-            background: #d70018;
+            background: var(--wl-brand);
             color: #ffffff;
             font-size: 10px !important;
             font-weight: 700 !important;
@@ -1940,7 +1523,7 @@
             display: inline-block;
             padding: 4px 10px;
             border-radius: 4px;
-            background: #d70018;
+            background: var(--wl-brand);
             color: #ffffff;
             font-size: 11.5px !important;
             font-weight: 600 !important;
@@ -1983,8 +1566,8 @@
         }
         .wa-field-group input:focus,
         .wa-field-group textarea:focus {
-            border-color: #d70018;
-            box-shadow: 0 0 0 2px rgba(215, 0, 24, 0.12);
+            border-color: var(--wl-brand);
+            box-shadow: 0 0 0 2px rgba(24, 42, 187, 0.12);
         }
         .wa-field-hint {
             font-size: 11.5px !important;
@@ -1998,9 +1581,9 @@
         .wa-submit-action-btn {
             height: 42px;
             margin-top: 6px;
-            background: #d70018;
+            background: var(--wl-brand);
             color: #ffffff;
-            border: 1px solid #d70018;
+            border: 1px solid var(--wl-brand);
             border-radius: 6px;
             font-size: 14px !important;
             font-weight: 600 !important;
@@ -2008,7 +1591,7 @@
             transition: background 0.15s ease;
         }
         .wa-submit-action-btn:hover {
-            background: #b90014;
+            background: var(--wl-brand-dark);
         }
 
         /* Already activated state card */

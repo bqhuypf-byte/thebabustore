@@ -2,7 +2,6 @@
 
 namespace Tests\Feature;
 
-use App\Livewire\WarrantyActivation;
 use App\Livewire\WarrantyLookup;
 use App\Models\Address;
 use App\Models\Order;
@@ -17,88 +16,6 @@ use Tests\TestCase;
 class WarrantyWorkflowTest extends TestCase
 {
     use DatabaseTransactions;
-
-    public function test_unactivated_placeholder_shows_pending_and_can_be_activated(): void
-    {
-        $user = User::factory()->create(['is_admin' => false]);
-        $product = Product::create([
-            'name' => 'Bàn phím Test',
-            'slug' => 'ban-phim-test-' . uniqid(),
-            'category_id' => 1,
-            'price' => 100000,
-        ]);
-        $variant = ProductVariant::create([
-            'product_id' => $product->id,
-            'sku' => 'TESTSKU' . uniqid(),
-            'name' => 'Bản RGB',
-            'price' => 100000,
-            'stock' => 'in_stock',
-            'warranty_days' => 365,
-        ]);
-
-        $order = Order::create([
-            'user_id' => $user->id,
-            'order_code' => 'BHTEST' . uniqid(),
-            'grand_total' => 100000,
-            'payment_method' => 'cod',
-            'payment_status' => 'paid',
-            'status' => 'new',
-            'notes' => 'Tạo link kích hoạt cho SKU: ' . $variant->sku,
-        ]);
-
-        Address::create([
-            'order_id' => $order->id,
-            'full_name' => 'Khách chờ kích hoạt (' . $variant->sku . ')',
-            'phone' => '0000000000',
-            'province' => '',
-            'district' => '',
-            'ward' => '',
-            'detailed_address' => 'Chờ khách điền',
-        ]);
-
-        $item = OrderItem::create([
-            'order_id' => $order->id,
-            'product_variant_id' => $variant->id,
-            'quantity' => 1,
-            'unit_amount' => 100000,
-            'total_amount' => 100000,
-            'warranty' => now(),
-        ]);
-
-        // 1. Check lookup when not activated
-        $statusBefore = WarrantyLookup::getWarrantyStatus($item);
-        $this->assertSame('pending', $statusBefore['state']);
-        $this->assertSame('Chưa kích hoạt', $statusBefore['label']);
-
-        // 2. Reject all-zeros phone number
-        Livewire::test(WarrantyActivation::class, ['code' => $order->order_code])
-            ->set('full_name', 'Nguyễn Văn Test')
-            ->set('phone', '0000000000')
-            ->call('activateWarranty')
-            ->assertHasErrors(['phone']);
-
-        // 3. Activate with valid real phone
-        Livewire::test(WarrantyActivation::class, ['code' => $order->order_code])
-            ->set('full_name', 'Nguyễn Văn Test')
-            ->set('phone', '0912345678')
-            ->call('activateWarranty')
-            ->assertHasNoErrors()
-            ->assertSet('activatedSuccess', true);
-
-        // 4. Verify DB was updated
-        $order->refresh();
-        $item->refresh();
-        $this->assertSame('delivered', $order->status);
-        $this->assertSame('Nguyễn Văn Test', $order->address->full_name);
-        $this->assertSame('0912345678', $order->address->phone);
-        $this->assertStringContainsString('Đã kích hoạt BH', $order->notes);
-
-        // 5. Check lookup after activation -> MUST BE ACTIVE
-        $statusAfter = WarrantyLookup::getWarrantyStatus($item);
-        $this->assertSame('active', $statusAfter['state']);
-        $this->assertSame('Đang bảo hành', $statusAfter['label']);
-        $this->assertGreaterThan(300, $statusAfter['days_left']);
-    }
 
     public function test_warranty_lookup_page_renders_correctly(): void
     {
@@ -118,60 +35,6 @@ class WarrantyWorkflowTest extends TestCase
             ->call('setTab', 'activate')
             ->assertSet('activeTab', 'activate')
             ->assertSee('KÍCH HOẠT BẢO HÀNH ĐIỆN TỬ');
-    }
-
-    public function test_already_activated_order_does_not_show_activation_inputs(): void
-    {
-        $user = User::factory()->create(['is_admin' => false]);
-        $product = Product::create([
-            'name' => 'Bàn phím Test 2',
-            'slug' => 'ban-phim-test-2-' . uniqid(),
-            'category_id' => 1,
-            'price' => 100000,
-        ]);
-        $variant = ProductVariant::create([
-            'product_id' => $product->id,
-            'sku' => 'TESTSKU2' . uniqid(),
-            'name' => 'Bản Pro',
-            'price' => 100000,
-            'stock' => 'in_stock',
-            'warranty_days' => 365,
-        ]);
-
-        $order = Order::create([
-            'user_id' => $user->id,
-            'order_code' => 'BHTEST2' . uniqid(),
-            'grand_total' => 100000,
-            'payment_method' => 'cod',
-            'payment_status' => 'paid',
-            'status' => 'delivered',
-            'notes' => 'Đã kích hoạt BH bởi Nguyễn Văn A lúc 10:00 09/11/2026',
-        ]);
-
-        Address::create([
-            'order_id' => $order->id,
-            'full_name' => 'Nguyễn Văn A',
-            'phone' => '0987654321',
-            'province' => '',
-            'district' => '',
-            'ward' => '',
-            'detailed_address' => 'Hà Nội',
-        ]);
-
-        OrderItem::create([
-            'order_id' => $order->id,
-            'product_variant_id' => $variant->id,
-            'quantity' => 1,
-            'unit_amount' => 100000,
-            'total_amount' => 100000,
-            'warranty' => now()->addYear(),
-        ]);
-
-        Livewire::test(WarrantyActivation::class, ['code' => $order->order_code])
-            ->assertSet('isAlreadyActivated', true)
-            ->assertSee('Sản Phẩm Đã Được Kích Hoạt')
-            ->assertSee('Đang có hiệu lực')
-            ->assertDontSee('Xác Nhận Kích Hoạt Bảo Hành');
     }
 
     public function test_delivered_order_shows_checkmark_on_all_steps(): void
