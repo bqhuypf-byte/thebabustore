@@ -12,8 +12,8 @@ class HomepageContent
         $description = trim(strip_tags((string) $setting?->company_description));
         if ($description !== '') {
             $sections[] = [
-                'enabled' => true, 'layout' => 'split', 'title' => 'Khám phá tất cả sản phẩm',
-                'body' => 'Bàn phím, chuột và phụ kiện cho góc máy của bạn.', 'image' => $setting?->banner_web,
+                'enabled' => true, 'layout' => 'catalog', 'eyebrow' => 'BUILD YOUR SETUP', 'title' => 'Tối ưu góc máy. Bứt phá phong cách.',
+                'body' => 'Khám phá bàn phím, chuột và phụ kiện dành cho góc máy của bạn.', 'image' => null,
                 'button_label' => 'Xem tất cả sản phẩm', 'link' => '/shop', 'full_link' => true,
             ];
         }

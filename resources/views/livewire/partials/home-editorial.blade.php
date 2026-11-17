@@ -2,12 +2,14 @@
 <div class="mc-editorial-stack">
 @foreach($homeSections as $section)
     @if(($section['enabled'] ?? true) && filled($section['title'] ?? null))
-        @php $layout = in_array($section['layout'] ?? '', ['split', 'banner', 'cards', 'faq'], true) ? $section['layout'] : 'split'; @endphp
-        @php $fullLink = in_array($layout, ['split', 'banner'], true) && ($section['full_link'] ?? false) && filled($section['link'] ?? null); @endphp
+        @php $layout = in_array($section['layout'] ?? '', ['split', 'banner', 'catalog', 'cards', 'faq'], true) ? $section['layout'] : 'split'; @endphp
+        @php $fullLink = in_array($layout, ['split', 'banner', 'catalog'], true) && ($section['full_link'] ?? false) && filled($section['link'] ?? null); @endphp
         <section class="mc-editorial mc-layout-{{ $layout }} {{ $fullLink ? 'mc-editorial-linked' : '' }}" aria-labelledby="mc-section-{{ $loop->index }}">
-            @if(in_array($layout, ['split', 'banner'], true))
+            @if(in_array($layout, ['split', 'banner', 'catalog'], true))
                 @if(!empty($section['image']))<img class="mc-editorial-image" src="{{ Storage::url($section['image']) }}" alt="{{ $section['title'] }}" loading="lazy">@endif
+                @if($layout === 'catalog' && empty($section['image']))<img class="mc-editorial-image" src="{{ asset('assets/100/436/596/themes/834446/assets/evo-page-banner.jpg') }}" alt="" loading="lazy">@endif
                 <div class="mc-editorial-copy">
+                    @if($layout === 'catalog' && !empty($section['eyebrow']))<p class="mc-catalog-eyebrow">{{ $section['eyebrow'] }}</p>@endif
                     <h2 id="mc-section-{{ $loop->index }}">{{ $section['title'] }}</h2>
                     @if(!empty($section['body']))<p>{{ $section['body'] }}</p>@endif
                     @if(!empty($section['link']) && !empty($section['button_label']))
