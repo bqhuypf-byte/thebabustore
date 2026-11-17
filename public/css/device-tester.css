@@ -182,3 +182,17 @@
 #dt-keyboard .dt-card-heading h2 { font-size:18px; }
 #dt-keyboard .dt-card-heading p { font-size:12px; }
 #dt-keyboard .dt-toolbar { padding:10px 14px; }
+
+/* Mouse illustration uses the storefront's existing blue, red and green. */
+#dt-mouse { --mouse-left:#182abb; --mouse-right:#d92d20; --mouse-middle:#0b805a; }
+.dt-mouse-svg { position:absolute; height:260px; width:208px; left:50%; top:12px; transform:translateX(-50%); pointer-events:none; }
+#dt-mouse-body { fill:#eef1ff; stroke:#b9c4dc; stroke-width:2; }
+.dt-mouse-svg [data-mouse-zone] { fill:#fff; stroke:#b9c4dc; stroke-width:2; }
+.dt-mouse-svg [data-mouse-zone="0"],.dt-mouse-svg [data-mouse-zone="3"] { --zone-color:var(--mouse-left); }
+.dt-mouse-svg [data-mouse-zone="2"],.dt-mouse-svg [data-mouse-zone="4"] { --zone-color:var(--mouse-right); }
+.dt-mouse-svg [data-mouse-zone="1"] { --zone-color:var(--mouse-middle); }
+.dt-mouse-svg [data-mouse-zone].active { fill:var(--zone-color); stroke:var(--zone-color); }
+.dt-wheel-lines { fill:none; stroke:#8993a5; stroke-width:2; }
+.dt-mouse-svg text { fill:#8993a5; font:700 13px Roboto,Arial,sans-serif; letter-spacing:3px; }
+.dt-mouse-hint { position:absolute; bottom:14px; left:12px; right:12px; text-align:center; color:#647084; font-size:11px; pointer-events:none; }
+@media(max-width:760px) { .dt-mouse-svg { height:220px; width:176px; top:8px; } .dt-mouse-hint { bottom:12px; font-size:10px; } }

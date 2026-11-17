@@ -338,6 +338,7 @@ function mount(root) {
     listen(find('#dt-key-sound'), 'change', prepareSound);
 
     function renderMouseButtons() {
+        root.querySelectorAll('[data-mouse-zone]').forEach(zone => zone.classList.toggle('active', mousePressed.has(Number(zone.dataset.mouseZone))));
         root.querySelectorAll('[data-mouse-button]').forEach(element => {
             const button = Number(element.dataset.mouseButton);
             element.querySelector('b').textContent = buttonCounts[button];
@@ -376,19 +377,35 @@ function mount(root) {
         cancelCps('Chọn bắt đầu, sau đó bấm nút đã chọn trong vùng test.');
     });
     listen(find('#dt-cps-button'), 'change', () => cancelCps('Đã đổi nút đo. Chọn bắt đầu để thử.'));
+    let touchPointer = null;
     listen(pad, 'pointerdown', event => {
-        if (event.pointerType !== 'mouse') event.preventDefault();
+        if (event.pointerType === 'mouse') return;
+        event.preventDefault();
+        if (touchPointer !== null) return;
+        touchPointer = event.pointerId;
+        pressMouseButton(0);
     });
+    function releaseTouch(event) {
+        if (touchPointer !== event.pointerId) return;
+        touchPointer = null;
+        mousePressed.delete(0);
+        renderMouseButtons();
+    }
+    listen(window, 'pointerup', releaseTouch, { capture: true });
+    listen(window, 'pointercancel', releaseTouch, { capture: true });
+    function pressMouseButton(button) {
+        if (mousePressed.has(button)) return;
+        mousePressed.add(button);
+        buttonCounts[button] += 1;
+        session.click(performance.now(), button);
+        renderMouseButtons();
+        renderCps();
+    }
     listen(pad, 'mousedown', event => {
         if (event.button < 0 || event.button > 4) return;
         event.preventDefault();
         pad.focus({ preventScroll: true });
-        if (mousePressed.has(event.button)) return;
-        mousePressed.add(event.button);
-        buttonCounts[event.button] += 1;
-        session.click(performance.now(), event.button);
-        renderMouseButtons();
-        renderCps();
+        pressMouseButton(event.button);
     });
     // Side buttons must not trigger browser history while the mouse tester is open.
     for (const type of ['pointerup', 'mousedown', 'mouseup', 'auxclick']) {
@@ -406,6 +423,7 @@ function mount(root) {
     }, { capture: true });
     listen(window, 'pointerup', event => { mousePressed.delete(event.button); renderMouseButtons(); }, { capture: true });
     listen(window, 'pointercancel', () => { mousePressed.clear(); renderMouseButtons(); });
+    listen(pad, 'mouseleave', () => { mousePressed.clear(); renderMouseButtons(); });
     for (const type of ['contextmenu', 'auxclick']) listen(pad, type, event => event.preventDefault());
     listen(pad, 'wheel', event => {
         event.preventDefault();
@@ -474,6 +492,7 @@ function mount(root) {
             set('#dt-keyboard-status', 'Vùng test vẫn bật. Quay lại cửa sổ để tiếp tục.');
         }
         mousePressed.clear();
+        touchPointer = null;
         movementTimes = [];
         lastMovementTime = -1;
         renderMouseButtons();

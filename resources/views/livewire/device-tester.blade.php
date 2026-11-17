@@ -56,7 +56,17 @@
                     <div class="dt-card-heading"><div><h2>Test nút & chuyển động</h2><p>Di chuột, bấm nút và cuộn trong vùng bên dưới.</p></div><span id="dt-input-source" class="dt-source"></span></div>
                     <div class="dt-mouse-pad" id="dt-mouse-pad" tabindex="0" role="region" aria-label="Vùng kiểm tra chuột">
                         <canvas id="dt-mouse-canvas" aria-hidden="true"></canvas>
-                        <div class="dt-pad-caption">Di chuột để vẽ quỹ đạo<br><span>Bấm hoặc cuộn để kiểm tra</span></div>
+                        <svg class="dt-mouse-svg" viewBox="0 0 240 300" aria-hidden="true">
+                            <path id="dt-mouse-body" d="M120 20 C55 20 28 66 28 135 V196 C28 251 61 280 120 280 S212 251 212 196 V135 C212 66 185 20 120 20Z"/>
+                            <path id="dt-mouse-left" data-mouse-zone="0" d="M114 28 C62 30 36 68 36 128 V138 H104 V90 Q104 76 114 72Z"/>
+                            <path id="dt-mouse-right" data-mouse-zone="2" d="M126 28 C178 30 204 68 204 128 V138 H136 V90 Q136 76 126 72Z"/>
+                            <rect id="dt-mouse-wheel" data-mouse-zone="1" x="110" y="81" width="20" height="48" rx="10"/>
+                            <path class="dt-wheel-lines" d="M115 94H125 M115 103H125 M115 112H125"/>
+                            <rect id="dt-mouse-back" data-mouse-zone="3" x="20" y="145" width="13" height="35" rx="6"/>
+                            <rect id="dt-mouse-forward" data-mouse-zone="4" x="20" y="187" width="13" height="35" rx="6"/>
+                            <text x="120" y="225" text-anchor="middle">BABU</text>
+                        </svg>
+                        <div class="dt-mouse-hint">Bấm 5 nút · Cuộn để kiểm tra · Di chuột để vẽ quỹ đạo</div>
                         <span class="dt-pad-position" id="dt-mouse-position">X — · Y —</span>
                     </div>
                     <div class="dt-mouse-buttons" aria-label="Trạng thái nút chuột">
