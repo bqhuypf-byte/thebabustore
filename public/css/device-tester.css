@@ -288,3 +288,14 @@
 @media(max-width:760px) { .dt-check-heading { flex-wrap:wrap; } .dt-check-metrics { gap:6px; } .dt-check-metrics > div { padding:10px 8px; } .dt-check-metrics strong { font-size:18px; } }
 
 .dt-wheel-check-metrics { grid-template-columns:1fr 1fr; }
+
+/* Pink BABU shell; input states stay distinct while testing. */
+#dt-mouse #dt-mouse-body { fill:#e7a1bc; stroke:#fac5d9; }
+#dt-mouse .dt-mouse-svg [data-mouse-zone] { fill:#f3b5cd; stroke:#ffd5e4; }
+#dt-mouse .dt-mouse-svg #dt-mouse-wheel { fill:#84536f; stroke:#ffe0ec; }
+#dt-mouse .dt-mouse-svg [data-mouse-zone].active { fill:var(--zone-color); stroke:var(--zone-color); }
+#dt-mouse #dt-mouse-wheel.is-scrolling { fill:var(--mouse-middle); stroke:#d1fff4; }
+#dt-mouse .dt-wheel-lines { stroke:#ffe0ec; }
+#dt-mouse .dt-wheel-arrow { stroke:#93617c; }
+#dt-mouse [data-scroll-direction="up"] .dt-wheel-up,#dt-mouse [data-scroll-direction="down"] .dt-wheel-down { stroke:var(--mouse-middle); }
+#dt-mouse .dt-mouse-svg text { fill:#67354e; font-size:15px; font-weight:800; letter-spacing:4px; }
