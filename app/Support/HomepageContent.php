@@ -14,7 +14,7 @@ class HomepageContent
             $sections[] = [
                 'enabled' => true, 'layout' => 'catalog', 'eyebrow' => 'BUILD YOUR SETUP', 'title' => 'Tối ưu góc máy. Bứt phá phong cách.',
                 'body' => 'Khám phá bàn phím, chuột và phụ kiện dành cho góc máy của bạn.', 'image' => null,
-                'button_label' => 'Xem tất cả sản phẩm', 'link' => '/shop', 'full_link' => true,
+                'button_label' => 'Khám phá ngay', 'link' => '/shop', 'full_link' => true,
             ];
         }
         $sections[] = [
