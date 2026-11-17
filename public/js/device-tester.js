@@ -1,3 +1,20 @@
+export class ClickAnomalySession {
+    constructor() { this.reset(); }
+    reset() { this.active = false; this.previous = null; this.count = 0; this.suspects = 0; }
+    start(button = 0, threshold = 80) {
+        this.reset(); this.button = Number(button); this.threshold = Number(threshold); this.active = true;
+    }
+    record(button, now) {
+        if (!this.active || button !== this.button || !Number.isFinite(now)) return null;
+        const interval = this.previous === null ? null : now - this.previous;
+        if (interval !== null && interval < 0) return null;
+        this.previous = now; this.count += 1;
+        const suspect = interval !== null && interval <= this.threshold;
+        if (suspect) this.suspects += 1;
+        return { interval, suspect };
+    }
+}
+
 export class ScrollStats {
     constructor() { this.reset(); }
     reset() { this.up = 0; this.down = 0; this.distance = [0, 0, 0]; this.last = null; }
@@ -130,6 +147,7 @@ function mount(root) {
     let keyCount = 0;
     let maxHeld = 0;
     const scroll = new ScrollStats();
+    const clickCheck = new ClickAnomalySession();
     let wheelFlashTimer;
     let points = [];
     let movementTimes = [];
@@ -422,9 +440,47 @@ function mount(root) {
         if (ripples.length > 24) ripples[0].remove();
         window.setTimeout(() => ripple.remove(), 700);
     }
+    function addDiagnosticLog(selector, message, suspect) {
+        const log = find(selector);
+        const row = document.createElement('p');
+        row.className = suspect ? 'dt-check-row is-suspect' : 'dt-check-row';
+        row.textContent = `${new Date().toLocaleTimeString('vi-VN', { hour12: false })} · ${message}`;
+        log.prepend(row);
+        while (log.children.length > 20) log.lastElementChild.remove();
+    }
+    function renderClickCheck() {
+        set('#dt-click-samples', clickCheck.count);
+        set('#dt-click-suspects', clickCheck.suspects);
+        set('[data-action="click-check"]', clickCheck.active ? 'Kết thúc lượt thử' : 'Bắt đầu lượt mới');
+        find('#dt-check-button').disabled = clickCheck.active;
+        find('#dt-check-threshold').disabled = clickCheck.active;
+        find('#dt-click-suspects').classList.toggle('is-suspect', clickCheck.suspects > 0);
+    }
+    listen(find('[data-action="click-check"]'), 'click', () => {
+        if (clickCheck.active) {
+            clickCheck.active = false;
+            set('#dt-click-check-status', 'Đã kết thúc. Kết quả là dấu hiệu tham khảo, không kết luận lỗi phần cứng.');
+        } else {
+            clickCheck.start(find('#dt-check-button').value, find('#dt-check-threshold').value);
+            find('#dt-click-check-log').replaceChildren();
+            set('#dt-click-interval', '—');
+            set('#dt-click-check-status', 'Đang thử: bấm đơn chậm, cách nhau khoảng 1 giây. Không cố tình bấm đúp.');
+            if (session.phase === 'armed' || session.phase === 'running') cancelCps('Đã dừng CPS để thử bấm đơn.');
+        }
+        renderClickCheck();
+    });
     function pressMouseButton(button, event) {
         if (mousePressed.has(button)) return;
         mousePressed.add(button);
+        if (event?.type === 'mousedown' && !event.sourceCapabilities?.firesTouchEvents) {
+            const result = clickCheck.record(button, performance.now());
+            if (result) {
+                const interval = result.interval === null ? 'Lần đầu' : `${result.interval.toFixed(1)} ms`;
+                set('#dt-click-interval', interval);
+                addDiagnosticLog('#dt-click-check-log', `${interval}${result.suspect ? ' · Nghi click đúp' : ''}`, result.suspect);
+                renderClickCheck();
+            }
+        }
         mouseRipple(event, button);
         buttonCounts[button] += 1;
         session.click(performance.now(), button);
@@ -530,6 +586,11 @@ function mount(root) {
     const observer = new ResizeObserver(resizeCanvas);
     observer.observe(pad);
     function pauseInput() {
+        if (clickCheck.active) {
+            clickCheck.active = false;
+            renderClickCheck();
+            set('#dt-click-check-status', 'Đã dừng khi rời vùng kiểm tra. Bắt đầu lượt mới để thử lại.');
+        }
         if (keyboardRunning) {
             pressed.clear();
             renderKeyboard();
@@ -579,6 +640,11 @@ function mount(root) {
         stopKeyboard('Đã xóa kết quả. Bấm vào khung để tiếp tục.');
         resetKeyboard();
         buttonCounts.fill(0); mousePressed.clear(); touchPointer = null;
+        clickCheck.reset();
+        renderClickCheck();
+        find('#dt-click-check-log').replaceChildren();
+        set('#dt-click-interval', '—');
+        set('#dt-click-check-status', 'Chọn bắt đầu, rồi bấm từng lần bằng chuột thật.');
         scroll.reset();
         delete pad.dataset.scrollDirection;
         clearTimeout(wheelFlashTimer);

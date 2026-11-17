@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { ScrollStats, ClickSession, summarizeIntervals, countsForSession, resolveKeyCode } from '../../public/js/device-tester.js';
+import { ClickAnomalySession, ScrollStats, ClickSession, summarizeIntervals, countsForSession, resolveKeyCode } from '../../public/js/device-tester.js';
 
 test('click timing starts on the first click and excludes the exact deadline', () => {
     const session = new ClickSession();
@@ -96,4 +96,20 @@ test('scroll distance keeps units separate, counts direction and resets complete
     scroll.reset();
     assert.deepEqual([scroll.up,scroll.down,scroll.last], [0,0,null]);
     assert.deepEqual(scroll.distance,[0,0,0]);
+});
+
+test('single-click check isolates selected button and flags close presses without declaring failure', () => {
+    const check = new ClickAnomalySession();
+    assert.equal(check.record(0, 0), null);
+    check.start(0, 80);
+    assert.deepEqual(check.record(0, 1000), { interval:null, suspect:false });
+    assert.equal(check.record(2, 1010), null);
+    assert.deepEqual(check.record(0, 1080), { interval:80, suspect:true });
+    assert.deepEqual(check.record(0, 2080), { interval:1000, suspect:false });
+    assert.equal(check.suspects,1); assert.equal(check.count,3);
+    check.active=false; assert.equal(check.record(0,2090),null);
+    check.start(2,40); assert.equal(check.count,0); assert.equal(check.suspects,0);
+    assert.deepEqual(check.record(2,3000),{interval:null,suspect:false});
+    assert.equal(check.record(2,NaN),null);
+    assert.equal(check.record(2,2900),null);
 });

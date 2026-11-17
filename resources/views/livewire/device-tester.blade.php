@@ -94,6 +94,20 @@
                     <p id="dt-cps-status" role="status">Chọn bắt đầu, sau đó bấm nút đã chọn trong vùng test.</p>
                 </aside>
             </div>
+            <div class="dt-diagnostic-grid">
+                <section class="dt-card dt-diagnostic-card" aria-labelledby="dt-click-check-title">
+                    <div class="dt-check-heading"><div><p class="dt-check-eyebrow">BẤM ĐƠN</p><h2 id="dt-click-check-title">Kiểm tra nghi click đúp</h2></div><button type="button" class="dt-button" data-action="click-check">Bắt đầu lượt mới</button></div>
+                    <p>Bấm từng lần chậm, cách nhau khoảng 1 giây trong khung chuột. Hai lần nhấn cùng nút quá sát nhau sẽ được đánh dấu để kiểm tra lại.</p>
+                    <div class="dt-check-controls">
+                        <label class="dt-select-label">Nút thử <select id="dt-check-button"><option value="0">Trái</option><option value="2">Phải</option><option value="1">Nút cuộn</option><option value="3">Hông 1</option><option value="4">Hông 2</option></select></label>
+                        <label class="dt-select-label">Ngưỡng cảnh báo <select id="dt-check-threshold"><option value="40">40 ms</option><option value="80" selected>80 ms</option><option value="120">120 ms</option></select></label>
+                    </div>
+                    <div class="dt-check-metrics"><div><span>Lần nhấn</span><strong id="dt-click-samples">0</strong></div><div><span>Nghi click đúp</span><strong id="dt-click-suspects">0</strong></div><div><span>Khoảng cách gần nhất</span><strong id="dt-click-interval">—</strong></div></div>
+                    <p id="dt-click-check-status" role="status">Chọn bắt đầu, rồi bấm từng lần bằng chuột thật.</p>
+                    <div id="dt-click-check-log" class="dt-check-log" aria-label="Lịch sử kiểm tra click đúp"></div>
+                    <p class="dt-check-note">Ngưỡng là bộ lọc tham khảo, không phải chuẩn kết luận hỏng switch. Bấm nhanh chủ động vẫn có thể bị đánh dấu. Chạm màn hình không được tính trong bài thử này.</p>
+                </section>
+            </div>
             <div class="dt-stat-grid dt-mouse-stats">
                 <div class="dt-stat"><span>Tần suất sự kiện ước tính</span><strong id="dt-mouse-hz">—</strong><small>Hz · trong 2 giây gần nhất</small></div>
                 <div class="dt-stat"><span>Khoảng cách trung bình</span><strong id="dt-mouse-interval">—</strong><small>ms / sự kiện</small></div>
