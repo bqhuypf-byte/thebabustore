@@ -383,7 +383,7 @@ function mount(root) {
         event.preventDefault();
         if (touchPointer !== null) return;
         touchPointer = event.pointerId;
-        pressMouseButton(0);
+        pressMouseButton(0, event);
     });
     function releaseTouch(event) {
         if (touchPointer !== event.pointerId) return;
@@ -393,9 +393,26 @@ function mount(root) {
     }
     listen(window, 'pointerup', releaseTouch, { capture: true });
     listen(window, 'pointercancel', releaseTouch, { capture: true });
-    function pressMouseButton(button) {
+    function mouseRipple(event, button) {
+        if (!event || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+        const rect = pad.getBoundingClientRect();
+        const ripple = document.createElement('i');
+        ripple.className = 'dt-mouse-ripple';
+        ripple.dataset.button = button;
+        ripple.style.left = `${event.clientX - rect.left}px`;
+        ripple.style.top = `${event.clientY - rect.top}px`;
+        ripple.setAttribute('aria-hidden', 'true');
+        ripple.addEventListener('animationend', () => ripple.remove(), { once: true });
+        pad.append(ripple);
+        // Bound transient DOM even when animations are interrupted or throttled.
+        const ripples = pad.querySelectorAll('.dt-mouse-ripple');
+        if (ripples.length > 24) ripples[0].remove();
+        window.setTimeout(() => ripple.remove(), 700);
+    }
+    function pressMouseButton(button, event) {
         if (mousePressed.has(button)) return;
         mousePressed.add(button);
+        mouseRipple(event, button);
         buttonCounts[button] += 1;
         session.click(performance.now(), button);
         renderMouseButtons();
@@ -405,7 +422,7 @@ function mount(root) {
         if (event.button < 0 || event.button > 4) return;
         event.preventDefault();
         pad.focus({ preventScroll: true });
-        pressMouseButton(event.button);
+        pressMouseButton(event.button, event);
     });
     // Side buttons must not trigger browser history while the mouse tester is open.
     for (const type of ['pointerup', 'mousedown', 'mouseup', 'auxclick']) {
@@ -536,6 +553,7 @@ function mount(root) {
         resetKeyboard();
         buttonCounts.fill(0); mousePressed.clear(); wheelUp = 0; wheelDown = 0;
         movementTimes = []; lastMovementTime = -1; points = [];
+        pad.querySelectorAll('.dt-mouse-ripple').forEach(ripple => ripple.remove());
         pad.classList.remove('has-movement');
         set('#dt-mouse-position', 'X — · Y —');
         set('#dt-wheel-status', 'Con lăn chưa có sự kiện');

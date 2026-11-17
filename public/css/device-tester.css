@@ -196,3 +196,11 @@
 .dt-mouse-svg text { fill:#8993a5; font:700 13px Roboto,Arial,sans-serif; letter-spacing:3px; }
 .dt-mouse-hint { position:absolute; bottom:14px; left:12px; right:12px; text-align:center; color:#647084; font-size:11px; pointer-events:none; }
 @media(max-width:760px) { .dt-mouse-svg { height:220px; width:176px; top:8px; } .dt-mouse-hint { bottom:12px; font-size:10px; } }
+
+.dt-mouse-svg [data-mouse-zone] { transform-box:fill-box; transform-origin:center; transition:fill .08s,transform .08s,filter .08s; }
+.dt-mouse-svg [data-mouse-zone].active { transform:scale(.96); filter:drop-shadow(0 0 5px var(--zone-color)); }
+.dt-mouse-ripple { position:absolute; width:22px; height:22px; margin:-11px; border:2px solid var(--mouse-left); border-radius:50%; pointer-events:none; animation:dt-mouse-ripple .45s ease-out forwards; }
+.dt-mouse-ripple[data-button="2"],.dt-mouse-ripple[data-button="4"] { border-color:var(--mouse-right); }
+.dt-mouse-ripple[data-button="1"] { border-color:var(--mouse-middle); }
+@keyframes dt-mouse-ripple { from { opacity:.7; transform:scale(.5); } to { opacity:0; transform:scale(3.5); } }
+@media(prefers-reduced-motion:reduce) { .dt-mouse-svg [data-mouse-zone] { transition:none; } .dt-mouse-svg [data-mouse-zone].active { transform:none; filter:none; } .dt-mouse-ripple { display:none; animation:none; } }
