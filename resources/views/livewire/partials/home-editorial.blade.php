@@ -3,13 +3,17 @@
 @foreach($homeSections as $section)
     @if(($section['enabled'] ?? true) && filled($section['title'] ?? null))
         @php $layout = in_array($section['layout'] ?? '', ['split', 'banner', 'cards', 'faq'], true) ? $section['layout'] : 'split'; @endphp
-        <section class="mc-editorial mc-layout-{{ $layout }}" aria-labelledby="mc-section-{{ $loop->index }}">
+        @php $fullLink = in_array($layout, ['split', 'banner'], true) && ($section['full_link'] ?? false) && filled($section['link'] ?? null); @endphp
+        <section class="mc-editorial mc-layout-{{ $layout }} {{ $fullLink ? 'mc-editorial-linked' : '' }}" aria-labelledby="mc-section-{{ $loop->index }}">
             @if(in_array($layout, ['split', 'banner'], true))
                 @if(!empty($section['image']))<img class="mc-editorial-image" src="{{ Storage::url($section['image']) }}" alt="{{ $section['title'] }}" loading="lazy">@endif
                 <div class="mc-editorial-copy">
                     <h2 id="mc-section-{{ $loop->index }}">{{ $section['title'] }}</h2>
                     @if(!empty($section['body']))<p>{{ $section['body'] }}</p>@endif
-                    @if(!empty($section['link']) && !empty($section['button_label']))<a class="mc-button" href="{{ $section['link'] }}">{{ $section['button_label'] }} <span aria-hidden="true">→</span></a>@endif
+                    @if(!empty($section['link']) && !empty($section['button_label']))
+                        @if($fullLink)<span class="mc-button">{{ $section['button_label'] }} <span aria-hidden="true">→</span></span>
+                        @else<a class="mc-button" href="{{ $section['link'] }}">{{ $section['button_label'] }} <span aria-hidden="true">→</span></a>@endif
+                    @endif
                 </div>
             @else
                 <div class="mc-editorial-heading"><h2 id="mc-section-{{ $loop->index }}">{{ $section['title'] }}</h2>@if(!empty($section['body']))<p>{{ $section['body'] }}</p>@endif</div>
@@ -31,6 +35,7 @@
                     @endforeach
                 </div>
             @endif
+            @if($fullLink)<a class="mc-editorial-full-link" href="{{ $section['link'] }}" aria-label="{{ $section['button_label'] ?? $section['title'] }}"></a>@endif
         </section>
     @endif
 @endforeach

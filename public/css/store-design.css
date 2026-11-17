@@ -305,3 +305,9 @@ body :is(.qv-actions, .ms-preview-actions) { position: sticky; bottom: -1px; bac
 @media (prefers-reduced-motion: reduce) {
     .babu-blog-image img { transition: none; }
 }
+
+.mc-editorial-stack .mc-editorial-linked { position:relative; border:1px solid #e9e5f3; background:linear-gradient(110deg,#f1edfb,#f7f8fc); }
+.mc-editorial-full-link { position:absolute; inset:0; z-index:2; border-radius:inherit; }
+.mc-editorial-linked .mc-button { background:#341eb5; border-color:#341eb5; color:#fff; }
+.mc-editorial-linked:hover .mc-button { background:#26158f; }
+.mc-editorial-linked:focus-within { outline:3px solid #6578e0; outline-offset:4px; }

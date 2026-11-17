@@ -61,6 +61,7 @@ class SettingResource extends Resource
                                         Forms\Components\TextInput::make('title')->label('Tiêu đề')->required()->maxLength(255),
                                         Forms\Components\Textarea::make('body')->label('Nội dung')->rows(3),
                                         Forms\Components\FileUpload::make('image')->label('Ảnh chính')->image()->disk('public')->directory('homepage')->visible(fn (Forms\Get $get) => in_array($get('layout'), ['split', 'banner'])),
+                                        Forms\Components\Toggle::make('full_link')->label('Bấm toàn bộ banner để mở liên kết')->default(false)->visible(fn (Forms\Get $get) => in_array($get('layout'), ['split', 'banner'])),
                                         Forms\Components\TextInput::make('button_label')->label('Chữ trên nút')->maxLength(100)->visible(fn (Forms\Get $get) => in_array($get('layout'), ['split', 'banner'])),
                                         Forms\Components\TextInput::make('link')->label('Liên kết')->maxLength(2048)->rules(['nullable', 'regex:~^(?:/(?!/)|https?://)[^\s]*$~i'])->helperText('Đường dẫn nội bộ /shop hoặc URL https://...')->visible(fn (Forms\Get $get) => in_array($get('layout'), ['split', 'banner'])),
                                         Forms\Components\Repeater::make('items')->label('Các mục')->schema([

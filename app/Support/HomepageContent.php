@@ -12,9 +12,9 @@ class HomepageContent
         $description = trim(strip_tags((string) $setting?->company_description));
         if ($description !== '') {
             $sections[] = [
-                'enabled' => true, 'layout' => 'split', 'title' => 'Không gian của bạn. Phong cách của bạn.',
-                'body' => $description, 'image' => $setting?->banner_web,
-                'button_label' => 'Về The BABU Store', 'link' => '/about',
+                'enabled' => true, 'layout' => 'split', 'title' => 'Khám phá tất cả sản phẩm',
+                'body' => 'Bàn phím, chuột và phụ kiện cho góc máy của bạn.', 'image' => $setting?->banner_web,
+                'button_label' => 'Xem tất cả sản phẩm', 'link' => '/shop', 'full_link' => true,
             ];
         }
         $sections[] = [
