@@ -1,4 +1,18 @@
-<section class="gear-repair-banner" aria-label="Dịch vụ sửa chữa Babu">
- <div class="gear-repair-intro"><span class="gear-repair-eyebrow"><i aria-hidden="true"></i> BABU CARE / SỬA CHỮA GEAR</span><h1>Chăm lại gear.<br>Trọn lại trải nghiệm.</h1><p>Kiểm tra, vệ sinh và sửa chữa bàn phím, chuột cùng phụ kiện của bạn.</p><a class="gear-repair-primary" href="{{ request()->is('sua-chua-gear') ? '#yeu-cau-sua-chua' : '/sua-chua-gear' }}">{{ request()->is('sua-chua-gear') ? 'Liên hệ tư vấn sửa chữa' : 'Khám phá dịch vụ' }} <span aria-hidden="true">↗</span></a><small>Kiểm tra thiết bị · Báo giá trước khi sửa</small></div>
- <div class="gear-repair-visual" aria-hidden="true"><span class="gear-repair-visual-label">BÀN PHÍM / CHUỘT / PHỤ KIỆN</span><svg viewBox="0 0 480 260" fill="none"><ellipse cx="236" cy="226" rx="191" ry="15" fill="#e9e6f3"/><g transform="translate(32 82) rotate(-8 164 62)"><rect x="0" y="0" width="328" height="132" rx="14" fill="white" stroke="#bcb7ce" stroke-width="2"/><rect x="9" y="9" width="310" height="114" rx="8" fill="#f4f3f8"/>@for($r=0;$r<4;$r++)@for($c=0;$c<12;$c++)<rect x="{{ 17+$c*25 }}" y="{{ 17+$r*23 }}" width="20" height="18" rx="3" fill="{{ ($r===0 && $c===0) || ($r===2 && $c===10) ? '#182ABB' : '#ffffff' }}" stroke="#d4d0e0"/>@endfor @endfor<rect x="92" y="109" width="143" height="7" rx="3" fill="#dcd7ed"/></g><g transform="translate(359 45) rotate(14 40 72)"><rect width="76" height="134" rx="37" fill="white" stroke="#bcb7ce" stroke-width="2"/><path d="M38 1v52M2 54h72" stroke="#d4d0e0" stroke-width="2"/><rect x="33" y="20" width="10" height="24" rx="5" fill="#182ABB"/></g><circle cx="330" cy="38" r="20" fill="#182ABB"/><path d="m322 38 6 6 10-12" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg><div class="gear-repair-visual-note"><span>01 — 04</span> Chăm sóc từng chi tiết.</div></div>
+<section class="care-service-mosaic" x-data aria-label="Babu Care — sửa chữa và vệ sinh gear">
+ <div class="care-mosaic-main">
+  @if($serviceMedia['cleaning'] ?? null)<img class="care-mosaic-image" src="{{ Storage::url($serviceMedia['cleaning']) }}" alt="" fetchpriority="high">@endif
+  <div class="care-mosaic-copy"><span>BABU CARE / SỬA CHỮA GEAR</span><h1>Chăm lại gear.<br>Trọn lại trải nghiệm.</h1><p>Kiểm tra, vệ sinh và sửa chữa bàn phím, chuột cùng phụ kiện của bạn.</p><a class="gear-repair-primary" href="#yeu-cau-sua-chua">Liên hệ tư vấn sửa chữa <span aria-hidden="true">↗</span></a><small>Kiểm tra thiết bị · Báo giá trước khi sửa</small></div>
+ </div>
+ <a class="care-mosaic-tile care-mosaic-wide" href="#dich-vu-headphones" @click="document.getElementById('dich-vu-headphones').open = true">
+  @if($serviceMedia['headphones'] ?? null)<img class="care-mosaic-image" src="{{ Storage::url($serviceMedia['headphones']) }}" alt="" loading="lazy">@endif
+  <span><small>ÂM THANH & KẾT NỐI</small><strong>Sửa chữa tai nghe</strong><em>Driver, dây, đệm tai nghe <i aria-hidden="true">↗</i></em></span>
+ </a>
+ <a class="care-mosaic-tile" href="#dich-vu-keyboard" @click="document.getElementById('dich-vu-keyboard').open = true">
+  @if($serviceMedia['keyboard'] ?? null)<img class="care-mosaic-image" src="{{ Storage::url($serviceMedia['keyboard']) }}" alt="" loading="lazy">@endif
+  <span><strong>Sửa chữa bàn phím</strong><em>Switch, hotswap, vệ sinh <i aria-hidden="true">↗</i></em></span>
+ </a>
+ <a class="care-mosaic-tile" href="#dich-vu-mouse" @click="document.getElementById('dich-vu-mouse').open = true">
+  @if($serviceMedia['mouse'] ?? null)<img class="care-mosaic-image" src="{{ Storage::url($serviceMedia['mouse']) }}" alt="" loading="lazy">@endif
+  <span><strong>Sửa chữa chuột</strong><em>Switch, cuộn lăn, dây <i aria-hidden="true">↗</i></em></span>
+ </a>
 </section>

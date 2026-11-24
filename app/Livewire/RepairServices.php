@@ -4,6 +4,7 @@ namespace App\Livewire;
 
 use App\Mail\RepairRequest;
 use App\Models\Setting;
+use App\Models\Category;
 use App\Support\RepairServicesContent;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Mail;
@@ -87,9 +88,17 @@ class RepairServices extends Component
 
     public function render()
     {
+        $categories = Category::query()->where('is_active', true)->get();
+        $media = [];
+        foreach (['keyboard' => 'bàn phím', 'cleaning' => 'bàn phím', 'mouse' => 'chuột', 'headphones' => 'tai nghe'] as $key => $keyword) {
+            $category = $categories->first(fn ($category) => str_contains(mb_strtolower($category->name), $keyword));
+            $media[$key] = $category?->banner ?: $category?->image;
+        }
+
         return view('repair-services', [
             'groups' => RepairServicesContent::groups(),
             'faqs' => RepairServicesContent::faqs(),
+            'serviceMedia' => $media,
             'repairSettings' => Setting::query()->first(),
         ]);
     }

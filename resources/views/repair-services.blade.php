@@ -6,16 +6,29 @@
  <main class="gear-repair-page">
   <nav class="gear-repair-breadcrumb" aria-label="Breadcrumb"><a href="/">Trang chủ</a><span aria-hidden="true">/</span><span>Sửa chữa gear</span></nav>
   @include('livewire.partials.repair-banner')
+  <nav class="care-local-nav" aria-label="Nội dung dịch vụ"><a href="#care-service-catalog">Dịch vụ sửa chữa</a><a href="#repair-services-title">Danh sách hạng mục</a><a href="#repair-process-title">Quy trình</a><a href="#care-faq-title">Câu hỏi thường gặp</a><a href="#yeu-cau-sua-chua">Liên hệ tư vấn <span aria-hidden="true">↗</span></a></nav>
+  <section id="care-service-catalog" class="care-catalog" x-data="{ group: 'all' }" aria-labelledby="care-catalog-title">
+   <header class="gear-repair-section-head"><div><span class="gear-repair-eyebrow">BABU CARE</span><h2 id="care-catalog-title">Sửa chữa & vệ sinh gaming gear</h2></div><p>Chọn hạng mục cần hỗ trợ.<br>Liên hệ để xác nhận phương án và báo giá.</p></header>
+   <div class="care-catalog-filters" role="group" aria-label="Lọc nhóm dịch vụ"><button type="button" @click="group = 'all'" :aria-pressed="(group === 'all').toString()">Tất cả dịch vụ</button>@foreach($groups as $group)<button type="button" @click="group = '{{ $group['id'] }}'" :aria-pressed="(group === '{{ $group['id'] }}').toString()">{{ $group['title'] }}</button>@endforeach</div>
+   <div class="care-catalog-grid">
+    @foreach($groups as $group)
+     @foreach(array_slice($group['items'], 0, 2) as $item)
+      <article class="care-catalog-card" x-show="group === 'all' || group === '{{ $group['id'] }}'">
+       <a class="care-catalog-photo" href="#yeu-cau-sua-chua" aria-label="Tư vấn {{ $item['name'] }}">@if($serviceMedia[$group['id']] ?? null)<img src="{{ Storage::url($serviceMedia[$group['id']]) }}" alt="Minh họa thiết bị — {{ $group['title'] }}" loading="lazy">@else<svg viewBox="0 0 80 80" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="10" y="20" width="60" height="40" rx="8"/><path d="M20 32h40M20 42h40M30 52h20"/></svg>@endif<span aria-hidden="true">↗</span></a>
+       <div><small>{{ $group['title'] }}</small><h3><a href="#yeu-cau-sua-chua">{{ $item['name'] }}</a></h3><p>Liên hệ báo giá</p><a class="care-catalog-consult" href="#yeu-cau-sua-chua">Tư vấn hạng mục <span aria-hidden="true">→</span></a></div>
+      </article>
+     @endforeach
+    @endforeach
+   </div>
+  </section>
   <section aria-labelledby="repair-services-title" class="gear-repair-services">
    <header class="gear-repair-section-head"><div><span class="gear-repair-eyebrow">DỊCH VỤ</span><h2 id="repair-services-title">Gear của bạn cần hỗ trợ gì?</h2></div><p>Chọn nhóm dịch vụ phù hợp.<br>Phương án và chi phí được xác nhận sau khi kiểm tra.</p></header>
-   <div class="gear-repair-grid">
+   <div class="care-service-directory">
     @foreach($groups as $group)
-     <article id="dich-vu-{{ $group['id'] }}">
-      <span class="gear-repair-service-number">0{{ $loop->iteration }}<span aria-hidden="true">↗</span></span>
-      <h3>{{ $group['title'] }}</h3><p>{{ $group['description'] }}</p>
-      <ul class="care-service-items">@foreach($group['items'] as $item)<li><span>{{ $item['name'] }}</span><small>{{ $item['price_from'] === null ? $item['price_note'] : 'Từ '.number_format($item['price_from'], 0, ',', '.').'đ' }}</small></li>@endforeach</ul>
-      <a href="#yeu-cau-sua-chua">Liên hệ báo giá <span aria-hidden="true">→</span></a>
-     </article>
+     <details id="dich-vu-{{ $group['id'] }}" class="care-directory-group" @if($loop->first) open @endif>
+      <summary><span class="care-directory-number">0{{ $loop->iteration }}</span><span><strong>{{ $group['title'] }}</strong><small>{{ count($group['items']) }} hạng mục · {{ $group['description'] }}</small></span><i aria-hidden="true">+</i></summary>
+      <ul class="care-service-items">@foreach($group['items'] as $item)<li><span>{{ $item['name'] }}</span><small>{{ $item['price_note'] }}</small><a href="#yeu-cau-sua-chua" aria-label="Tư vấn {{ $item['name'] }}">Liên hệ <span aria-hidden="true">↗</span></a></li>@endforeach</ul>
+     </details>
     @endforeach
    </div>
   </section>
