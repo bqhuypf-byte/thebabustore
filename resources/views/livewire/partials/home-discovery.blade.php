@@ -3,7 +3,8 @@
     $discoverySections = collect($discoverySettings?->homepage_sections ?? []);
     $setupSection = $discoverySections->firstWhere('layout', 'setup');
     $setupItems = collect($setupSection['items'] ?? [])->filter(fn ($item) => !empty($item['image']))->take(3);
-    $homeBrands = \App\Models\Brand::query()->whereHas('products', fn ($q) => $q->where('is_active', true)->whereHas('variants', fn ($v) => $v->where('stock', 'in_stock')))->orderBy('name')->take(6)->get();
+    $brandPriority = array_flip(['atk', 'aula', 'mchose', 'lofree', 'weika']);
+    $homeBrands = \App\Models\Brand::query()->whereHas('products', fn ($q) => $q->where('is_active', true)->whereHas('variants', fn ($v) => $v->where('stock', 'in_stock')))->orderBy('name')->get()->sortBy(fn ($brand) => $brandPriority[mb_strtolower($brand->name)] ?? 100)->take(6)->values();
 @endphp
 @if($homeBrands->isNotEmpty())
 <section class="home-discovery home-brands" aria-labelledby="home-brands-title">

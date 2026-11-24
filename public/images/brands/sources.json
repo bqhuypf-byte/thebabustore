@@ -40,5 +40,19 @@
     "asset_url": "https://www.lofree.co/cdn/shop/files/lofree_logo_black.png?v=1710760376&width=400",
     "downloaded": "2026-11-24",
     "bytes": 3124
+  },
+  "mchose": {
+    "file": "mchose.png",
+    "source": "https://www.mchose.store/",
+    "asset_url": "https://www.mchose.store/cdn/shop/files/MCHOSE_LOGO_4ef9f8d9-2c90-40e3-a170-03aa6193204b.png?v=1766731393&width=560",
+    "downloaded": "2026-11-24",
+    "bytes": 3317
+  },
+  "weika": {
+    "file": "weika.jpg",
+    "source": "https://shopee.co.th/weikavth",
+    "asset_url": "https://img.ws.mms.shopee.co.th/th-11134216-7r98u-lwkg7gyx58lr3d",
+    "downloaded": "2026-11-24",
+    "bytes": 135077
   }
 }

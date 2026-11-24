@@ -6,5 +6,7 @@ return [
     'aula' => ['file' => 'aula.png', 'background' => '#eef7ff'],
     'fgg' => ['file' => 'fgg.png', 'background' => '#fff2ee'],
     'fury-cube' => ['file' => 'fury-cube.png', 'background' => '#fff1f4'],
+    'mchose' => ['file' => 'mchose.png', 'background' => '#fff'],
+    'weika' => ['file' => 'weika.jpg', 'background' => '#fff'],
     'lofree' => ['file' => 'lofree.png', 'background' => '#f5f2ec'],
 ];
