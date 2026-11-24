@@ -427,6 +427,7 @@ button.button.btn.btn-large.btn-block.btn-danger.btn-checkout.evo-button {
     <link rel="stylesheet" href="{{ asset('css/home-product-carousel.css') }}?v={{ filemtime(public_path('css/home-product-carousel.css')) }}">
     <link rel="stylesheet" href="{{ asset('css/store-design.css') }}?v={{ filemtime(public_path('css/store-design.css')) }}">
     <link rel="stylesheet" href="{{ asset('css/product-card-layout.css') }}?v={{ filemtime(public_path('css/product-card-layout.css')) }}">
+    <link rel="stylesheet" href="{{ asset('css/quick-view-layout.css') }}?v={{ filemtime(public_path('css/quick-view-layout.css')) }}">
 </body>
 
 </html>

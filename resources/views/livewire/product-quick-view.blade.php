@@ -1,10 +1,15 @@
 <div class="qv-root">
     @if($quickProduct)
         @php $selected = $quickProduct->variants->firstWhere('id', $variantId); $images = collect($quickProduct->images ?: [])->merge($quickProduct->variants->pluck('image'))->filter()->unique()->values(); $image = $images->get((int) $imageIndex) ?: $images->first(); @endphp
-        <div class="qv-overlay" wire:click.self="$set('productId', null)" x-data @keydown.escape.window="$wire.set('productId', null)">
+        <div class="qv-overlay" wire:click.self="$set('productId', null)" x-data="{
+        origin: document.activeElement, oldOverflow: '',
+        init() { this.oldOverflow = document.body.style.overflow; document.body.style.overflow = 'hidden'; this.$nextTick(() => this.$el.querySelector('button')?.focus()); },
+        destroy() { document.body.style.overflow = this.oldOverflow; if (this.origin?.isConnected) this.origin.focus(); },
+        trap(event) { const nodes = [...this.$el.querySelectorAll('a[href],button:not(:disabled),input:not(:disabled),select:not(:disabled),textarea:not(:disabled),[tabindex]')].filter(node => node.tabIndex >= 0 && node.getClientRects().length); const first = nodes[0], last = nodes[nodes.length - 1]; if (!first) return; if (event.shiftKey && document.activeElement === first) { event.preventDefault(); last.focus(); } else if (!event.shiftKey && document.activeElement === last) { event.preventDefault(); first.focus(); } }
+    }" @keydown.tab="trap($event)" @keydown.escape.window="$wire.set('productId', null)">
             <section class="qv-dialog" role="dialog" aria-modal="true" aria-labelledby="qv-title">
                 <button class="qv-close" type="button" wire:click="$set('productId', null)" aria-label="Đóng">×</button>
-                <div><div class="qv-main-image">@if($image)<img src="{{ asset('storage/'.$image) }}" alt="{{ $quickProduct->name }}">@endif</div>@if($images->count()>1)<div class="qv-thumbs">@foreach($images as $galleryImage)<button type="button" wire:click="$set('imageIndex', {{ $loop->index }})" class="{{ $imageIndex == $loop->index ? 'selected' : '' }}" aria-label="Ảnh sản phẩm {{ $loop->iteration }}"><img src="{{ asset('storage/'.$galleryImage) }}" alt=""></button>@endforeach</div>@endif</div>
+                <div class="qv-gallery"><div class="qv-main-image">@if($image)<img src="{{ asset('storage/'.$image) }}" alt="{{ $quickProduct->name }}">@endif</div>@if($images->count()>1)<div class="qv-thumbs">@foreach($images as $galleryImage)<button type="button" wire:click="$set('imageIndex', {{ $loop->index }})" class="{{ $imageIndex == $loop->index ? 'selected' : '' }}" aria-label="Ảnh sản phẩm {{ $loop->iteration }}"><img src="{{ asset('storage/'.$galleryImage) }}" alt=""></button>@endforeach</div>@endif</div>
                 <div class="qv-info"><div class="qv-top"><span>{{ $quickProduct->category?->name }}</span><a href="/product/{{ $quickProduct->slug }}">Xem trang chi tiết →</a></div><h2 id="qv-title">{{ $quickProduct->name }}</h2><div class="qv-price">{{ number_format($selected?->price ?? $quickProduct->price, 0, ',', '.') }}₫</div>@php($classificationGroups = \App\Support\VariantSelection::groups($quickProduct, $variantId))
                     @if($classificationGroups)
                         <div class="store-option-picker">

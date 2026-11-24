@@ -56,7 +56,12 @@
         $previewGallery = collect($previewImages)->merge($previewProduct->variants->pluck('image'))->filter()->unique()->values();
         $previewImage = $previewGallery->get((int) $previewImageIndex) ?: $previewGallery->first();
     @endphp
-    <div class="ms-preview-overlay" wire:click.self="closePreview" x-data @keydown.escape.window="$wire.closePreview()">
+    <div class="ms-preview-overlay" wire:click.self="closePreview" x-data="{
+        origin: document.activeElement, oldOverflow: '',
+        init() { this.oldOverflow = document.body.style.overflow; document.body.style.overflow = 'hidden'; this.$nextTick(() => this.$el.querySelector('button')?.focus()); },
+        destroy() { document.body.style.overflow = this.oldOverflow; if (this.origin?.isConnected) this.origin.focus(); },
+        trap(event) { const nodes = [...this.$el.querySelectorAll('a[href],button:not(:disabled),input:not(:disabled),select:not(:disabled),textarea:not(:disabled),[tabindex]')].filter(node => node.tabIndex >= 0 && node.getClientRects().length); const first = nodes[0], last = nodes[nodes.length - 1]; if (!first) return; if (event.shiftKey && document.activeElement === first) { event.preventDefault(); last.focus(); } else if (!event.shiftKey && document.activeElement === last) { event.preventDefault(); first.focus(); } }
+    }" @keydown.tab="trap($event)" @keydown.escape.window="$wire.closePreview()">
         <section class="ms-preview" role="dialog" aria-modal="true" aria-labelledby="preview-title">
             <button class="ms-preview-close" type="button" wire:click="closePreview" aria-label="Đóng">×</button>
             <div class="ms-preview-gallery">
@@ -70,12 +75,10 @@
                         @endforeach
                     </div>
                 @endif
-                <p class="ms-preview-image-caption">Hình ảnh sản phẩm tại The BABU Store</p>
             </div>
             <div class="ms-preview-details">
                 <div class="ms-preview-top"><span>{{ $previewProduct->category?->name }}</span><a href="/product/{{ $previewProduct->slug }}">Xem trang chi tiết →</a></div>
                 <h2 id="preview-title">{{ $previewProduct->name }}</h2>
-                <p>Thông tin sản phẩm</p>
                 <div class="ms-preview-price">{{ number_format($previewVariant?->price ?? $previewProduct->price, 0, ',', '.') }}₫</div>
                 @php($classificationGroups = \App\Support\VariantSelection::groups($previewProduct, $previewVariantId))
                 @if($classificationGroups)
@@ -93,13 +96,8 @@
                 </div>
                 @endif
                 @error('previewVariantId') <p class="ms-preview-error">{{ $message }}</p> @enderror
-                @if($previewProduct->short_description)
-                    <h3>Thông tin nổi bật:</h3>
-                    <p>{{ strip_tags($previewProduct->short_description) }}</p>
-                @endif
                 <div class="ms-preview-quantity"><span>Số lượng:</span><button type="button" wire:click="changePreviewQuantity(-1)" aria-label="Giảm số lượng">−</button><span>{{ $previewQuantity }}</span><button type="button" wire:click="changePreviewQuantity(1)" aria-label="Tăng số lượng">+</button></div>
                 <div class="ms-preview-actions"><button type="button" wire:click="addPreviewToCart" @disabled(!$previewVariant)>Thêm vào giỏ</button><button type="button" wire:click="addPreviewToCart(true)" @disabled(!$previewVariant)>Mua ngay</button></div>
-                <p class="ms-preview-benefits">Bảo hành · Giao hàng toàn quốc · Hỗ trợ tận tâm</p>
             </div>
         </section>
     </div>
