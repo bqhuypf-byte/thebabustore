@@ -21,3 +21,6 @@ body.babu-retail #product-page .pd-photo-grid button:focus-visible{outline:2px s
 @media(max-width:600px){body.babu-retail #product-page .pd-product-frame .pd-gallery.pd-photo-grid{gap:10px}body.babu-retail #product-page .pd-product-frame .pd-gallery.pd-photo-grid .pd-thumbnails{gap:10px}body.babu-retail #product-page .pd-photo-grid .pd-photo-dialog{padding:14px}}
 @media(hover:none){body.babu-retail #product-page .pd-photo-grid .photo-nav{opacity:.8;pointer-events:auto}}
 @media(prefers-reduced-motion:reduce){body.babu-retail #product-page .pd-photo-grid *{transition:none!important}}
+
+/* Give the main product photograph more room on three-column desktops. */
+@media(min-width:1200px){body.babu-retail #product-page .pd-product-frame .pd-grid:has(.pd-photo-grid){grid-template-columns:minmax(0,1.4fr) minmax(0,1.2fr) minmax(230px,.7fr)}}
