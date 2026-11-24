@@ -13,15 +13,7 @@
             <span class="sep">›</span><span class="cur">{{ $product->name }}</span>
         </nav>
         <div class="product pd-grid">
-            <div class="gallery pd-gallery">
-                <div class="main-photo pd-main-image">
-                    @if($displayImage)<img src="{{ asset('storage/'.$displayImage) }}" alt="{{ $product->name }}{{ $selected ? ' — '.$selected->name : '' }}" fetchpriority="high">@else<span>Chưa có hình ảnh</span>@endif
-                    @if($selected)<span class="photo-chip">{{ $selected->name }}</span>@endif
-                    @if($images->count()>1)<button class="photo-nav prev" type="button" wire:click="changeImage(-1)" aria-label="Ảnh trước">‹</button><button class="photo-nav next" type="button" wire:click="changeImage(1)" aria-label="Ảnh tiếp theo">›</button>@endif
-                </div>
-                <div class="thumbs pd-thumbnails">@foreach($images as $image)<button type="button" wire:click="selectImage({{ $loop->index }})" class="{{ $displayImage === $image ? 'active' : '' }}" aria-label="Ảnh sản phẩm {{ $loop->iteration }}" aria-pressed="{{ $displayImage === $image ? 'true' : 'false' }}"><img src="{{ asset('storage/'.$image) }}" alt="{{ $product->name }} — ảnh {{ $loop->iteration }}" loading="lazy"></button>@endforeach</div>
-                <p class="gallery-cap">Ảnh và thông tin cập nhật theo phân loại · Hình ảnh tại The BABU Store</p>
-            </div>
+            @include('livewire.partials.product-photo-gallery')
             <section class="buy-col pd-details">
                 <div class="cat-row"><a class="cat-link" href="/shop?category={{ urlencode($product->category?->slug ?? '') }}">{{ $product->category?->name ?? 'Sản phẩm' }}</a><span class="stock {{ $stock_status !== 'in_stock' ? 'out' : '' }}"><i></i>{{ $stock_status === 'in_stock' ? 'Còn hàng' : 'Hết hàng' }}</span></div>
                 <h1 class="title">{{ $product->name }}</h1>
