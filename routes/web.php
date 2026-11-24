@@ -53,6 +53,7 @@ Route::get('/bao-tri', function () {
 Route::get('/', Home::class);
 Route::get('/about', About::class);
 Route::get('/contact', Contact::class);
+Route::get('/sua-chua-gear', \App\Livewire\RepairServices::class)->name('repair-services');
 Route::get('/chinh-sach-van-chuyen', ShippingPolicy::class);
 Route::get('/chinh-sach-bao-mat', PrivacyPolicy::class);
 Route::get('/chinh-sach-thanh-toan', PaymentPolicy::class);
