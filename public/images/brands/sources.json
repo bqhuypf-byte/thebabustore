@@ -1,0 +1,44 @@
+{
+  "akko": {
+    "file": "akko.svg",
+    "source": "https://en.akkogear.com/",
+    "asset_url": "https://en.akkogear.com/wp-content/themes/xtra/img/Akko-logo-White.svg",
+    "downloaded": "2026-11-24",
+    "bytes": 4100
+  },
+  "atk": {
+    "file": "atk.png",
+    "source": "https://www.atk.store/",
+    "asset_url": "https://www.atk.store/cdn/shop/files/atk_logo-black_31d10e5f-48ba-4bcb-87a0-21a3d509fd48.png?v=1774246806&width=360",
+    "downloaded": "2026-11-24",
+    "bytes": 18264
+  },
+  "fgg": {
+    "file": "fgg.png",
+    "source": "https://f.gg/",
+    "asset_url": "https://f.gg/cdn/shop/files/FGG-Madlions-original-3D-v4.png?v=1787194121&width=500",
+    "downloaded": "2026-11-24",
+    "bytes": 71064
+  },
+  "fury-cube": {
+    "file": "fury-cube.png",
+    "source": "https://www.furycube.com/",
+    "asset_url": "https://www.furycube.com/cdn/shop/files/1_29d978ec-5de9-47a3-a18d-ab072f5bce26.png?v=1750412299&width=600",
+    "downloaded": "2026-11-24",
+    "bytes": 10979
+  },
+  "aula": {
+    "file": "aula.png",
+    "source": "https://www.aulastar.com/",
+    "asset_url": "https://www.aulastar.com/uploads/allimg/20230921/1-2309212124532Z.png",
+    "downloaded": "2026-11-24",
+    "bytes": 18259
+  },
+  "lofree": {
+    "file": "lofree.png",
+    "source": "https://www.lofree.co/",
+    "asset_url": "https://www.lofree.co/cdn/shop/files/lofree_logo_black.png?v=1710760376&width=400",
+    "downloaded": "2026-11-24",
+    "bytes": 3124
+  }
+}
