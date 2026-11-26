@@ -1,0 +1,897 @@
+[
+  {
+    "id": "keyboard",
+    "title": "Sửa chữa & thay linh kiện bàn phím cơ",
+    "description": "Hàn, rã hàn, thay switch; kiểm tra lỗi phím, mạch, cổng kết nối và pin.",
+    "items": [
+      {
+        "name": "Hàn switch bàn phím cơ",
+        "kind": "replacement",
+        "symptoms": "Lắp switch cho PCB hàn hoặc hàn lại switch sau khi thay.",
+        "scope": "Kiểm tra PCB, switch và layout 60–65%, 75–TKL hoặc fullsize; thống nhất công và số lượng trước khi làm.",
+        "source_url": "https://rightfix.com.vn/han-switch-ban-phim-co-assem-rightfix",
+        "source_status": "observed_service",
+        "reference_price_vnd": 150000,
+        "price_from": null,
+        "price_note": "Báo giá sau kiểm tra",
+        "warranty": null,
+        "price_unit": "layout 60–65%",
+        "image": "images/repair/reference/service-1.png",
+        "image_source_url": "https://rightfix.com.vn/wp-content/uploads/2021/06/San-pham-Wed-21-800x800.png",
+        "tiers": [
+          {
+            "label": "Hàn switch",
+            "price": 150000,
+            "condition": "60–65%"
+          },
+          {
+            "label": "Hàn switch",
+            "price": 200000,
+            "condition": "75% – TKL"
+          },
+          {
+            "label": "Hàn switch",
+            "price": 250000,
+            "condition": "Fullsize"
+          }
+        ],
+        "price_source": "Bảng giá RightFix và ảnh tham khảo chủ dự án cung cấp ngày 25/11/2026"
+      },
+      {
+        "name": "Rã hàn switch bàn phím cơ",
+        "kind": "replacement",
+        "symptoms": "Tháo switch hàn để thay mới, bảo dưỡng hoặc chuyển sang bộ switch khác.",
+        "scope": "Kiểm tra pad mạch và LED đi kèm; phạm vi rã hàn phụ thuộc layout và tình trạng PCB.",
+        "source_url": "https://rightfix.com.vn/ra-han-switch-ban-phim-co-rightfix",
+        "source_status": "observed_service",
+        "reference_price_vnd": 200000,
+        "price_from": null,
+        "price_note": "Báo giá sau kiểm tra",
+        "warranty": null,
+        "price_unit": "layout 60–65%",
+        "image": "images/repair/reference/service-5.png",
+        "image_source_url": "https://rightfix.com.vn/wp-content/uploads/2021/04/San-pham-Wed-25-800x800.png",
+        "tiers": [
+          {
+            "label": "Rã hàn switch",
+            "price": 200000,
+            "condition": "60–65%"
+          },
+          {
+            "label": "Rã hàn switch",
+            "price": 250000,
+            "condition": "75% – TKL"
+          },
+          {
+            "label": "Rã hàn switch",
+            "price": 300000,
+            "condition": "Fullsize"
+          }
+        ],
+        "price_source": "Bảng giá RightFix và ảnh tham khảo chủ dự án cung cấp ngày 25/11/2026"
+      },
+      {
+        "name": "Thay switch MX",
+        "kind": "replacement",
+        "symptoms": "Switch bị kẹt, chập chờn hoặc muốn đổi cảm giác gõ.",
+        "scope": "Xác định PCB hàn hay hot-swap, đúng loại switch; số lượng và mã switch ảnh hưởng tổng chi phí.",
+        "source_url": "https://rightfix.com.vn/thay-switch-ban-phim-co-rightfix",
+        "source_status": "observed_service",
+        "reference_price_vnd": 70000,
+        "price_from": null,
+        "price_note": "Báo giá sau kiểm tra",
+        "warranty": null,
+        "price_unit": "switch đầu tiên",
+        "image": "images/repair/reference/service-16.png",
+        "image_source_url": "https://rightfix.com.vn/wp-content/uploads/2021/04/San-pham-Wed-30-800x800.png",
+        "tiers": [
+          {
+            "label": "MX loại thường",
+            "price": 70000,
+            "condition": "Switch đầu tiên"
+          },
+          {
+            "label": "MX loại thường",
+            "price": 20000,
+            "condition": "Mỗi switch tiếp theo trên cùng bàn phím"
+          },
+          {
+            "label": "MX loại tốt",
+            "price": 90000,
+            "condition": "Switch đầu tiên"
+          },
+          {
+            "label": "MX loại tốt",
+            "price": 40000,
+            "condition": "Mỗi switch tiếp theo trên cùng bàn phím"
+          }
+        ],
+        "price_source": "Bảng giá RightFix và ảnh tham khảo chủ dự án cung cấp ngày 25/11/2026"
+      },
+      {
+        "name": "Kiểm tra liệt nút / phím không nhận",
+        "kind": "repair",
+        "symptoms": "Một hoặc nhiều phím không có tín hiệu, phải nhấn mạnh hoặc lúc nhận lúc không.",
+        "scope": "Kiểm tra switch, tiếp xúc socket và đường mạch; xác định nguyên nhân trước khi thay linh kiện.",
+        "source_url": "https://rightfix.com.vn/sua-mach-ban-phim-co-rightfix",
+        "source_status": "observed_service",
+        "reference_price_vnd": null,
+        "price_from": null,
+        "price_note": "Báo giá sau kiểm tra",
+        "warranty": null,
+        "image": "images/repair/reference/service-7.png",
+        "image_source_url": "https://rightfix.com.vn/wp-content/uploads/2021/04/San-pham-Wed-22-800x800.png",
+        "tiers": []
+      },
+      {
+        "name": "Kiểm tra double / loạn phím",
+        "kind": "repair",
+        "symptoms": "Bấm một lần ra nhiều ký tự, tự lặp chữ hoặc nhấn phím này ra phím khác.",
+        "scope": "Phân biệt lỗi switch, mạch và cấu hình; không mặc định mọi lỗi đều xử lý bằng thay switch.",
+        "source_url": "https://rightfix.com.vn/thay-switch-ban-phim-co-rightfix",
+        "source_status": "observed_service",
+        "reference_price_vnd": null,
+        "price_from": null,
+        "price_note": "Báo giá sau kiểm tra",
+        "warranty": null,
+        "image": "images/repair/reference/service-16.png",
+        "image_source_url": "https://rightfix.com.vn/wp-content/uploads/2021/04/San-pham-Wed-30-800x800.png",
+        "tiers": []
+      },
+      {
+        "name": "Kiểm tra chập cháy / lỗi nguồn",
+        "kind": "repair",
+        "symptoms": "Bàn phím mất nguồn, có dấu hiệu chập hoặc linh kiện bị cháy.",
+        "scope": "Đo kiểm tình trạng PCB và linh kiện; khả năng sửa hay thay bo mạch được xác nhận sau kiểm tra.",
+        "source_url": "https://mkshop.vn/dich-vu-sua-chua-ban-phim-co-chuot-uy-tin-chuyen-nghiep-lay-ngay-tai-ha-noi-mkshop/",
+        "source_status": "supplementary_service_source",
+        "reference_price_vnd": null,
+        "price_from": null,
+        "price_note": "Báo giá sau kiểm tra",
+        "warranty": null,
+        "image": "images/repair/reference/service-7.png",
+        "image_source_url": "https://rightfix.com.vn/wp-content/uploads/2021/04/San-pham-Wed-22-800x800.png",
+        "tiers": []
+      },
+      {
+        "name": "Thay cổng kết nối bàn phím",
+        "kind": "replacement",
+        "symptoms": "Cổng USB / Type-C lỏng, gãy hoặc kết nối chập chờn.",
+        "scope": "Đối chiếu loại cổng, chân hàn và phần mạch liên quan theo model.",
+        "source_url": "https://rightfix.com.vn/thay-cong-ban-phim-co-rightfix",
+        "source_status": "observed_service",
+        "reference_price_vnd": 120000,
+        "price_from": null,
+        "price_note": "Báo giá sau kiểm tra",
+        "warranty": null,
+        "image": "images/repair/reference/service-8.png",
+        "image_source_url": "https://rightfix.com.vn/wp-content/uploads/2023/04/San-pham-Wed-26.png",
+        "tiers": [
+          {
+            "label": "Thay cổng kết nối bàn phím",
+            "price": 120000,
+            "condition": "Theo thiết bị thực tế"
+          }
+        ]
+      },
+      {
+        "name": "Thay pin bàn phím",
+        "kind": "replacement",
+        "symptoms": "Thời lượng pin giảm, pin không tích điện hoặc cần kiểm tra pin.",
+        "scope": "Kiểm tra pin và mạch sạc; chỉ chọn pin đúng thông số, kích thước và đầu nối.",
+        "source_url": "https://rightfix.com.vn/thay-pin-ban-phim-co-rightfix",
+        "source_status": "observed_service",
+        "reference_price_vnd": 200000,
+        "price_from": null,
+        "price_note": "Báo giá sau kiểm tra",
+        "warranty": null,
+        "image": "images/repair/reference/service-14.png",
+        "image_source_url": "https://rightfix.com.vn/wp-content/uploads/2023/04/San-pham-Wed-29.png",
+        "tiers": [
+          {
+            "label": "Thay pin bàn phím",
+            "price": 200000,
+            "condition": "Theo thiết bị thực tế"
+          }
+        ]
+      },
+      {
+        "name": "Thay hoặc nối dây bàn phím",
+        "kind": "replacement",
+        "symptoms": "Dây bị đứt, gãy hoặc mất kết nối khi chạm vào dây.",
+        "scope": "Kiểm tra dây, đầu cắm và sơ đồ kết nối trước khi thống nhất phương án.",
+        "source_url": "https://rightfix.com.vn/thay-day-noi-day-ban-phim-co-rightfix",
+        "source_status": "observed_service",
+        "reference_price_vnd": 150000,
+        "price_from": null,
+        "price_note": "Báo giá sau kiểm tra",
+        "warranty": null,
+        "image": "images/repair/reference/service-11.png",
+        "image_source_url": "https://rightfix.com.vn/wp-content/uploads/2021/04/San-pham-Wed-27-800x800.png",
+        "tiers": [
+          {
+            "label": "Thay hoặc nối dây bàn phím",
+            "price": 150000,
+            "condition": "Theo thiết bị thực tế"
+          }
+        ]
+      },
+      {
+        "name": "Kiểm tra liệt hàng / cột, chạm mạch",
+        "kind": "repair",
+        "symptoms": "Nhiều phím trên cùng hàng hoặc cột không nhận hay nhận sai.",
+        "scope": "Kiểm tra đường tín hiệu ma trận và tình trạng mạch; báo phương án theo mức hư hỏng.",
+        "source_url": "https://rightfix.com.vn/sua-mach-ban-phim-co-rightfix",
+        "source_status": "observed_service",
+        "reference_price_vnd": null,
+        "price_from": null,
+        "price_note": "Báo giá sau kiểm tra",
+        "warranty": null,
+        "image": "images/repair/reference/service-7.png",
+        "image_source_url": "https://rightfix.com.vn/wp-content/uploads/2021/04/San-pham-Wed-22-800x800.png",
+        "tiers": []
+      },
+      {
+        "name": "Kiểm tra bàn phím vào nước / oxy hóa",
+        "kind": "repair",
+        "symptoms": "Thiết bị từng dính nước, chất lỏng hoặc có dấu hiệu rỉ trên mạch.",
+        "scope": "Kiểm tra vùng ảnh hưởng và khả năng phục hồi; không cam kết sửa được mọi trường hợp.",
+        "source_url": "https://rightfix.com.vn/sua-mach-ban-phim-co-rightfix",
+        "source_status": "observed_service",
+        "reference_price_vnd": null,
+        "price_from": null,
+        "price_note": "Báo giá sau kiểm tra",
+        "warranty": null,
+        "image": "images/repair/reference/service-7.png",
+        "image_source_url": "https://rightfix.com.vn/wp-content/uploads/2021/04/San-pham-Wed-22-800x800.png",
+        "tiers": []
+      },
+      {
+        "name": "Thay switch Romer-G",
+        "kind": "replacement",
+        "symptoms": "Phím Logitech dùng Romer-G bị chập chờn hoặc không nhận.",
+        "scope": "Xác nhận đúng loại switch và số phím cần thay; kiểm tra mạch trước khi chốt linh kiện.",
+        "source_url": "https://rightfix.com.vn/thay-switch-romerg-phim-logitech-rightfix",
+        "source_status": "observed_service",
+        "reference_price_vnd": 90000,
+        "price_from": null,
+        "price_note": "Báo giá sau kiểm tra",
+        "warranty": null,
+        "image": "images/repair/reference/service-18.png",
+        "image_source_url": "https://rightfix.com.vn/wp-content/uploads/2021/04/San-pham-Wed-33.png",
+        "tiers": [
+          {
+            "label": "Romer-G",
+            "price": 90000,
+            "condition": "Switch đầu tiên — giá trang dịch vụ"
+          },
+          {
+            "label": "Romer-G",
+            "price": 50000,
+            "condition": "Mỗi switch tiếp theo"
+          }
+        ],
+        "price_source": "Bảng giá RightFix và ảnh tham khảo chủ dự án cung cấp ngày 25/11/2026"
+      },
+      {
+        "name": "Combo rã và hàn switch",
+        "kind": "replacement",
+        "symptoms": "Đổi bộ switch trên bàn phím PCB hàn.",
+        "scope": "Tách công rã/hàn và linh kiện; xác nhận layout, LED và tình trạng mạch.",
+        "source_url": "https://rightfix.com.vn/thay-led-mod-led-mod-led-ngam-ban-phim-co-rightfix",
+        "source_status": "observed_service",
+        "reference_price_vnd": 300000,
+        "price_from": null,
+        "price_note": "Báo giá sau kiểm tra",
+        "warranty": null,
+        "image": "images/repair/reference/service-13.png",
+        "image_source_url": "https://rightfix.com.vn/wp-content/uploads/2021/04/San-pham-Wed-28.png",
+        "tiers": [
+          {
+            "label": "Rã + hàn switch",
+            "price": 300000,
+            "condition": "60–65%"
+          },
+          {
+            "label": "Rã + hàn switch",
+            "price": 400000,
+            "condition": "75% – TKL"
+          },
+          {
+            "label": "Rã + hàn switch",
+            "price": 500000,
+            "condition": "Fullsize"
+          }
+        ],
+        "price_source": "Bảng giá RightFix và ảnh tham khảo chủ dự án cung cấp ngày 25/11/2026"
+      },
+      {
+        "name": "Thay LED bàn phím",
+        "kind": "replacement",
+        "symptoms": "LED không sáng, sáng yếu hoặc sai màu ở một số vị trí.",
+        "scope": "Kiểm tra loại LED, mạch và số lượng trước khi xác nhận khả năng thay.",
+        "source_url": "https://rightfix.com.vn/thay-led-mod-led-mod-led-ngam-ban-phim-co-rightfix",
+        "source_status": "observed_service",
+        "reference_price_vnd": 50000,
+        "price_from": null,
+        "price_note": "Báo giá sau kiểm tra",
+        "warranty": null,
+        "price_unit": "LED đầu tiên",
+        "image": "images/repair/reference/service-13.png",
+        "image_source_url": "https://rightfix.com.vn/wp-content/uploads/2021/04/San-pham-Wed-28.png",
+        "tiers": [
+          {
+            "label": "LED đơn / RGB",
+            "price": 50000,
+            "condition": "LED đầu tiên"
+          },
+          {
+            "label": "LED đơn / RGB",
+            "price": 10000,
+            "condition": "Mỗi LED tiếp theo"
+          }
+        ],
+        "price_source": "Bảng giá RightFix và ảnh tham khảo chủ dự án cung cấp ngày 25/11/2026"
+      },
+      {
+        "name": "Kiểm tra lỗi mạch bàn phím",
+        "kind": "repair",
+        "symptoms": "Mất tín hiệu hoặc lỗi nhiều phím sau va đập hay can thiệp trước đó.",
+        "scope": "Khảo sát PCB để phân biệt lỗi tiếp xúc, đứt đường mạch hoặc linh kiện liên quan.",
+        "source_url": "https://rightfix.com.vn/sua-mach-ban-phim-co-rightfix",
+        "source_status": "observed_service",
+        "reference_price_vnd": 80000,
+        "price_from": null,
+        "price_note": "Báo giá sau kiểm tra",
+        "warranty": null,
+        "image": "images/repair/reference/service-7.png",
+        "image_source_url": "https://rightfix.com.vn/wp-content/uploads/2021/04/San-pham-Wed-22-800x800.png",
+        "tiers": []
+      }
+    ]
+  },
+  {
+    "id": "cleaning",
+    "title": "Vệ sinh & bảo dưỡng bàn phím",
+    "description": "Làm sạch keycap, khung, switch và stab; xác nhận phạm vi theo thiết bị.",
+    "items": [
+      {
+        "name": "Vệ sinh keycap, PCB, plate và case",
+        "kind": "cleaning",
+        "symptoms": "Bụi bẩn, bám dầu hoặc cần vệ sinh bàn phím sau thời gian sử dụng.",
+        "scope": "Trao đổi phạm vi tháo lắp và tình trạng vật liệu trước khi vệ sinh.",
+        "source_url": "https://rightfix.com.vn/ve-sinh-phuc-hoi-gay-vo-ban-phim-co-rightfix",
+        "source_status": "observed_service",
+        "reference_price_vnd": 180000,
+        "price_from": null,
+        "price_note": "Báo giá sau kiểm tra",
+        "warranty": null,
+        "image": "images/repair/reference/service-19.png",
+        "image_source_url": "https://rightfix.com.vn/wp-content/uploads/2021/04/San-pham-Wed-31.png",
+        "tiers": [
+          {
+            "label": "Vệ sinh keycap, PCB, plate và case",
+            "price": 180000,
+            "condition": "Theo thiết bị thực tế"
+          }
+        ]
+      },
+      {
+        "name": "Lube switch",
+        "kind": "cleaning",
+        "symptoms": "Muốn bảo dưỡng hoặc điều chỉnh cảm giác gõ của bộ switch phù hợp.",
+        "scope": "Xác nhận loại switch, số lượng và nhu cầu rã hàn trước khi thực hiện.",
+        "source_url": "https://rightfix.com.vn/lube-switch-rightfix",
+        "source_status": "observed_service",
+        "reference_price_vnd": 3000,
+        "price_from": null,
+        "price_note": "Báo giá sau kiểm tra",
+        "warranty": null,
+        "price_unit": "mỗi switch",
+        "image": "images/repair/reference/service-3.png",
+        "image_source_url": "https://rightfix.com.vn/wp-content/uploads/2021/06/San-pham-Wed-23-800x800.png",
+        "tiers": [
+          {
+            "label": "Lube switch",
+            "price": 3000,
+            "condition": "Mỗi switch"
+          }
+        ],
+        "price_source": "Bảng giá RightFix và ảnh tham khảo chủ dự án cung cấp ngày 25/11/2026"
+      },
+      {
+        "name": "Mod stab",
+        "kind": "cleaning",
+        "symptoms": "Các phím dài lỏng, rung hoặc cần cân chỉnh thanh cân bằng.",
+        "scope": "Kiểm tra stab và cách lắp trên bàn phím; thống nhất hạng mục cần xử lý.",
+        "source_url": null,
+        "source_status": "owner_requested_diagnostic",
+        "reference_price_vnd": null,
+        "price_from": null,
+        "price_note": "Báo giá sau kiểm tra",
+        "warranty": null,
+        "image": "images/repair/reference/service-3.png",
+        "image_source_url": "https://rightfix.com.vn/wp-content/uploads/2021/06/San-pham-Wed-23-800x800.png"
+      },
+      {
+        "name": "Mod LED đơn 2 chân",
+        "kind": "replacement",
+        "symptoms": "Nhu cầu thay đổi hoặc bổ sung đèn theo cấu trúc bàn phím.",
+        "scope": "Chỉ thực hiện khi PCB và loại LED tương thích.",
+        "source_url": "https://rightfix.com.vn/thay-led-mod-led-mod-led-ngam-ban-phim-co-rightfix",
+        "source_status": "observed_service",
+        "reference_price_vnd": 300000,
+        "price_from": null,
+        "price_note": "Báo giá sau kiểm tra",
+        "warranty": null,
+        "image": "images/repair/reference/service-13.png",
+        "image_source_url": "https://rightfix.com.vn/wp-content/uploads/2021/04/San-pham-Wed-28.png",
+        "tiers": [
+          {
+            "label": "Mod LED đơn 2 chân",
+            "price": 300000,
+            "condition": "60–65%"
+          },
+          {
+            "label": "Mod LED đơn 2 chân",
+            "price": 350000,
+            "condition": "75% – TKL"
+          },
+          {
+            "label": "Mod LED đơn 2 chân",
+            "price": 400000,
+            "condition": "Fullsize"
+          }
+        ],
+        "price_source": "Bảng giá RightFix và ảnh tham khảo chủ dự án cung cấp ngày 25/11/2026"
+      },
+      {
+        "name": "Phục hồi keycap, khung và mạch bàn phím",
+        "kind": "repair",
+        "symptoms": "Keycap, khung hoặc mạch có hư hỏng cần xem xét khả năng phục hồi.",
+        "scope": "Đánh giá từng phần; không dùng chung một phương án cho mọi vật liệu.",
+        "source_url": "https://rightfix.com.vn/ve-sinh-phuc-hoi-gay-vo-ban-phim-co-rightfix",
+        "source_status": "catalogue_only",
+        "reference_price_vnd": null,
+        "price_from": null,
+        "price_note": "Báo giá sau kiểm tra",
+        "warranty": null,
+        "image": "images/repair/reference/service-19.png",
+        "image_source_url": "https://rightfix.com.vn/wp-content/uploads/2021/04/San-pham-Wed-31.png",
+        "tiers": []
+      },
+      {
+        "name": "Sơn bàn phím theo yêu cầu",
+        "kind": "cleaning",
+        "symptoms": "Nhu cầu đổi màu hoặc xử lý bề mặt khung bàn phím.",
+        "scope": "Liên hệ xác nhận khả năng tiếp nhận, vật liệu và phạm vi trước khi gửi.",
+        "source_url": "https://rightfix.com.vn/ve-sinh-phuc-hoi-gay-vo-ban-phim-co-rightfix",
+        "source_status": "catalogue_only",
+        "reference_price_vnd": null,
+        "price_from": null,
+        "price_note": "Báo giá sau kiểm tra",
+        "warranty": null,
+        "image": "images/repair/reference/service-19.png",
+        "image_source_url": "https://rightfix.com.vn/wp-content/uploads/2021/04/San-pham-Wed-31.png"
+      }
+    ]
+  },
+  {
+    "id": "mouse",
+    "title": "Sửa chữa & bảo dưỡng chuột",
+    "description": "Switch click, cuộn lăn, mạch, sensor, kết nối, pin và vệ sinh.",
+    "items": [
+      {
+        "name": "Thay switch chuột",
+        "kind": "replacement",
+        "symptoms": "Nút click chập chờn hoặc muốn thay switch phù hợp.",
+        "scope": "Kiểm tra loại switch và mạch; xác nhận thay một hay nhiều nút theo model.",
+        "source_url": "https://rightfix.com.vn/thay-switch-chuot-rightfix",
+        "source_status": "observed_service",
+        "reference_price_vnd": 90000,
+        "price_from": null,
+        "price_note": "Báo giá sau kiểm tra",
+        "warranty": null,
+        "image": "images/repair/reference/service-17.png",
+        "image_source_url": "https://rightfix.com.vn/wp-content/uploads/2021/04/San-pham-Wed-18-800x800.png",
+        "tiers": [
+          {
+            "label": "Switch Omron 50M",
+            "price": 90000,
+            "condition": "Switch đầu tiên"
+          },
+          {
+            "label": "Switch Omron 50M",
+            "price": 40000,
+            "condition": "Mỗi switch tiếp theo trên cùng chuột"
+          }
+        ],
+        "price_source": "Bảng giá tham khảo chủ dự án cung cấp ngày 25/11/2026"
+      },
+      {
+        "name": "Thay cuộn lăn / encoder",
+        "kind": "replacement",
+        "symptoms": "Cuộn bị nhảy nấc, cuộn ngược hoặc không nhận tín hiệu.",
+        "scope": "Đo đúng chiều cao encoder; kiểm tra thêm trục lăn và đường tín hiệu.",
+        "source_url": "https://rightfix.com.vn/thay-cuon-chuot-rightfix",
+        "source_status": "observed_service",
+        "reference_price_vnd": 100000,
+        "price_from": null,
+        "price_note": "Báo giá sau kiểm tra",
+        "warranty": null,
+        "image": "images/repair/reference/service-10.png",
+        "image_source_url": "https://rightfix.com.vn/wp-content/uploads/2021/04/San-pham-Wed-15-800x800.png",
+        "tiers": [
+          {
+            "label": "Encoder / cuộn lăn",
+            "price": 100000,
+            "condition": "Tùy dòng chuột"
+          },
+          {
+            "label": "Encoder / cuộn lăn",
+            "price": 150000,
+            "condition": "Tùy dòng chuột"
+          }
+        ],
+        "price_source": "Bảng giá tham khảo chủ dự án cung cấp ngày 25/11/2026"
+      },
+      {
+        "name": "Kiểm tra double click / giữ kéo bị ngắt",
+        "kind": "repair",
+        "symptoms": "Click một lần thành nhiều lần hoặc đang kéo thì tự nhả.",
+        "scope": "Kiểm tra nút và tín hiệu; chỉ đề xuất thay switch sau khi xác định nguyên nhân.",
+        "source_url": "https://rightfix.com.vn/thay-switch-chuot-rightfix",
+        "source_status": "observed_service",
+        "reference_price_vnd": null,
+        "price_from": null,
+        "price_note": "Báo giá sau kiểm tra",
+        "warranty": null,
+        "image": "images/repair/reference/service-17.png",
+        "image_source_url": "https://rightfix.com.vn/wp-content/uploads/2021/04/San-pham-Wed-18-800x800.png",
+        "tiers": []
+      },
+      {
+        "name": "Kiểm tra liệt nút trái / phải",
+        "kind": "repair",
+        "symptoms": "Nút chính không nhận, phải nhấn mạnh hoặc phản hồi chập chờn.",
+        "scope": "Phân biệt lỗi switch, cơ cấu bấm và đường mạch.",
+        "source_url": "https://rightfix.com.vn/sua-chua-chuot-may-tinh-tai-rightfix",
+        "source_status": "observed_service",
+        "reference_price_vnd": null,
+        "price_from": null,
+        "price_note": "Báo giá sau kiểm tra",
+        "warranty": null,
+        "image": "images/repair/reference/service-6.png",
+        "image_source_url": "https://rightfix.com.vn/wp-content/uploads/2021/06/Thiet-ke-chua-co-ten-16.png",
+        "tiers": []
+      },
+      {
+        "name": "Thay hoặc nối dây chuột",
+        "kind": "replacement",
+        "symptoms": "Chuột mất kết nối khi di chuyển hoặc dây có dấu hiệu gãy đứt.",
+        "scope": "Kiểm tra lõi dây, đầu nối và khả năng thay thế theo model.",
+        "source_url": "https://rightfix.com.vn/thay-day-noi-day-chuot-rightfix",
+        "source_status": "observed_service",
+        "reference_price_vnd": 150000,
+        "price_from": null,
+        "price_note": "Báo giá sau kiểm tra",
+        "warranty": null,
+        "image": "images/repair/reference/service-12.png",
+        "image_source_url": "https://rightfix.com.vn/wp-content/uploads/2021/04/San-pham-Wed-16-800x800.png",
+        "tiers": [
+          {
+            "label": "Dây cao su",
+            "price": 150000,
+            "condition": "Theo model và đầu nối"
+          },
+          {
+            "label": "Dây bọc dù",
+            "price": 170000,
+            "condition": "Theo model và đầu nối"
+          }
+        ],
+        "price_source": "Bảng giá tham khảo chủ dự án cung cấp ngày 25/11/2026"
+      },
+      {
+        "name": "Thay cổng kết nối / cổng sạc chuột",
+        "kind": "replacement",
+        "symptoms": "Cổng lỏng, gãy hoặc chập chờn khi cắm dây.",
+        "scope": "Xác nhận chân cổng, cơ cấu lắp và mạch liên quan.",
+        "source_url": "https://rightfix.com.vn/thay-cong-chuot-rightfix",
+        "source_status": "observed_service",
+        "reference_price_vnd": 120000,
+        "price_from": null,
+        "price_note": "Báo giá sau kiểm tra",
+        "warranty": null,
+        "image": "images/repair/reference/service-9.png",
+        "image_source_url": "https://rightfix.com.vn/wp-content/uploads/2023/04/San-pham-Wed-14-800x800.png",
+        "tiers": [
+          {
+            "label": "Thay cổng kết nối / cổng sạc chuột",
+            "price": 120000,
+            "condition": "Theo thiết bị thực tế"
+          }
+        ]
+      },
+      {
+        "name": "Thay pin chuột",
+        "kind": "replacement",
+        "symptoms": "Pin tụt nhanh, không tích điện hoặc cần kiểm tra nguồn pin.",
+        "scope": "Đối chiếu điện áp, đầu nối và kích thước; kiểm tra mạch sạc trước khi chốt phương án.",
+        "source_url": "https://rightfix.com.vn/thay-pin-chuot-rightfix",
+        "source_status": "observed_service",
+        "reference_price_vnd": 150000,
+        "price_from": null,
+        "price_note": "Báo giá sau kiểm tra",
+        "warranty": null,
+        "image": "images/repair/reference/service-15.png",
+        "image_source_url": "https://rightfix.com.vn/wp-content/uploads/2023/04/San-pham-Wed-17-800x800.png",
+        "tiers": [
+          {
+            "label": "Thay pin chuột",
+            "price": 150000,
+            "condition": "Theo thiết bị thực tế"
+          }
+        ]
+      },
+      {
+        "name": "Kiểm tra lỗi mạch / đứt via chuột",
+        "kind": "repair",
+        "symptoms": "Mất tín hiệu hoặc bong pad, đứt đường mạch sau hư hỏng/can thiệp.",
+        "scope": "Đo kiểm đường tín hiệu và vùng hư hỏng để đánh giá khả năng phục hồi.",
+        "source_url": "https://rightfix.com.vn/loi-mach-chuot-dut-mach-dut-via-rightfix",
+        "source_status": "observed_service",
+        "reference_price_vnd": 80000,
+        "price_from": null,
+        "price_note": "Báo giá sau kiểm tra",
+        "warranty": null,
+        "image": "images/repair/reference/service-2.png",
+        "image_source_url": "https://rightfix.com.vn/wp-content/uploads/2023/04/San-pham-Wed-13-800x800.png",
+        "tiers": []
+      },
+      {
+        "name": "Kiểm tra sensor / tracking bất thường",
+        "kind": "repair",
+        "symptoms": "Con trỏ đứng, nhảy hoặc mất tracking trong khi nút vẫn hoạt động.",
+        "scope": "Kiểm tra mắt đọc, thấu kính, bề mặt và nguồn/mạch; không mặc định phải thay sensor.",
+        "source_url": "https://dolozistore.com/sua-chuot-gaming/",
+        "source_status": "supplementary_service_source",
+        "reference_price_vnd": null,
+        "price_from": null,
+        "price_note": "Báo giá sau kiểm tra",
+        "warranty": null,
+        "image": "images/repair/reference/service-17.png",
+        "image_source_url": "https://rightfix.com.vn/wp-content/uploads/2021/04/San-pham-Wed-18-800x800.png",
+        "tiers": []
+      },
+      {
+        "name": "Kiểm tra nút giữa / nút hông",
+        "kind": "repair",
+        "symptoms": "Middle click hoặc side button không nhận hay bị lún.",
+        "scope": "Kiểm tra cơ cấu nút, switch và mạch theo model trước khi báo phương án.",
+        "source_url": "https://dolozistore.com/sua-chuot-gaming/",
+        "source_status": "supplementary_service_source",
+        "reference_price_vnd": null,
+        "price_from": null,
+        "price_note": "Báo giá sau kiểm tra",
+        "warranty": null,
+        "image": "images/repair/reference/service-17.png",
+        "image_source_url": "https://rightfix.com.vn/wp-content/uploads/2021/04/San-pham-Wed-18-800x800.png",
+        "tiers": []
+      },
+      {
+        "name": "Kiểm tra mất kết nối / sạc không vào",
+        "kind": "repair",
+        "symptoms": "Chuột không nhận USB, chập chờn nguồn hoặc không sạc được.",
+        "scope": "Phân biệt dây, cổng, pin và mạch; xác nhận khả năng tiếp nhận theo tình trạng.",
+        "source_url": "https://rightfix.com.vn/sua-chua-chuot-may-tinh-tai-rightfix",
+        "source_status": "observed_service",
+        "reference_price_vnd": null,
+        "price_from": null,
+        "price_note": "Báo giá sau kiểm tra",
+        "warranty": null,
+        "image": "images/repair/reference/service-6.png",
+        "image_source_url": "https://rightfix.com.vn/wp-content/uploads/2021/06/Thiet-ke-chua-co-ten-16.png",
+        "tiers": []
+      },
+      {
+        "name": "Phục hồi vỏ / trục con lăn",
+        "kind": "repair",
+        "symptoms": "Vỏ nứt vỡ, bánh xe quay trơn hoặc nghi gãy trục.",
+        "scope": "Đánh giá kết cấu và phương án phục hồi/thay phù hợp trước khi làm.",
+        "source_url": "https://rightfix.com.vn/phuc-hoi-gay-vo-vo-truc-banh-xe-cuon-lan-chuot-rightfix",
+        "source_status": "observed_service",
+        "reference_price_vnd": 50000,
+        "price_from": null,
+        "price_note": "Báo giá sau kiểm tra",
+        "warranty": null,
+        "image": "images/repair/reference/service-4.png",
+        "image_source_url": "https://rightfix.com.vn/wp-content/uploads/2023/04/San-pham-Wed-20.png",
+        "tiers": []
+      },
+      {
+        "name": "Thay feet chuột",
+        "kind": "replacement",
+        "symptoms": "Feet bị mòn, bong hoặc rê chuột không còn trơn.",
+        "scope": "Chọn feet đúng model/hình dáng; giá vật tư và công xác nhận riêng.",
+        "source_url": "https://rightfix.com.vn/ve-sinh-thay-feet-skin-chuot-rightfix",
+        "source_status": "observed_service",
+        "reference_price_vnd": 30000,
+        "price_from": null,
+        "price_note": "Báo giá sau kiểm tra",
+        "warranty": null,
+        "image": "images/repair/reference/service-20.png",
+        "image_source_url": "https://rightfix.com.vn/wp-content/uploads/2021/05/San-pham-Wed-19-800x800.png",
+        "price_unit": "từ, tùy model",
+        "tiers": [
+          {
+            "label": "Feet chuột DIY",
+            "price": 30000,
+            "condition": "Từ mức này, tùy model"
+          }
+        ],
+        "price_source": "Bảng giá tham khảo chủ dự án cung cấp ngày 25/11/2026"
+      },
+      {
+        "name": "Vệ sinh chuột",
+        "kind": "cleaning",
+        "symptoms": "Bụi bẩn, bám dầu trên vỏ, khe nút hoặc khu vực bánh xe.",
+        "scope": "Kiểm tra tình trạng và phạm vi tháo lắp; không thay thế chẩn đoán lỗi mạch.",
+        "source_url": "https://rightfix.com.vn/ve-sinh-thay-feet-skin-chuot-rightfix",
+        "source_status": "observed_service",
+        "reference_price_vnd": 80000,
+        "price_from": null,
+        "price_note": "Báo giá sau kiểm tra",
+        "warranty": null,
+        "image": "images/repair/reference/service-20.png",
+        "image_source_url": "https://rightfix.com.vn/wp-content/uploads/2021/05/San-pham-Wed-19-800x800.png",
+        "price_unit": "từ, tùy tình trạng",
+        "tiers": [
+          {
+            "label": "Vệ sinh chuột",
+            "price": 80000,
+            "condition": "Từ mức này, tùy tình trạng / dòng chuột"
+          }
+        ],
+        "price_source": "Bảng giá tham khảo chủ dự án cung cấp ngày 25/11/2026"
+      },
+      {
+        "name": "Kiểm tra chuột vào nước / chập mạch",
+        "kind": "repair",
+        "symptoms": "Thiết bị từng dính chất lỏng, mất nguồn hoặc nghi chập.",
+        "scope": "Kiểm tra mức ảnh hưởng và linh kiện; báo khả năng sửa sau đánh giá thực tế.",
+        "source_url": null,
+        "source_status": "owner_requested_diagnostic",
+        "reference_price_vnd": null,
+        "price_from": null,
+        "price_note": "Báo giá sau kiểm tra",
+        "warranty": null,
+        "image": "images/repair/reference/service-20.png",
+        "image_source_url": "https://rightfix.com.vn/wp-content/uploads/2021/05/San-pham-Wed-19-800x800.png",
+        "tiers": []
+      }
+    ]
+  },
+  {
+    "id": "headphones",
+    "title": "Tai nghe & cáp",
+    "description": "Kiểm tra âm thanh, dây kết nối và các bộ phận cần thay thế.",
+    "items": [
+      {
+        "name": "Thay đệm tai nghe",
+        "kind": "replacement",
+        "symptoms": "Đệm tai bong tróc hoặc cần thay theo model.",
+        "scope": "Xác nhận kích thước, chất liệu và cách lắp.",
+        "source_url": null,
+        "source_status": "existing_babu_content",
+        "reference_price_vnd": null,
+        "price_from": null,
+        "price_note": "Báo giá sau kiểm tra",
+        "warranty": null,
+        "image": "images/repair/reference/service-21.png",
+        "image_source_url": "https://rightfix.com.vn/ve-sinh-tai-nghe-phuc-hoi-gay-vo-rightfix"
+      },
+      {
+        "name": "Thay đệm quai đeo",
+        "kind": "replacement",
+        "symptoms": "Đệm đầu xuống cấp hoặc cần kiểm tra bộ phận thay thế.",
+        "scope": "Kiểm tra model và cấu trúc quai đeo.",
+        "source_url": null,
+        "source_status": "existing_babu_content",
+        "reference_price_vnd": null,
+        "price_from": null,
+        "price_note": "Báo giá sau kiểm tra",
+        "warranty": null,
+        "image": "images/repair/reference/service-21.png",
+        "image_source_url": "https://rightfix.com.vn/ve-sinh-tai-nghe-phuc-hoi-gay-vo-rightfix"
+      },
+      {
+        "name": "Thay hoặc nối dây tai nghe",
+        "kind": "replacement",
+        "symptoms": "Âm thanh chập chờn khi lay dây hoặc dây bị đứt.",
+        "scope": "Kiểm tra dây và đầu nối trước khi báo phương án.",
+        "source_url": null,
+        "source_status": "existing_babu_content",
+        "reference_price_vnd": null,
+        "price_from": null,
+        "price_note": "Báo giá sau kiểm tra",
+        "warranty": null,
+        "image": "images/repair/reference/service-21.png",
+        "image_source_url": "https://rightfix.com.vn/ve-sinh-tai-nghe-phuc-hoi-gay-vo-rightfix"
+      },
+      {
+        "name": "Kiểm tra driver và lỗi âm thanh",
+        "kind": "repair",
+        "symptoms": "Mất tiếng một bên, rè hoặc tín hiệu âm thanh bất thường.",
+        "scope": "Phân biệt lỗi dây, đầu kết nối và bộ phận âm thanh.",
+        "source_url": null,
+        "source_status": "existing_babu_content",
+        "reference_price_vnd": null,
+        "price_from": null,
+        "price_note": "Báo giá sau kiểm tra",
+        "warranty": null,
+        "image": "images/repair/reference/service-21.png",
+        "image_source_url": "https://rightfix.com.vn/ve-sinh-tai-nghe-phuc-hoi-gay-vo-rightfix",
+        "tiers": []
+      },
+      {
+        "name": "Thay cổng tai nghe",
+        "kind": "replacement",
+        "symptoms": "Cổng kết nối lỏng hoặc không nhận thiết bị.",
+        "scope": "Đối chiếu loại cổng và mạch theo model.",
+        "source_url": null,
+        "source_status": "existing_babu_content",
+        "reference_price_vnd": null,
+        "price_from": null,
+        "price_note": "Báo giá sau kiểm tra",
+        "warranty": null,
+        "image": "images/repair/reference/service-21.png",
+        "image_source_url": "https://rightfix.com.vn/ve-sinh-tai-nghe-phuc-hoi-gay-vo-rightfix"
+      },
+      {
+        "name": "Kiểm tra mic không nhận",
+        "kind": "repair",
+        "symptoms": "Mic mất tín hiệu hoặc ghi âm chập chờn.",
+        "scope": "Kiểm tra kết nối và tình trạng mic; xác nhận khả năng tiếp nhận.",
+        "source_url": null,
+        "source_status": "existing_babu_content",
+        "reference_price_vnd": null,
+        "price_from": null,
+        "price_note": "Báo giá sau kiểm tra",
+        "warranty": null,
+        "image": "images/repair/reference/service-21.png",
+        "image_source_url": "https://rightfix.com.vn/ve-sinh-tai-nghe-phuc-hoi-gay-vo-rightfix",
+        "tiers": []
+      },
+      {
+        "name": "Vệ sinh tai nghe",
+        "kind": "cleaning",
+        "symptoms": "Bụi bẩn hoặc cần làm sạch phần đệm và vỏ.",
+        "scope": "Xác nhận vật liệu và phạm vi vệ sinh trước khi làm.",
+        "source_url": null,
+        "source_status": "existing_babu_content",
+        "reference_price_vnd": null,
+        "price_from": null,
+        "price_note": "Báo giá sau kiểm tra",
+        "warranty": null,
+        "image": "images/repair/reference/service-21.png",
+        "image_source_url": "https://rightfix.com.vn/ve-sinh-tai-nghe-phuc-hoi-gay-vo-rightfix"
+      },
+      {
+        "name": "Phục hồi gãy vỡ tai nghe",
+        "kind": "repair",
+        "symptoms": "Khung hoặc quai đeo có hư hỏng cơ học.",
+        "scope": "Đánh giá kết cấu thực tế; không cam kết phục hồi mọi trường hợp.",
+        "source_url": null,
+        "source_status": "existing_babu_content",
+        "reference_price_vnd": null,
+        "price_from": null,
+        "price_note": "Báo giá sau kiểm tra",
+        "warranty": null,
+        "image": "images/repair/reference/service-21.png",
+        "image_source_url": "https://rightfix.com.vn/ve-sinh-tai-nghe-phuc-hoi-gay-vo-rightfix",
+        "tiers": []
+      }
+    ]
+  }
+]

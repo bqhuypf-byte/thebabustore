@@ -18,13 +18,14 @@ class ProductVariant extends Model
         'discount_price',
         'image',
         'stock',
+        'stock_quantity',
         'product_id',
         'warranty_days',
         'classification',
         'specifications',
     ];
 
-    protected $casts = ['classification' => 'array', 'specifications' => 'array'];
+    protected $casts = ['stock_quantity' => 'integer', 'classification' => 'array', 'specifications' => 'array'];
 
     public function product()
     {

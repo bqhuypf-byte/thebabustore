@@ -1,0 +1,12 @@
+﻿[
+  {
+    "key": "wide",
+    "path": "C:\\Users\\ADMIN\\.codex\\generated_images\\01a215ec-c7e1-75f3-89c4-71e07c81d936\\exec-03d66ea4-0a53-480c-b92c-455374166e2f.png",
+    "prompt": "Use case: ads-marketing. Final ecommerce campaign banner for THE BABU STORE. Wide 3:1 landscape 2400x800. Premium BLACK FRIDAY campaign matching a Vietnamese gaming gear store with dark graphite and violet brand identity. Right half: beautiful realistic compact mechanical keyboard, white gaming mouse, black gaming headset, restrained dark podium, violet rim light with small warm orange accent. Left half: large perfectly legible bold sans-serif campaign typography, generous margins, only exact copy 'BLACK FRIDAY' as largest line, 'SIÊU SALE GAMING GEAR' as second line, and small but readable 'KHÁM PHÁ NGAY' as callout. A modest 'THE BABU STORE' top label. No discounts, percentages, prices, dates, gifts, urgency, specifications or added wording. Keep all content in safe area. Typography must remain readable when shown at 450x150 px. Clean premium commercial art, no tiny text, no excess decorations or watermarks. Product shapes illustrative and unbranded, no invented logos."
+  },
+  {
+    "key": "mobile",
+    "path": "C:\\Users\\ADMIN\\.codex\\generated_images\\01a215ec-c7e1-75f3-89c4-71e07c81d936\\exec-58d99620-22da-4a66-a30f-db5616672eca.png",
+    "prompt": "Create the MOBILE 3:2 landscape 1200x800 counterpart of this Black Friday banner. Preserve the premium dark graphite, violet and small warm orange color accents, white/gray keyboard and mouse and black gaming headset identity. Recompose with large legible typography in upper half, full products in lower half, generous margins, no clipping. Only exact text: small 'THE BABU STORE'; largest 'BLACK FRIDAY'; second line 'SIÊU SALE GAMING GEAR'; small callout 'KHÁM PHÁ NGAY'. No prices, dates, discounts, percentages, gifts, urgency or additional text. Correct Vietnamese diacritics, clean commercial design, readable on a 390px phone."
+  }
+]

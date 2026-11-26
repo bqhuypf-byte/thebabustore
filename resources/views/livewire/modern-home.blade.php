@@ -1,15 +1,19 @@
 <div class="ms-root">
 @php
     $modernCategories = \App\Models\Category::query()->where('is_active', 1)->withCount(['product_cat as active_products_count' => fn ($query) => $query->where('is_active', 1)])->orderBy('ordinal_number')->take(4)->get();
-    $saleProducts = \App\Models\Product::query()->with('variants')->where('is_active', 1)->where('on_sale', 1)->whereHas('variants', fn ($query) => $query->where('stock', 'in_stock'))->latest('id')->take(4)->get();
+    $saleProducts = \App\Models\Product::query()->with(['variants', 'category'])->withCount('approvedReviews')->withAvg('approvedReviews', 'rating')->addSelect(['delivered_units' => \App\Models\OrderItem::query()->selectRaw('COALESCE(SUM(order_items.quantity), 0)')->join('product_variants', 'product_variants.id', '=', 'order_items.product_variant_id')->whereColumn('product_variants.product_id', 'products.id')->whereHas('order', fn ($orders) => $orders->whereIn('status', ['delivered', 'completed']))])->where('is_active', 1)->where('on_sale', 1)->whereHas('variants', fn ($query) => $query->where('stock', 'in_stock'))->latest('id')->take(12)->get();
+    $homeCampaign = \App\Models\PromotionCampaign::live()->where('slug','black-friday')->first();
+    $homeCampaignItems = $homeCampaign ? $homeCampaign->items()->visible()->with(['product.variants' => fn($q) => $q->orderBy('id'), 'product.category'])->take(8)->get() : collect();
 @endphp
 
-<div class="modern-storefront mc-home">
+<div class="modern-storefront mc-home home-proposal">
     @livewire('inc.header')
 
     <main>
+        @error('cardPurchase')<p class="purchase-error" role="alert">{{ $message }}</p>@enderror
         @include('livewire.partials.home-hero')
         <section class="ms-section" id="modern-categories" aria-label="Danh mục sản phẩm">
+            <div class="home-proposal-heading"><div><h2>Mua theo danh mục</h2><p>Chọn thiết bị phù hợp với góc máy của bạn.</p></div><a href="/shop">Xem tất cả</a></div>
             <div class="ms-category-grid">
                 @foreach($modernCategories as $index => $category)
                     @php $categoryImage = $category->banner ?: $category->image; @endphp
@@ -20,33 +24,57 @@
                 @endforeach
             </div>
         </section>
-
-        @include('livewire.partials.home-product-carousel')
-
+        @if($homeCampaign)
+            @include('livewire.partials.home-black-friday')
+        @else
         <section class="ms-section ms-flash-section" aria-labelledby="flash-title">
-            <div class="ms-flash">
-                <div class="ms-flash-heading"><div><span class="ms-flash-kicker">⚡ ƯU ĐÃI NỔI BẬT</span><h2 id="flash-title">Flash Sale hôm nay</h2><p>Khám phá ưu đãi gaming gear từ The BABU Store</p></div><a href="/shop?sort=discount">Xem tất cả ưu đãi →</a></div>
+            <div class="ms-flash ms-flash-campaign" x-data="{ saleCategory: 'all' }">
+                <div class="sale-campaign-banner"><span class="sale-campaign-spark" aria-hidden="true">✦</span><div><span class="sale-campaign-eyebrow">ƯU ĐÃI BABU STORE</span><h2 id="flash-title">Deal đẹp mỗi ngày</h2><p>GAMING GEAR NỔI BẬT</p></div><span class="sale-campaign-spark" aria-hidden="true">✦</span></div>
+                @php $saleCategories = $saleProducts->pluck('category')->filter()->unique('id'); @endphp
+                <div class="sale-campaign-tabs" role="group" aria-label="Danh mục ưu đãi"><button type="button" @click="saleCategory = 'all'" :class="{ 'is-active': saleCategory === 'all' }" :aria-pressed="(saleCategory === 'all').toString()">Nổi bật</button>@foreach($saleCategories as $saleCategory)<button type="button" @click="saleCategory = '{{ $saleCategory->id }}'" :class="{ 'is-active': saleCategory === '{{ $saleCategory->id }}' }" :aria-pressed="(saleCategory === '{{ $saleCategory->id }}').toString()">{{ $saleCategory->name }}</button>@endforeach</div>
                 @if($saleProducts->isNotEmpty())
-                    <div class="ms-flash-grid">
+                    <div class="ms-flash-grid" style="--sale-columns:{{ min(6, max(1, $saleProducts->count())) }}">
                         @foreach($saleProducts as $saleProduct)
                             @php $saleVariant = $saleProduct->variants->firstWhere('stock', 'in_stock') ?: $saleProduct->variants->first(); $saleImage = $saleVariant?->image ?: (($saleProduct->images ?: [])[0] ?? null); @endphp
-                            <article class="ms-flash-card">
+                            <article class="ms-flash-card" x-show="saleCategory === 'all' || saleCategory === '{{ $saleProduct->category_id }}'">
                                 <a class="ms-flash-image" href="/product/{{ $saleProduct->slug }}">@if($saleImage)<img src="{{ asset('storage/'.$saleImage) }}" alt="{{ $saleProduct->name }}">@endif</a>
-                                <div class="ms-flash-body"><a href="/product/{{ $saleProduct->slug }}">{{ $saleProduct->name }}</a><strong>{{ number_format($saleVariant?->price ?? $saleProduct->price, 0, ',', '.') }}₫</strong><button type="button" wire:click="openPreview({{ $saleProduct->id }})">Chọn phiên bản</button></div>
+                                <div class="ms-flash-body">
+    <a href="/product/{{ $saleProduct->slug }}">{{ $saleProduct->name }}</a>
+    <div class="home-flash-meta">
+        @if($saleProduct->approved_reviews_count > 0)<span><span class="home-flash-star" aria-hidden="true">★</span> {{ number_format($saleProduct->approved_reviews_avg_rating, 1) }} <span>({{ $saleProduct->approved_reviews_count }} đánh giá)</span></span>@else<span>Chưa có đánh giá</span>@endif
+        @if($saleProduct->delivered_units > 0)<span> · Đã bán {{ number_format($saleProduct->delivered_units, 0, ',', '.') }}</span>@endif
+    </div>
+    <strong class="home-flash-price">{{ number_format($saleVariant?->price ?? $saleProduct->price, 0, ',', '.') }}₫</strong>
+    @php $availableVariants = $saleProduct->variants->where('stock', 'in_stock')->count(); $allVariants = $saleProduct->variants->count(); @endphp
+    <div class="home-flash-stock" role="meter" aria-label="Tỷ lệ phiên bản còn hàng" aria-valuemin="0" aria-valuemax="{{ $allVariants }}" aria-valuenow="{{ $availableVariants }}"><span style="--stock-fill:{{ round($availableVariants / max(1, $allVariants) * 100) }}%"></span></div>
+    <span class="home-flash-stock-label">{{ $availableVariants }}/{{ $allVariants }} phiên bản còn hàng</span>
+    @include('livewire.partials.purchase-card-button', ['purchaseCardProduct'=>$saleProduct])
+</div>
                             </article>
                         @endforeach
                     </div>
+                    <a class="sale-campaign-all" href="/shop?sort=discount">Xem tất cả ưu đãi</a>
                 @else
                     <div class="ms-flash-empty"><strong>Ưu đãi mới đang được cập nhật</strong><span>Trong lúc chờ đợi, khám phá các sản phẩm gaming gear của chúng tôi.</span><a href="/shop">Khám phá cửa hàng →</a></div>
                 @endif
             </div>
         </section>
+        @endif
+        @include('livewire.partials.home-services')
 
+
+        @include('livewire.partials.home-product-carousel')
+
+
+
+        @include('livewire.partials.home-discovery')
         @include('livewire.partials.home-editorial')
     </main>
 
     @livewire('inc.footer')
     <link rel="stylesheet" href="{{ asset('css/home-mchose.css') }}?v={{ filemtime(public_path('css/home-mchose.css')) }}">
+    <link rel="stylesheet" href="{{ asset('css/home-reference.css') }}?v={{ filemtime(public_path('css/home-reference.css')) }}">
+    <link rel="stylesheet" href="{{ asset('css/home-proposal.css') }}?v={{ filemtime(public_path('css/home-proposal.css')) }}">
 </div>
 
 @if($previewProduct)
@@ -80,7 +108,7 @@
                 <div class="ms-preview-top"><span>{{ $previewProduct->category?->name }}</span><a href="/product/{{ $previewProduct->slug }}">Xem trang chi tiết →</a></div>
                 <h2 id="preview-title">{{ $previewProduct->name }}</h2>
                 <div class="ms-preview-price">{{ number_format($previewVariant?->price ?? $previewProduct->price, 0, ',', '.') }}₫</div>
-                @php($classificationGroups = \App\Support\VariantSelection::groups($previewProduct, $previewVariantId))
+                @php($classificationGroups = (\App\Support\VariantSelection::map($previewProduct) ? \App\Support\PurchaseValidation::groups($previewProduct, $purchaseOptions) : []))
                 @if($classificationGroups)
                     <div class="store-option-picker">
                         @include('livewire.partials.variant-option-groups', ['selectionAction' => 'selectPreviewClassification'])
@@ -89,15 +117,14 @@
                 <div class="ms-preview-variant-heading"><h3>Chọn phiên bản / Biến thể:</h3></div>
                 <div class="ms-preview-variants">
                     @forelse($previewProduct->variants as $variant)
-                        <button type="button" wire:click="selectPreviewVariant({{ $variant->id }})" @disabled($variant->stock !== 'in_stock') aria-pressed="{{ $previewVariantId == $variant->id ? 'true' : 'false' }}" class="{{ $previewVariantId == $variant->id ? 'selected' : '' }}">@if($variant->image)<img class="ms-variant-image" src="{{ asset('storage/'.$variant->image) }}" alt="">@elseif($previewGallery->first())<img class="ms-variant-image" src="{{ asset('storage/'.$previewGallery->first()) }}" alt="">@endif<span>{{ $variant->name }}<small>{{ number_format($variant->price, 0, ',', '.') }}₫</small></span></button>
+                        <button type="button" wire:click="selectPreviewVariant({{ $variant->id }})" @disabled(!\App\Support\PurchaseValidation::available($variant)) aria-pressed="{{ $previewVariantId == $variant->id ? 'true' : 'false' }}" class="{{ $previewVariantId == $variant->id ? 'selected' : '' }}">@if($variant->image)<img class="ms-variant-image" src="{{ asset('storage/'.$variant->image) }}" alt="">@elseif($previewGallery->first())<img class="ms-variant-image" src="{{ asset('storage/'.$previewGallery->first()) }}" alt="">@endif<span>{{ $variant->name }}@if(!\App\Support\PurchaseValidation::available($variant))<small>Hết hàng</small>@endif<small>{{ number_format($variant->price, 0, ',', '.') }}₫</small></span></button>
                     @empty
                         <p>Sản phẩm chưa có phiên bản để đặt hàng.</p>
                     @endforelse
                 </div>
                 @endif
                 @error('previewVariantId') <p class="ms-preview-error">{{ $message }}</p> @enderror
-                <div class="ms-preview-quantity"><span>Số lượng:</span><button type="button" wire:click="changePreviewQuantity(-1)" aria-label="Giảm số lượng">−</button><span>{{ $previewQuantity }}</span><button type="button" wire:click="changePreviewQuantity(1)" aria-label="Tăng số lượng">+</button></div>
-                <div class="ms-preview-actions"><button type="button" wire:click="addPreviewToCart" @disabled(!$previewVariant)>Thêm vào giỏ</button><button type="button" wire:click="addPreviewToCart(true)" @disabled(!$previewVariant)>Mua ngay</button></div>
+                @include('livewire.partials.purchase-controls', ['purchaseProduct'=>$previewProduct, 'purchaseVariant'=>$previewVariant, 'quantityProperty'=>'previewQuantity', 'quantityClass'=>'ms-preview-quantity', 'actionsClass'=>'ms-preview-actions', 'addAction'=>'addPreviewToCart', 'buyAction'=>'addPreviewToCart', 'buyExpression'=>'addPreviewToCart(true)'])
             </div>
         </section>
     </div>

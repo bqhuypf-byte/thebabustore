@@ -199,6 +199,7 @@ class ProductResource extends Resource
                                                                     ->unique(ProductVariant::class, 'sku', ignoreRecord: true)
                                                                     ->columnSpan(1),
 
+                                                                TextInput::make('stock_quantity')->label('Số lượng tồn kho')->numeric()->integer()->minValue(0)->nullable()->helperText('Để trống nếu chưa quản lý số lượng chính xác. Không tự điền số lượng.'),
                                                                 Select::make('stock')
                                                                     ->options([
                                                                         'in_stock' => 'Còn hàng (In Stock)',

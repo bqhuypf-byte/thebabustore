@@ -15,6 +15,7 @@ use Livewire\Component;
 class ProductDetail extends Component
 {
     use LivewireAlert;
+    use \App\Livewire\Concerns\ValidatesPurchases, \App\Livewire\Concerns\PurchasesProductCards;
 
     public $slug;
     public $quantity = 1;
@@ -51,28 +52,23 @@ class ProductDetail extends Component
             ->firstOrFail();
     }
 
-    public function setDefaultVariant()
+    protected function purchaseProduct(): ?Product
     {
-        if ($this->product->variants->isNotEmpty()) {
-            $variant = $this->product->variants->firstWhere('stock', 'in_stock') ?? $this->product->variants->first();
-            $this->updateVariantDetails($variant->id);
-        }
+        return Product::with('variants')->where('is_active',true)->find($this->product->id);
     }
-
-    public function updateVariantDetails($variantId)
+    protected function purchaseVariantKey(): string { return 'selectedVariant'; }
+    protected function purchaseQuantityKey(): string { return 'quantity'; }
+    protected function applyPurchaseVariant($variant): void
     {
-        $variant = $this->product->variants->find($variantId);
-
-        if ($variant) {
-            $this->selectedVariant = $variantId;
-            $this->price = $variant->price;
-            $this->discount_price = $variant->discount_price;
-            $this->sku = $variant->sku;
-            $this->variant_img = $variant->image;
-            $this->activeImage = $variant->image ?: collect($this->product->images ?: [])->first();
-            $this->stock_status = $variant->stock; // Cập nhật trạng thái tồn kho
-        }
+        $this->price=$variant?->price;
+        $this->discount_price=$variant?->discount_price;
+        $this->sku=$variant?->sku;
+        $this->variant_img=$variant?->image;
+        $this->activeImage=$variant?->image ?: collect($this->product->images ?: [])->first();
+        $this->stock_status=$variant && \App\Support\PurchaseValidation::available($variant) ? 'in_stock' : ($variant ? 'out_of_stock' : null);
     }
+    public function setDefaultVariant() { $this->initializePurchase($this->product); }
+    public function updateVariantDetails($variantId) { $this->choosePurchaseVariant((int)$variantId); }
 
     public function selectImage(int $index): void
     {
@@ -91,20 +87,7 @@ class ProductDetail extends Component
         $this->activeImage = $images->get(($index + ($direction < 0 ? -1 : 1) + $images->count()) % $images->count());
     }
 
-    public function selectClassification(string $group, string $value): void
-    {
-        $map = \App\Support\VariantSelection::map($this->product);
-        $current = $map[$this->selectedVariant] ?? [];
-        $best = \App\Support\VariantSelection::select($this->product, $this->selectedVariant, $group, $value);
-        if ($best) {
-            $changed = [];
-            foreach ($current as $key => $selected) {
-                if ($key !== $group && ($map[$best->id][$key] ?? null) !== $selected) $changed[] = $key.': '.$map[$best->id][$key];
-            }
-            $this->classificationNotice = $changed ? 'Đã chọn phiên bản còn hàng phù hợp: '.implode(', ', $changed).'.' : '';
-            $this->updateVariantDetails($best->id);
-        }
-    }
+    public function selectClassification(string $group,string $value): void { $this->choosePurchaseOption($group,$value); }
 
     public function loadRelatedProducts()
     {
@@ -114,42 +97,19 @@ class ProductDetail extends Component
             ->take(8)
             ->get();
     }
-    public function incrementQuantity()
-    {
-        $this->quantity = min(99, (int) $this->quantity + 1);
-    }
-
-    public function decrementQuantity()
-    {
-        if ($this->quantity > 1) {
-            $this->quantity--;
-        }
-    }
-    public function addtocart()
-    {
-        if (! $this->product->variants()->where('id', $this->selectedVariant)->where('stock', 'in_stock')->exists()) {
-            $this->addError('selectedVariant', 'Vui lòng chọn phiên bản còn hàng.');
-            return;
-        }
-        $cartItemCount = CartManagement::addItemToCart($this->selectedVariant, max(1, min(99, (int) $this->quantity)));
-        $this->dispatch('cart-updated');
-        $this->dispatch('cart-added');
-
-        $this->quantity = 1;
-    }
-    public function buyNow()
-    {
-        if (! $this->product->variants()->where('id', $this->selectedVariant)->where('stock', 'in_stock')->exists()) {
-            $this->addError('selectedVariant', 'Vui lòng chọn phiên bản còn hàng.');
-            return;
-        }
-        $cartItemCount = CartManagement::addItemToCart($this->selectedVariant, max(1, min(99, (int) $this->quantity)));
-        $this->quantity = 1;
-        return redirect('/checkout');
-    }
+    public function incrementQuantity() { $this->quantity=(int)$this->quantity+1;$this->clampPurchaseQuantity(); }
+    public function decrementQuantity() { $this->quantity=(int)$this->quantity-1;$this->clampPurchaseQuantity(); }
+    public function updatedQuantity(): void { $this->clampPurchaseQuantity(); }
+    public function addtocart() { return $this->submitPurchase(); }
+    public function buyNow() { return $this->submitPurchase(true); }
 
     public function render()
     {
+        $this->product->load('variants');
+        $current=$this->product->variants->firstWhere('id',$this->selectedVariant);
+        $this->stock_status=$current && \App\Support\PurchaseValidation::available($current) ? 'in_stock' : ($current ? 'out_of_stock' : null);
+        $this->price=$current?->price;$this->sku=$current?->sku;
+
         $approvedReviews = Review::where('product_id', $this->product->id)
             ->where('status', 'approved')
             ->latest()
@@ -173,7 +133,7 @@ class ProductDetail extends Component
             'reviewCount' => $reviewCount,
             'avgRating' => $avgRating,
             'ratingDistribution' => $ratingDistribution,
-            'classificationGroups' => \App\Support\VariantSelection::groups($this->product, $this->selectedVariant),
+            'classificationGroups' => (\App\Support\VariantSelection::map($this->product) ? \App\Support\PurchaseValidation::groups($this->product, $this->purchaseOptions) : []),
             'productContent' => \App\Support\ProductContent::forProduct($this->product, $this->product->variants->firstWhere('id', $this->selectedVariant)),
             'settings' => \App\Models\Setting::query()->first(),
         ]);

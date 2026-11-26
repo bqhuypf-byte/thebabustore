@@ -1,0 +1,9 @@
+*.private.*
+.database.env
+*.tar.gz
+composer.pre-production.*
+local-manifest.json
+server-manifest.json
+changed-files.json
+sync-files.txt
+

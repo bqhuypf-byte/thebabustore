@@ -8,6 +8,12 @@
   @if($images->count())<span class="pd-image-count">{{ ($images->search($displayImage) !== false ? $images->search($displayImage) : 0) + 1 }}/{{ $images->count() }}</span>@endif
   @if($images->count()>1)<button class="photo-nav prev" type="button" wire:click="changeImage(-1)" aria-label="Ảnh trước">‹</button><button class="photo-nav next" type="button" wire:click="changeImage(1)" aria-label="Ảnh tiếp theo">›</button>@endif
  </div>
- <div class="thumbs pd-thumbnails" aria-label="Thư viện ảnh sản phẩm">@foreach($images as $image)<button type="button" wire:click="selectImage({{ $loop->index }})" class="{{ $displayImage === $image ? 'active' : '' }}" aria-label="Ảnh sản phẩm {{ $loop->iteration }}" aria-pressed="{{ $displayImage === $image ? 'true' : 'false' }}"><img src="{{ asset('storage/'.$image) }}" alt="{{ $product->name }} — ảnh {{ $loop->iteration }}" loading="lazy"></button>@endforeach</div>
+ @if($images->count() > 1)
+ <div class="pd-thumbnail-carousel">
+  <button type="button" class="pd-thumb-arrow" aria-label="Cuộn ảnh sang trái" @click="$refs.thumbnails.scrollBy({ left: -$refs.thumbnails.clientWidth, behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth' })">‹</button>
+  <div class="thumbs pd-thumbnails" x-ref="thumbnails" aria-label="Thư viện ảnh sản phẩm">@foreach($images as $image)<button type="button" wire:key="product-photo-{{ $product->id }}-{{ $loop->index }}" wire:click="selectImage({{ $loop->index }})" class="{{ $displayImage === $image ? 'active' : '' }}" aria-label="Ảnh sản phẩm {{ $loop->iteration }}" aria-pressed="{{ $displayImage === $image ? 'true' : 'false' }}"><img src="{{ asset('storage/'.$image) }}" alt="{{ $product->name }} — ảnh {{ $loop->iteration }}" loading="lazy"></button>@endforeach</div>
+  <button type="button" class="pd-thumb-arrow" aria-label="Cuộn ảnh sang phải" @click="$refs.thumbnails.scrollBy({ left: $refs.thumbnails.clientWidth, behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth' })">›</button>
+ </div>
+ @endif
  @if($displayImage)<dialog class="pd-photo-dialog" x-ref="photoZoom" @close="$refs.zoomTrigger.focus()" aria-label="Ảnh phóng to {{ $product->name }}" @click="if ($event.target === $el) $el.close()"><button class="pd-photo-dialog-close" type="button" @click="$refs.photoZoom.close()" aria-label="Đóng ảnh phóng to" autofocus>×</button><img src="{{ asset('storage/'.$displayImage) }}" alt="{{ $product->name }} — ảnh phóng to"></dialog>@endif
 </div>

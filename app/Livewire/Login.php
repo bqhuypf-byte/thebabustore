@@ -135,6 +135,8 @@ class Login extends Component
 
     public function loginDemoUser()
     {
+        abort_unless(app()->environment('local', 'testing'), 404);
+
         $demoUser = User::firstOrCreate(
             ['email' => 'hgdigital.vn@gmail.com'],
             [

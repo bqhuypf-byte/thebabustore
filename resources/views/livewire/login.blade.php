@@ -150,10 +150,12 @@
                     </div>
 
                     {{-- ĐĂNG NHẬP MẪU --}}
+                    @if(app()->environment('local', 'testing'))
                     <button type="button" class="auth-btn-demo" wire:click="loginDemoUser" wire:loading.attr="disabled">
                         <span class="auth-sparkle">✨</span>
                         <span>Đăng nhập tài khoản mẫu (Nguyễn Hoàng Nam)</span>
                     </button>
+                    @endif
 
                     {{-- ĐĂNG NHẬP GOOGLE --}}
                     <div class="auth-social-row">

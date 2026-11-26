@@ -1,0 +1,14 @@
+{
+    "campaign_id": 1,
+    "url": "http:\/\/127.0.0.1:8000\/black-friday",
+    "admin_url": "http:\/\/127.0.0.1:8000\/hg-digital\/promotion-campaigns\/1\/edit",
+    "product_count": 4,
+    "product_ids": [
+        702,
+        700,
+        696,
+        693
+    ],
+    "product_and_variant_data_unchanged": true,
+    "source": "Existing active on_sale products with an in_stock variant; no invented prices or discounts."
+}

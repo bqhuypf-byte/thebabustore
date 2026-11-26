@@ -14,6 +14,7 @@ use Livewire\WithPagination;
 class Shop extends Component
 {
     use WithPagination;
+    use \App\Livewire\Concerns\PurchasesProductCards;
 
     // Khai báo các thuộc tính
     public $selectedPriceRanges = [];
@@ -127,10 +128,15 @@ class Shop extends Component
             default => $productsQuery->orderByDesc('created_at'),
         };
         $products = $productsQuery->paginate(12);
+        $this->categoryInfo = $this->categorySlug ? Category::where('slug', $this->categorySlug)->first() : null;
+        $this->subcategoryInfo = $this->subcategorySlug ? Subcategory::where('slug', $this->subcategorySlug)->first() : null;
+        $collectionCategory = $this->categoryInfo ?: $this->subcategoryInfo?->category;
+        $collection = \App\Support\CatalogPresentation::collection($collectionCategory, $this->subcategoryInfo, $products->getCollection());
 
 
         return view('livewire.store-shop', [
             'products' => $products,
+            'collection' => $collection,
             'categories' => $this->categories,
             'brands' => $this->brands,
             'categories_all' => $this->categories_all,

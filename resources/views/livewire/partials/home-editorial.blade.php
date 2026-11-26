@@ -1,13 +1,17 @@
 @php $homeSettings = \App\Models\Setting::query()->first(); $homeSections = $homeSettings?->homepage_sections ?? \App\Support\HomepageContent::defaults($homeSettings); @endphp
 <div class="mc-editorial-stack">
-@foreach($homeSections as $section)
-    @if(($section['enabled'] ?? true) && filled($section['title'] ?? null))
+@foreach(collect($homeSections)->reject(fn ($entry) => in_array($entry['layout'] ?? '', ['setup', 'newsletter'], true))->sortBy(fn ($entry) => ($entry['layout'] ?? '') === 'faq' ? 1 : 0) as $section)
+    @if(($section['enabled'] ?? true) && filled($section['title'] ?? null) && !str_contains(mb_strtoupper($section['title']), 'BABU HUB') && mb_strtolower(trim($section['title'])) !== 'cùng kết nối. cùng chia sẻ.' && ($section['layout'] ?? '') !== 'faq')
         @php $layout = in_array($section['layout'] ?? '', ['split', 'banner', 'catalog', 'cards', 'faq'], true) ? $section['layout'] : 'split'; @endphp
         @php $fullLink = in_array($layout, ['split', 'banner', 'catalog'], true) && ($section['full_link'] ?? false) && filled($section['link'] ?? null); @endphp
-        <section class="mc-editorial mc-layout-{{ $layout }} {{ $fullLink ? 'mc-editorial-linked' : '' }}" aria-labelledby="mc-section-{{ $loop->index }}">
+        <section class="mc-editorial mc-layout-{{ $layout }} {{ $layout === 'catalog' && !empty($section['image']) ? 'mc-catalog-has-image' : '' }} {{ $fullLink ? 'mc-editorial-linked' : '' }}" aria-labelledby="mc-section-{{ $loop->index }}">
             @if(in_array($layout, ['split', 'banner', 'catalog'], true))
                 @if(!empty($section['image']))<img class="mc-editorial-image" src="{{ Storage::url($section['image']) }}" alt="{{ $section['title'] }}" loading="lazy">@endif
                 @if($layout === 'catalog' && empty($section['image']))<img class="mc-editorial-image" src="{{ asset('assets/100/436/596/themes/834446/assets/evo-page-banner.jpg') }}" alt="" loading="lazy">@endif
+                @if($layout === 'catalog' && empty($section['image']))
+                    @php $setupFocusProduct = $latestProducts->first(fn ($item) => filled(($item->images ?: [])[0] ?? null)); @endphp
+                    @if($setupFocusProduct)<img class="home-build-product" src="{{ Storage::url($setupFocusProduct->images[0]) }}" alt="{{ $setupFocusProduct->name }}" loading="lazy">@endif
+                @endif
                 <div class="mc-editorial-copy">
                     @if($layout === 'catalog' && !empty($section['eyebrow']))<p class="mc-catalog-eyebrow">{{ $section['eyebrow'] }}</p>@endif
                     <h2 id="mc-section-{{ $loop->index }}">{{ $section['title'] }}</h2>
@@ -45,7 +49,7 @@
 @if($latestPosts->isNotEmpty())
 <section class="babu-blog-section babu-blog-home" aria-labelledby="mc-blog-title">
     <div class="babu-blog-heading">
-        <h2 id="mc-blog-title">BLOG</h2>
+        <div><h2 id="mc-blog-title">Blog</h2><p>Hướng dẫn và chia sẻ về gaming gear.</p></div>
         <a href="/blogs">Xem tất cả <span aria-hidden="true">→</span></a>
     </div>
     <div class="babu-blog-grid">
@@ -55,3 +59,5 @@
     </div>
 </section>
 @endif
+
+@include('livewire.partials.home-community')

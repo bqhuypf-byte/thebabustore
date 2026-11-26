@@ -19,5 +19,8 @@ yarn-error.log
 /.vscode
 /.zed
 /storage/app/public
+/storage/app/backups/
+/storage/logs/
+/storage/framework/
 *.sql
 *.html

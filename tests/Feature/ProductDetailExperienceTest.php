@@ -75,8 +75,11 @@ class ProductDetailExperienceTest extends TestCase
 
         $component = Livewire::test(ProductDetail::class, ['slug' => $product->slug])
             ->assertSee('Chọn phân loại')->assertSee('Dòng máy')->assertSee('Màu sắc')
+            ->assertSet('selectedVariant', null)
+            ->call('selectClassification', 'Dòng máy', 'Pro')
             ->call('selectClassification', 'Màu sắc', 'Blue')->assertSet('selectedVariant', $variants[1]->id)
-            ->call('selectClassification', 'Dòng máy', 'Pro X')->assertSet('selectedVariant', $variants[2]->id)
+            ->call('selectClassification', 'Dòng máy', 'Pro X')->assertSet('selectedVariant', null)
+            ->call('selectClassification', 'Màu sắc', 'Black')->assertSet('selectedVariant', $variants[2]->id)
             ->assertSet('price', 120000)
             ->call('selectClassification', 'Màu sắc', 'Gold')->assertSet('selectedVariant', $variants[2]->id)
             ->call('addtocart')->assertDispatched('cart-added');
@@ -90,7 +93,7 @@ class ProductDetailExperienceTest extends TestCase
         $first = ProductVariant::create(['product_id' => $product->id, 'name' => 'One', 'sku' => 'ONE-'.uniqid(), 'price' => 100000, 'stock' => 'in_stock', 'classification' => ['Công tắc' => 'Linear']]);
         $second = ProductVariant::create(['product_id' => $product->id, 'name' => 'Two', 'sku' => 'TWO-'.uniqid(), 'price' => 125000, 'stock' => 'in_stock', 'classification' => ['Công tắc' => 'Tactile']]);
         Livewire::test(ProductDetail::class, ['slug' => $product->slug])
-            ->assertSee('Công tắc')->assertSet('selectedVariant', $first->id)
+            ->assertSee('Công tắc')->assertSet('selectedVariant', null)
             ->call('selectClassification', 'Công tắc', 'Tactile')
             ->assertSet('selectedVariant', $second->id)->assertSet('price', 125000);
     }
@@ -101,10 +104,11 @@ class ProductDetailExperienceTest extends TestCase
         $first = ProductVariant::create(['product_id' => $product->id, 'name' => 'A', 'sku' => 'THREE-'.uniqid(), 'price' => 100000, 'stock' => 'in_stock', 'classification' => ['Loại' => 'A', 'Màu' => 'Đen', 'Cáp' => 'Có']]);
         $second = ProductVariant::create(['product_id' => $product->id, 'name' => 'B', 'sku' => 'THREE-'.uniqid(), 'price' => 135000, 'stock' => 'in_stock', 'classification' => ['Loại' => 'B', 'Màu' => 'Trắng', 'Cáp' => 'Không']]);
         Livewire::test(ProductDetail::class, ['slug' => $product->slug])
-            ->assertSet('selectedVariant', $first->id)->assertSee('Cáp')
-            ->call('selectClassification', 'Loại', 'B')
-            ->assertSet('selectedVariant', $second->id)->assertSet('price', 135000)
-            ->assertSee('Đã chọn phiên bản còn hàng phù hợp');
+            ->assertSet('selectedVariant', null)->assertSee('Cáp')
+            ->call('selectClassification', 'Loại', 'B')->assertSet('selectedVariant', null)
+            ->call('selectClassification', 'Màu', 'Trắng')->assertSet('selectedVariant', null)
+            ->call('selectClassification', 'Cáp', 'Không')
+            ->assertSet('selectedVariant', $second->id)->assertSet('price', 135000);
     }
     public function test_compact_groups_disable_missing_combinations_and_keep_the_selected_cart_variant(): void
     {
@@ -126,11 +130,9 @@ class ProductDetailExperienceTest extends TestCase
         ]));
         Livewire::test(ProductDetail::class, ['slug' => $product->slug])
             ->assertSee('pd-options-compact', false)->assertSee('pd-options-color', false)
-            ->assertSee('Không có tổ hợp này')
-            ->call('selectClassification', 'Switch', 'Void (Silent)')
-            ->assertSet('selectedVariant', $variants[0]->id)
-            ->call('selectClassification', 'Màu sắc', 'Silver')
-            ->assertSet('selectedVariant', $variants[1]->id)
+            ->assertSet('selectedVariant', null)
+            ->call('selectClassification', 'Số phím', '68 phím')
+            ->call('selectClassification', 'Màu sắc', 'Silver')->assertSet('selectedVariant', null)
             ->call('selectClassification', 'Switch', 'Void (Silent)')
             ->assertSet('selectedVariant', $variants[2]->id)->assertSet('price', 120000)
             ->call('selectClassification', 'Số phím', '84 phím')
@@ -174,8 +176,8 @@ class ProductDetailExperienceTest extends TestCase
             session()->forget('cart_items');
             Livewire::test($surface)->call($open, $product->id)
                 ->assertSee('store-option-picker', false)->assertSee('Màu sắc')->assertSee('Switch')
-                ->call($select, 'Switch', 'Void (Silent)')->assertSet($property, $variants[0]->id)
-                ->call($select, 'Màu sắc', 'Silver')->assertSet($property, $variants[1]->id)
+                ->assertSet($property, null)
+                ->call($select, 'Màu sắc', 'Silver')->assertSet($property, null)
                 ->call($select, 'Switch', 'Void (Silent)')->assertSet($property, $variants[2]->id)
                 ->call($add)->assertDispatched('cart-added');
             $this->assertSame($variants[2]->id, session('cart_items')[0]['product_variant_id']);

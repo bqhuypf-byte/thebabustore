@@ -26,6 +26,7 @@
                     <label><input id="dt-reset-shortcut" type="checkbox" checked> Ctrl + Space đặt lại</label>
                 </div>
                 <p id="dt-sound-status" class="dt-option-note" hidden></p>
+                <div id="dt-ime-warning" class="dt-ime-warning" role="alert" hidden><strong>Vui lòng tắt UniKey hoặc chuyển bộ gõ sang tiếng Anh.</strong><p>Có dấu hiệu bộ gõ đang ghép chữ tiếng Việt (ví dụ â, đ). Bộ gõ có thể tự gửi Backspace để thay chữ; đây chưa phải dấu hiệu lỗi bàn phím. Tắt bộ gõ rồi đặt lại kết quả để thử lại.</p></div>
                 <div class="dt-keyboard-scroll" id="dt-keyboard-stage" tabindex="0" role="region" aria-label="Vùng nhận phím bàn phím">
                     <div class="dt-media-heading"><span>Phím media & trình duyệt</span><span id="dt-media-tested">0 / 18</span></div>
                     <div class="dt-media-row" id="dt-media-visual"></div>
@@ -37,23 +38,18 @@
                     <p id="dt-keyboard-status" role="status">Đang nhận phím · Bấm ngoài khung để tạm dừng</p>
                 </div>
             </div>
-            <div class="dt-stat-grid">
-                <div class="dt-stat"><span>Đã nhận trên layout</span><strong id="dt-key-tested">0 / 104</strong></div>
-                <div class="dt-stat"><span>Đang giữ</span><strong id="dt-key-held">0</strong></div>
-                <div class="dt-stat"><span>Giữ đồng thời nhiều nhất</span><strong id="dt-key-max">0</strong></div>
-                <div class="dt-stat"><span>Lần nhấn mới</span><strong id="dt-key-count">0</strong></div>
+            <div class="dt-key-dock dt-key-dock-classic">
+                <div class="dt-dock-controls"><label><input id="dt-log-visible" type="checkbox" checked> Hiện thông tin phím</label><span>Ctrl + Space: đặt lại</span><div class="dt-key-dock-totals"><span>Đã thử <b id="dt-key-tested">0 / 104</b></span><span>Giữ tối đa <b id="dt-key-max">0</b></span><span>Lần nhấn <b id="dt-key-count">0</b></span></div></div>
+                <div class="dt-dock-table" id="dt-dock-table"><table><thead><tr><th>KeyCode web</th><th title="Trình duyệt không cung cấp scan code phần cứng">scanCode</th><th>Flags web</th><th>Phím</th><th title="Khoảng cách giữa hai sự kiện, không phải độ trễ phần cứng">dt(ms)</th></tr></thead><tbody id="dt-key-log"></tbody></table></div>
+                <div class="dt-held-counter"><strong id="dt-key-held">000</strong><span>PHÍM ĐÃ NHẬN</span></div>
+                <button class="dt-dock-clear" type="button" data-action="keyboard-clear">Xóa<span>Ctrl + Space</span></button>
             </div>
-            <div class="dt-card dt-event-card">
-                <div><h2>Sự kiện gần nhất</h2><p id="dt-last-key" class="dt-last-key">Chưa nhận phím</p>
-                    <dl class="dt-key-details"><div><dt>Code</dt><dd id="dt-event-code">—</dd></div><div><dt>KeyCode web</dt><dd id="dt-event-number">—</dd></div><div><dt>Vị trí</dt><dd id="dt-event-location">—</dd></div><div><dt>Trạng thái</dt><dd id="dt-event-flags">—</dd></div></dl>
-                    <p class="dt-muted">Mã trên do trình duyệt cung cấp; scan code Windows không có trong bản web. Một số phím hệ thống/media có thể được hệ điều hành giữ lại.</p></div>
-                <div class="dt-event-log" id="dt-key-log" aria-label="Lịch sử sự kiện bàn phím"><p class="dt-empty">Nhấn phím trong vùng test để xem lịch sử.</p></div>
-            </div>
+            <div hidden><span id="dt-last-key"></span><span id="dt-event-code"></span><span id="dt-event-number"></span><span id="dt-event-location"></span><span id="dt-event-flags"></span></div>
         </section>
         <section id="dt-mouse" role="tabpanel" aria-labelledby="dt-tab-mouse" hidden>
-            <div class="dt-mouse-layout">
+            <div class="dt-mouse-layout"><section class="dt-auto-results"><div class="dt-auto-heading"><h2>Tự động theo dõi</h2><span>Không cần bấm bắt đầu</span></div><div class="dt-auto-grid"><div class="dt-auto-result" id="dt-auto-click"><h3>Nghi double click</h3><strong id="dt-auto-click-count">0</strong><p id="dt-auto-click-detail"></p></div><div class="dt-auto-result" id="dt-auto-wheel"><h3>Nghi loạn con lăn</h3><strong id="dt-auto-wheel-count">0</strong><p id="dt-auto-wheel-detail"></p></div><div class="dt-auto-result" id="dt-auto-hold"><h3>Giữ & thả nút</h3><strong id="dt-auto-hold-time">—</strong><p id="dt-auto-hold-detail"></p></div></div></section>
                 <div class="dt-card">
-                    <div class="dt-card-heading"><div><h2>Test nút & chuyển động</h2><p>Di chuột, bấm nút và cuộn trong vùng bên dưới.</p></div><span id="dt-input-source" class="dt-source"></span></div>
+                    <div class="dt-card-heading"><div><h2>Vùng kiểm tra chuột</h2><p>Di chuột, bấm nút và cuộn trong vùng bên dưới.</p></div></div>
                     <div class="dt-mouse-pad" id="dt-mouse-pad" tabindex="0" role="region" aria-label="Vùng kiểm tra chuột">
                         <canvas id="dt-mouse-canvas" aria-hidden="true"></canvas>
                         <svg class="dt-mouse-svg" viewBox="0 0 240 300" aria-hidden="true">
@@ -75,55 +71,16 @@
                         <span data-mouse-button="0">Trái <b>0</b></span><span data-mouse-button="2">Phải <b>0</b></span><span data-mouse-button="1">Nút cuộn <b>0</b></span><span data-mouse-button="3" title="Back">Hông 1 <b>0</b></span><span data-mouse-button="4" title="Forward">Hông 2 <b>0</b></span>
                     </div>
                     <div class="dt-mouse-summary"><p class="dt-wheel-status" id="dt-wheel-status" role="status">Con lăn chưa có sự kiện</p><span id="dt-mouse-total">Tổng 0 lượt bấm</span></div>
-                    <div class="dt-scroll-readouts" aria-label="Kết quả test con lăn">
-                        <div><span>Cuộn lên</span><strong id="dt-scroll-up">0</strong></div>
-                        <div><span>Cuộn xuống</span><strong id="dt-scroll-down">0</strong></div>
+                    <div class="dt-scroll-simple"><div><span>Cuộn lên</span><strong id="dt-scroll-up">0</strong></div>
+                        <div><span>Cuộn xuống</span><strong id="dt-scroll-down">0</strong></div></div><details class="dt-scroll-details"><summary>Dữ liệu cuộn chi tiết</summary><div class="dt-scroll-readouts" aria-label="Kết quả test con lăn">
+                        
                         <div><span>deltaY gần nhất</span><strong id="dt-scroll-delta">—</strong></div>
                         <div><span>Tổng quãng cuộn</span><strong id="dt-scroll-distance">0</strong></div>
                     </div>
-                    <p class="dt-scroll-note">Tổng cộng độ lớn mỗi lượt cuộn, tách theo đơn vị trình duyệt: pixel, dòng hoặc trang. Số lượt là số sự kiện wheel, không phải số nấc vật lý.</p>
+                    <p class="dt-scroll-note">Tổng cộng độ lớn mỗi lượt cuộn, tách theo đơn vị trình duyệt: pixel, dòng hoặc trang. Số lượt là số sự kiện wheel, không phải số nấc vật lý.</p></details>
                 </div>
-                <aside class="dt-card dt-cps-card">
-                    <h2>Tốc độ click</h2><p>Đo nút được chọn, bao gồm cả hai nút hông. Mặc định tính tất cả 5 nút.</p>
-                    <label class="dt-select-label" for="dt-cps-button">Nút tính CPS <select id="dt-cps-button"><option value="all">Tất cả 5 nút</option><option value="0">Nút trái</option><option value="2">Nút phải</option><option value="1">Nút giữa</option><option value="3">Hông 1 · Back</option><option value="4">Hông 2 · Forward</option></select></label>
-                    <label class="dt-select-label" for="dt-cps-duration">Thời gian <select id="dt-cps-duration"><option value="5">5 giây</option><option value="10">10 giây</option></select></label>
-                    <div class="dt-cps-score"><strong id="dt-cps-score">0.00</strong><span>click / giây</span></div>
-                    <div class="dt-cps-detail"><span id="dt-cps-count">0 click</span><span id="dt-cps-time">5.0 giây</span></div>
-                    <progress id="dt-cps-progress" max="100" value="0" aria-label="Tiến độ đo tốc độ click"></progress>
-                    <button class="dt-button" type="button" data-action="cps-start">Bắt đầu đo</button>
-                    <p id="dt-cps-status" role="status">Chọn bắt đầu, sau đó bấm nút đã chọn trong vùng test.</p>
-                </aside>
+                <aside class="dt-card dt-results-card"><h2>Kết quả kiểm tra</h2><p>Dấu tích xác nhận đã nhận tín hiệu.</p><div class="dt-results-heading"><span>CƠ BẢN</span><strong id="dt-results-basic-count">0 / 5</strong></div><div id="dt-results-basic"></div><div class="dt-results-heading"><span>MỞ RỘNG</span><strong id="dt-results-extra-count">0 / 4</strong></div><div id="dt-results-extra"></div></aside>
             </div>
-            <div class="dt-diagnostic-grid">
-                <section class="dt-card dt-diagnostic-card" aria-labelledby="dt-click-check-title">
-                    <div class="dt-check-heading"><div><p class="dt-check-eyebrow">BẤM ĐƠN</p><h2 id="dt-click-check-title">Kiểm tra nghi click đúp</h2></div><button type="button" class="dt-button" data-action="click-check">Bắt đầu lượt mới</button></div>
-                    <p>Bấm từng lần chậm, cách nhau khoảng 1 giây trong khung chuột. Hai lần nhấn cùng nút quá sát nhau sẽ được đánh dấu để kiểm tra lại.</p>
-                    <div class="dt-check-controls">
-                        <label class="dt-select-label">Nút thử <select id="dt-check-button"><option value="0">Trái</option><option value="2">Phải</option><option value="1">Nút cuộn</option><option value="3">Hông 1</option><option value="4">Hông 2</option></select></label>
-                        <label class="dt-select-label">Ngưỡng cảnh báo <select id="dt-check-threshold"><option value="40">40 ms</option><option value="80" selected>80 ms</option><option value="120">120 ms</option></select></label>
-                    </div>
-                    <div class="dt-check-metrics"><div><span>Lần nhấn</span><strong id="dt-click-samples">0</strong></div><div><span>Nghi click đúp</span><strong id="dt-click-suspects">0</strong></div><div><span>Khoảng cách gần nhất</span><strong id="dt-click-interval">—</strong></div></div>
-                    <p id="dt-click-check-status" role="status">Chọn bắt đầu, rồi bấm từng lần bằng chuột thật.</p>
-                    <div id="dt-click-check-log" class="dt-check-log" aria-label="Lịch sử kiểm tra click đúp"></div>
-                    <p class="dt-check-note">Ngưỡng là bộ lọc tham khảo, không phải chuẩn kết luận hỏng switch. Bấm nhanh chủ động vẫn có thể bị đánh dấu. Chạm màn hình không được tính trong bài thử này.</p>
-                </section>
-                <section class="dt-card dt-diagnostic-card" aria-labelledby="dt-wheel-check-title">
-                    <div class="dt-check-heading"><div><p class="dt-check-eyebrow">CUỘN MỘT CHIỀU</p><h2 id="dt-wheel-check-title">Kiểm tra tín hiệu cuộn ngược</h2></div><button type="button" class="dt-button" data-action="wheel-check">Bắt đầu lượt mới</button></div>
-                    <p>Cuộn đều theo chiều đã chọn trong khung chuột. Tín hiệu ngược chiều được tô màu để bạn đối chiếu với thao tác thực tế.</p>
-                    <div class="dt-check-controls"><label class="dt-select-label">Chiều thử <select id="dt-check-direction"><option value="down">Chỉ cuộn xuống</option><option value="up">Chỉ cuộn lên</option></select></label></div>
-                    <div class="dt-check-metrics dt-wheel-check-metrics"><div><span>Sự kiện đã nhận</span><strong id="dt-wheel-samples">0</strong></div><div><span>Ngược chiều đã chọn</span><strong id="dt-wheel-reversed">0</strong></div></div>
-                    <p id="dt-wheel-check-status" role="status">Chọn chiều và bắt đầu, dùng con lăn chuột thật để thử.</p>
-                    <div id="dt-wheel-check-log" class="dt-check-log" aria-label="Lịch sử kiểm tra cuộn ngược"></div>
-                    <p class="dt-check-note">Đổi chiều chủ động và touchpad có thể tạo cảnh báo. Bỏ qua thao tác Ctrl + cuộn để thu phóng. Bản web không xác nhận hỏng encoder hay phát hiện chắc chắn nấc cuộn bị mất.</p>
-                </section>
-            </div>
-            <div class="dt-stat-grid dt-mouse-stats">
-                <div class="dt-stat"><span>Tần suất sự kiện ước tính</span><strong id="dt-mouse-hz">—</strong><small>Hz · trong 2 giây gần nhất</small></div>
-                <div class="dt-stat"><span>Khoảng cách trung bình</span><strong id="dt-mouse-interval">—</strong><small>ms / sự kiện</small></div>
-                <div class="dt-stat"><span>Khoảng cách nhỏ nhất</span><strong id="dt-mouse-min">—</strong><small>ms / sự kiện</small></div>
-                <div class="dt-stat"><span>Khoảng cách lớn nhất</span><strong id="dt-mouse-max">—</strong><small>ms / sự kiện</small></div>
-            </div>
-            <p class="dt-measure-note">Tần suất trên là dữ liệu trình duyệt ghi nhận khi di chuột, dùng để tham khảo. Đây không phải phép đo trực tiếp polling rate USB hoặc độ trễ phần cứng như công cụ Windows.</p>
         </section>
         <noscript><p class="dt-measure-note">Bật JavaScript để sử dụng công cụ kiểm tra.</p></noscript>
     </main>

@@ -7,9 +7,9 @@
             : 'Chuyên cung cấp bàn phím cơ, switch, keycap và phụ kiện setup chính hãng.';
     @endphp
     <div class="store-footer-grid">
-        <div>
+        <div class="store-footer-company">
             <a class="store-footer-logo" href="/">@if($footerSettings?->logo)<img class="store-footer-brand-image" src="{{ Storage::url($footerSettings->logo) }}" alt="{{ $footerSettings->web_name ?: 'BABU STORE' }}" width="240" height="48" loading="lazy">@else<strong>{{ $footerSettings?->web_name ?: 'BABU STORE' }}</strong>@endif</a>
-            <p>{{ $footerBio }}</p>
+            <p class="store-footer-bio">{{ $footerBio }}</p>
             @if($footerSettings?->address)
                 <p class="store-footer-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 10c0 6-8 12-8 12S4 16 4 10a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg><span>{{ $footerSettings->address }}</span></p>
             @endif

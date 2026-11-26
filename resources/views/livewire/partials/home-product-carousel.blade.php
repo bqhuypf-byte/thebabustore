@@ -9,18 +9,26 @@
     $carouselCategories = \App\Models\Category::where('is_active', true)
         ->whereHas('product_cat', fn ($products) => $products->where('is_active', true)->whereHas('variants', fn ($variants) => $variants->where('stock', 'in_stock')))
         ->with(['product_cat' => $carouselScope])->orderBy('ordinal_number')->get();
-    $carouselGroups = collect([['key' => 'new', 'name' => 'Mới nhất', 'products' => $carouselLatest]])
-        ->concat($carouselCategories->map(fn ($category) => ['key' => (string) $category->id, 'name' => $category->name, 'products' => $category->product_cat]));
+    $featuredPool = $carouselLatest->concat($carouselCategories->flatMap(fn ($category) => $category->product_cat))->unique('id')->values();
+    $featuredSold = \App\Models\OrderItem::query()->join('product_variants', 'product_variants.id', '=', 'order_items.product_variant_id')
+        ->whereIn('product_variants.product_id', $featuredPool->pluck('id'))
+        ->whereHas('order', fn ($q) => $q->whereIn('status', ['delivered', 'completed']))
+        ->selectRaw('product_variants.product_id, SUM(order_items.quantity) as sold')->groupBy('product_variants.product_id')->pluck('sold', 'product_id');
+    $carouselGroups = collect([
+        ['key' => 'best', 'name' => 'Bán chạy', 'products' => $featuredPool->filter(fn ($product) => ($featuredSold[$product->id] ?? 0) > 0)->sortByDesc(fn ($product) => $featuredSold[$product->id])->take(8)],
+        ['key' => 'new', 'name' => 'Hàng mới về', 'products' => $carouselLatest],
+        ['key' => 'combo', 'name' => 'Combo setup', 'products' => $featuredPool->filter(fn ($product) => preg_match('/\bcombo\b/iu', $product->name))->take(8)],
+    ]);
 @endphp
-<section class="home-catalog" aria-labelledby="home-catalog-title" x-data="{ active: 'new' }">
-    <div class="home-catalog-heading"><h2 id="home-catalog-title">Sản phẩm theo danh mục</h2><p>Khám phá gaming gear cho góc máy của bạn.</p></div>
-    <div class="home-catalog-tabs" role="tablist" aria-label="Danh mục sản phẩm" @keydown.arrow-right.prevent="const tabs = [...$el.querySelectorAll('[role=tab]')]; const next = tabs[(tabs.indexOf(document.activeElement) + 1) % tabs.length]; next.focus(); next.click()" @keydown.arrow-left.prevent="const tabs = [...$el.querySelectorAll('[role=tab]')]; const prev = tabs[(tabs.indexOf(document.activeElement) + tabs.length - 1) % tabs.length]; prev.focus(); prev.click()">
+<section class="home-catalog" aria-labelledby="home-catalog-title" x-data="{ active: 'best' }">
+    <div class="home-catalog-heading"><div><h2 id="home-catalog-title">Sản phẩm nổi bật</h2><p>Khám phá gaming gear cho góc máy của bạn.</p></div><a href="/shop">Xem tất cả</a></div>
+    <div class="home-catalog-tabs" role="tablist" aria-label="Nhóm sản phẩm nổi bật" @keydown.arrow-right.prevent="const tabs = [...$el.querySelectorAll('[role=tab]')]; const next = tabs[(tabs.indexOf(document.activeElement) + 1) % tabs.length]; next.focus(); next.click()" @keydown.arrow-left.prevent="const tabs = [...$el.querySelectorAll('[role=tab]')]; const prev = tabs[(tabs.indexOf(document.activeElement) + tabs.length - 1) % tabs.length]; prev.focus(); prev.click()">
         @foreach($carouselGroups as $group)
             <button type="button" role="tab" id="catalog-tab-{{ $group['key'] }}" aria-controls="catalog-panel-{{ $group['key'] }}" :aria-selected="(active === '{{ $group['key'] }}').toString()" :tabindex="active === '{{ $group['key'] }}' ? 0 : -1" :class="{ 'is-active': active === '{{ $group['key'] }}' }" @click="active = '{{ $group['key'] }}'">{{ $group['name'] }}</button>
         @endforeach
     </div>
     @foreach($carouselGroups as $group)
-        <div id="catalog-panel-{{ $group['key'] }}" class="home-catalog-panel" role="tabpanel" aria-labelledby="catalog-tab-{{ $group['key'] }}" x-show="active === '{{ $group['key'] }}'" @if($group['key'] !== 'new') x-cloak @endif wire:key="home-catalog-{{ $group['key'] }}"
+        <div id="catalog-panel-{{ $group['key'] }}" class="home-catalog-panel" role="tabpanel" aria-labelledby="catalog-tab-{{ $group['key'] }}" x-show="active === '{{ $group['key'] }}'" @if($group['key'] !== 'best') x-cloak @endif wire:key="home-catalog-{{ $group['key'] }}"
             x-data="{
                 progress: 0, atStart: true, atEnd: false, observer: null,
                 sync() { const track = this.$refs.track; const max = Math.max(0, track.scrollWidth - track.clientWidth); this.progress = max > 0 ? track.scrollLeft / max * 100 : 0; this.atStart = track.scrollLeft <= 2; this.atEnd = max - track.scrollLeft <= 2; },
@@ -44,6 +52,7 @@
                         </div>
                         <div class="home-catalog-body">
                             <a class="home-catalog-name" href="/product/{{ $product->slug }}">{{ $product->name }}</a>
+                            <div class="home-product-meta">@if($product->approved_reviews_count > 0)<span class="home-product-star">★</span> {{ number_format($product->approved_reviews_avg, 1) }} · {{ $product->approved_reviews_count }} đánh giá @else Chưa có đánh giá @endif  · Đã bán {{ number_format($featuredSold[$product->id] ?? 0, 0, ',', '.') }}</div>
                             <div class="home-catalog-price">@if($priceVaries)<span>Từ </span>@endif{{ number_format($price ?? $product->price, 0, ',', '.') }}₫</div>
                             @if($variantImages->isNotEmpty())
                                 <div class="home-catalog-variants" aria-label="Ảnh phiên bản {{ $product->name }}">
@@ -53,6 +62,7 @@
                                     @if($variantImages->count() > 4)<button type="button" class="home-catalog-more" wire:click="openPreview({{ $product->id }})" aria-label="Xem thêm phiên bản {{ $product->name }}">+{{ $variantImages->count() - 4 }}</button>@endif
                                 </div>
                             @endif
+                            @include('livewire.partials.purchase-card-button', ['purchaseCardProduct'=>$product, 'purchaseCardClass'=>'home-product-add'])
                         </div>
                     </article>
                 @empty

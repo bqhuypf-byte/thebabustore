@@ -15,9 +15,9 @@ class VariantSelection
         foreach ($variants as $variant) {
             $attributes = collect($variant->classification ?: [])->filter(fn ($value, $key) => is_string($key) && trim($key) !== '' && is_string($value) && trim($value) !== '')->mapWithKeys(fn ($value, $key) => [trim($key) => trim($value)])->all();
             if (!$attributes) {
-                // Derive a model and colour only when every existing variant follows this unambiguous pattern.
-                if (!preg_match('/^(.+?)\s+(gray|grey|purple|blue|black|golden|gold|silver|white|green|pink|orange|red)$/iu', trim($variant->name), $match)) return [];
-                $attributes = ['Dòng máy' => trim($match[1]), 'Màu sắc' => ucfirst(mb_strtolower($match[2]))];
+                // Only infer explicit known colour words; require a unique complete map below.
+                $attributes = self::inferAttributes($variant->name, $product);
+                if (!$attributes) return [];
             }
             $map[$variant->id] = $attributes;
         }
@@ -37,6 +37,48 @@ class VariantSelection
         }
         foreach ($map as $id => $attrs) $map[$id] = array_replace(array_fill_keys($keys, ''), $attrs);
         return $map;
+    }
+
+    private static function inferAttributes(string $name, Product $product): array
+    {
+        // Match colour phrases longest-first, so Rose Red / Black Gold remain one colour.
+        $colours = [
+            'xanh da trời','xanh dương','xanh lá','xanh đen','trắng xanh','trắng đỏ','cam trắng','xanh trắng','đen polar',
+            'đen hồng gradient','đen gradient','đen graphic','trắng graphic','đen vàng','đen đỏ','hồng nhạt','sương mù trắng',
+            'rose red','white blue','black red','polar black','polar blue','sky blue','black gold','blue gradient','black gradient',
+            'red metalic','đỏ metalic','berry red','steel black','ice white','white gold','light pink','pastel pink','lake green',
+            'black pink','white graphic','mint','cheese','crystal','cyan','rose','snow','retro',
+            'trắng','đen','đỏ','cam','hồng','tím','vàng','bạc','xám','xanh','nâu',
+            'gray','grey','purple','blue','black','golden','gold','silver','white','green','pink','orange','red',
+        ];
+        usort($colours, fn($a,$b) => mb_strlen($b) <=> mb_strlen($a));
+        $pattern = implode('|', array_map(fn($value) => preg_quote($value, '/'), $colours));
+        $name = preg_replace('/\s+/u', ' ', trim($name));
+        $name = preg_replace('/^màu\s+/iu', '', $name);
+        // A colour-only variant inherits its actual product's model name, never an invented version.
+        if (preg_match('/^('.$pattern.')$/iu', $name, $match)) {
+            return ['Phiên bản' => $product->name, 'Màu sắc' => self::colourLabel($match[1])];
+        }
+        if (preg_match('/^('.$pattern.')(?:\s*-\s*|\s+)(.+)$/iu', $name, $match)) {
+            $model = self::versionLabel(trim($match[2]));
+            return ['Phiên bản' => $model, 'Màu sắc' => self::colourLabel($match[1])];
+        }
+        if (preg_match('/^(.+?)(?:\s*-\s*|\s+)('.$pattern.')$/iu', $name, $match)) {
+            return ['Phiên bản' => self::versionLabel(trim($match[1])), 'Màu sắc' => self::colourLabel($match[2])];
+        }
+        return [];
+    }
+
+    private static function versionLabel(string $value): string
+    {
+        $key = mb_strtolower(preg_replace('/\s*-\s*/u', '-', trim($value)));
+        $switchLabels = ['linear'=>'Linear', 'tactile'=>'Tactile', 'clicky'=>'Clicky', 'clikcy'=>'Clicky', 'silent-linear'=>'Silent Linear', 'silent-tactile'=>'Silent Tactile'];
+        return $switchLabels[$key] ?? preg_replace('/\bpro\b/iu', 'Pro', trim($value));
+    }
+
+    private static function colourLabel(string $value): string
+    {
+        return mb_strtoupper(mb_substr($value, 0, 1)).mb_strtolower(mb_substr($value, 1));
     }
 
     public static function select(Product $product, $selectedVariant, string $group, string $value): ?ProductVariant

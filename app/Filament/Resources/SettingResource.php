@@ -37,6 +37,7 @@ class SettingResource extends Resource
             ->schema([
                 Forms\Components\Tabs::make('Cài đặt') // Đổi tên tab
                     ->tabs([
+                        \App\Support\RepairContentSchema::tab(),
                         Tabs\Tab::make('Trang chủ')
                             ->icon('heroicon-o-home')
                             ->schema([
@@ -55,14 +56,16 @@ class SettingResource extends Resource
                                         Forms\Components\Select::make('layout')->label('Bố cục')->options([
                                             'split' => 'Giới thiệu: ảnh và nội dung hai cột',
                                             'banner' => 'Banner: HUB / cộng đồng',
+                                            'newsletter' => 'Đăng ký email: ảnh nền',
                                             'catalog' => 'Banner sản phẩm: ảnh nền và chữ nổi',
                                             'cards' => 'Thẻ: người giới thiệu / ảnh khách hàng',
                                             'faq' => 'Câu hỏi thường gặp',
+                                            'setup' => 'Góc setup: ba ảnh khách hàng',
                                         ])->required()->default('split')->live(),
                                         Forms\Components\TextInput::make('eyebrow')->label('Dòng nhãn nhỏ')->maxLength(80)->visible(fn (Forms\Get $get) => $get('layout') === 'catalog'),
                                         Forms\Components\TextInput::make('title')->label('Tiêu đề')->required()->maxLength(255),
                                         Forms\Components\Textarea::make('body')->label('Nội dung')->rows(3),
-                                        Forms\Components\FileUpload::make('image')->label('Ảnh chính')->image()->disk('public')->directory('homepage')->visible(fn (Forms\Get $get) => in_array($get('layout'), ['split', 'banner', 'catalog'])),
+                                        Forms\Components\FileUpload::make('image')->label('Ảnh chính')->image()->disk('public')->directory('homepage')->visible(fn (Forms\Get $get) => in_array($get('layout'), ['split', 'banner', 'catalog', 'newsletter'])),
                                         Forms\Components\Toggle::make('full_link')->label('Bấm toàn bộ banner để mở liên kết')->default(false)->visible(fn (Forms\Get $get) => in_array($get('layout'), ['split', 'banner', 'catalog'])),
                                         Forms\Components\TextInput::make('button_label')->label('Chữ trên nút')->maxLength(100)->visible(fn (Forms\Get $get) => in_array($get('layout'), ['split', 'banner', 'catalog'])),
                                         Forms\Components\TextInput::make('link')->label('Liên kết')->maxLength(2048)->rules(['nullable', 'regex:~^(?:/(?!/)|https?://)[^\s]*$~i'])->helperText('Đường dẫn nội bộ /shop hoặc URL https://...')->visible(fn (Forms\Get $get) => in_array($get('layout'), ['split', 'banner', 'catalog'])),
@@ -71,7 +74,7 @@ class SettingResource extends Resource
                                             Forms\Components\Textarea::make('body')->label('Nội dung / câu trả lời')->rows(3),
                                             Forms\Components\FileUpload::make('image')->label('Ảnh')->image()->disk('public')->directory('homepage'),
                                             Forms\Components\TextInput::make('link')->label('Liên kết')->maxLength(2048)->rules(['nullable', 'regex:~^(?:/(?!/)|https?://)[^\s]*$~i']),
-                                        ])->defaultItems(0)->collapsible()->itemLabel(fn (array $state): ?string => $state['title'] ?? null)->visible(fn (Forms\Get $get) => in_array($get('layout'), ['cards', 'faq'])),
+                                        ])->defaultItems(0)->collapsible()->itemLabel(fn (array $state): ?string => $state['title'] ?? null)->visible(fn (Forms\Get $get) => in_array($get('layout'), ['cards', 'faq', 'setup'])),
                                     ])->defaultItems(0)->collapsible()->itemLabel(fn (array $state): ?string => $state['title'] ?? null)->columnSpanFull(),
                             ]),
                         Tabs\Tab::make('Thông Tin')

@@ -1,0 +1,11 @@
+﻿{
+  "tool": "built-in imagegen",
+  "wide": "Premium Black Friday hero for THE BABU STORE, exact wide 3:1; massive sculpted silver-chrome gothic Black Friday lettering, vivid violet/lavender and near-black carbon/halftone background, light streaks from lower corners. Exact copy: THE BABU STORE; Black Friday; SIÊU SALE GAMING GEAR. No red/orange, prices, discounts, dates, percentages, buttons or products.",
+  "mobile": "Recompose the silver-chrome violet artwork as 3:2 landscape for a 390px phone, two-line Black Friday in safe margins. Preserve THE BABU STORE and SIÊU SALE GAMING GEAR, violet carbon/halftone texture and lavender streaks. No fabricated pricing or campaign terms.",
+  "outputs": {
+    "desktop": "storage/app/public/promotions/black-friday-2026/chrome/banner.webp",
+    "mobile": "storage/app/public/promotions/black-friday-2026/chrome/banner-mobile.webp",
+    "product_banner": "storage/app/public/promotions/black-friday-2026/chrome/product-banner.webp",
+    "originals": "storage/app/public/promotions/black-friday-2026/chrome/originals/"
+  }
+}

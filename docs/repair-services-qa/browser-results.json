@@ -1,0 +1,31 @@
+{
+  "desktop": {
+    "overflow": false,
+    "hero": true,
+    "cards": 12,
+    "columns": "305px 305px 305px 305px"
+  },
+  "variantPrice": "200.000đ",
+  "dialog": {
+    "open": true,
+    "rows": 3,
+    "price": "200.000đ"
+  },
+  "prefill": "Cần tư vấn: Hàn switch bàn phím cơ (Hàn switch — 75% – TKL). Model / tình trạng: ",
+  "sensor": [
+    "Kiểm tra sensor / tracking bất thường"
+  ],
+  "empty": true,
+  "mouse": 15,
+  "mobile": {
+    "overflow": false,
+    "columns": "173px 173px"
+  },
+  "modalMobile": {
+    "overflow": false,
+    "open": true
+  },
+  "escapeCloses": true,
+  "imageFailures": [],
+  "errors": []
+}

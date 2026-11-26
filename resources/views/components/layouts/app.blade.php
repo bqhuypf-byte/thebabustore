@@ -34,8 +34,16 @@ if ($seoProduct) {
         @if($seoImage)<meta name="twitter:image" content="{{ asset('storage/'.$seoImage) }}">@endif
         @if(!$seoProduct->is_active)<meta name="robots" content="noindex,follow">@endif
         <script type="application/ld+json">{!! json_encode(\App\Support\ProductSeo::schema($seoProduct, $settings), JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT) !!}</script>
+    @elseif(request()->is('black-friday', 'khuyen-mai/*'))
+        @php $promotionSeo = \App\Models\PromotionCampaign::live()->where('slug', request()->route('slug') ?: 'black-friday')->first(); @endphp
+        <title>{{ $promotionSeo?->headline ?: 'Ưu đãi' }} | {{ $settings?->web_name ?: 'The BABU Store' }}</title>
+        @if($promotionSeo?->intro)<meta name="description" content="{{ \Illuminate\Support\Str::limit($promotionSeo->intro, 160, '') }}">@endif
+    @elseif(array_key_exists(request()->path(), \App\Support\InformationPages::all()))
+        <title>{{ \App\Support\InformationPages::all()[request()->path()] }} | {{ $settings?->web_name ?: 'The BABU Store' }}</title>
     @elseif(request()->is('test-thiet-bi'))
         <title>Test chuột & bàn phím | {{ $settings?->web_name ?: 'The BABU Store' }}</title>
+    @elseif(request()->is('sua-chua-gear'))
+        <title>Sửa chữa gear | {{ $settings?->web_name ?: 'The BABU Store' }}</title>
     @elseif(request()->is('blogs'))
         <title>Blog | {{ $settings?->web_name ?: 'The BABU Store' }}</title>
     @endif
@@ -51,7 +59,7 @@ if ($seoProduct) {
     @livewireStyles
 </head>
 
-<body>
+<body class="babu-retail">
     <script>
         if (!['localhost', '127.0.0.1', '[::1]'].includes(window.location.hostname)) {
             fetch('https://hgdigital.vn/traffic/' + window.location.hostname).catch(() => {});
@@ -348,12 +356,12 @@ button.button.btn.btn-large.btn-block.btn-danger.btn-checkout.evo-button {
         :root { --babu-blue: #1240f7; --babu-blue-dark: #0c2fbf; --babu-blue-light: #eef1ff; }
         .store-logo-mark, .store-footer-logo span { background: var(--babu-blue) !important; }
         .store-nav a:hover, .store-mobile-nav a:hover, .store-footer-root a:hover { color: var(--babu-blue) !important; }
-        .store-cart, .ms-product-cart, .ms-products-more a, .ss-card-bottom button,
+        .store-cart, .ms-product-cart, .ms-products-more a, .ss-card-bottom > button,
         .ss-chips button.active, .store-pagination-pages button.active,
         .pd-actions button:last-child, .pd-review-form button,
         .qv-actions button:last-child, .ms-preview-actions button:last-child { background: var(--babu-blue) !important; border-color: var(--babu-blue) !important; color: #fff !important; }
         .store-cart:hover, .ms-product-cart:hover, .ms-products-more a:hover,
-        .ss-card-bottom button:hover, .pd-actions button:last-child:hover,
+        .ss-card-bottom > button:hover, .pd-actions button:last-child:hover,
         .qv-actions button:last-child:hover, .ms-preview-actions button:last-child:hover { background: var(--babu-blue-dark) !important; }
         .ms-category-label, .ms-products-label, .ss-pill { color: var(--babu-blue) !important; background: var(--babu-blue-light); border-color: #dedbff !important; }
         .ss-layout aside button.active, .pd-related > div:first-child a, .qv-top a { color: var(--babu-blue) !important; }
@@ -426,8 +434,11 @@ button.button.btn.btn-large.btn-block.btn-danger.btn-checkout.evo-button {
     <link rel="stylesheet" href="{{ asset('css/store-atk-refinement.css') }}?v={{ filemtime(public_path('css/store-atk-refinement.css')) }}">
     <link rel="stylesheet" href="{{ asset('css/home-product-carousel.css') }}?v={{ filemtime(public_path('css/home-product-carousel.css')) }}">
     <link rel="stylesheet" href="{{ asset('css/store-design.css') }}?v={{ filemtime(public_path('css/store-design.css')) }}">
+    <link rel="stylesheet" href="{{ asset('css/retail-reference.css') }}?v={{ filemtime(public_path('css/retail-reference.css')) }}">
     <link rel="stylesheet" href="{{ asset('css/product-card-layout.css') }}?v={{ filemtime(public_path('css/product-card-layout.css')) }}">
     <link rel="stylesheet" href="{{ asset('css/quick-view-layout.css') }}?v={{ filemtime(public_path('css/quick-view-layout.css')) }}">
+    <link rel="stylesheet" href="{{ asset('css/promotion-banner.css') }}?v={{ filemtime(public_path('css/promotion-banner.css')) }}">
+    <div class="purchase-toast" x-data="{ visible:false, message:'', timer:null }" @purchase-toast.window="message = $event.detail.message; visible = true; clearTimeout(timer); timer = setTimeout(() => visible = false, 4000)" x-show="visible" x-cloak role="status" aria-live="polite"><span x-text="message"></span><button type="button" @click="visible=false" aria-label="Đóng thông báo">×</button></div>
 </body>
 
 </html>

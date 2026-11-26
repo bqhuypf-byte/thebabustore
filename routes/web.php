@@ -51,6 +51,8 @@ Route::get('/bao-tri', function () {
 });
 
 Route::get('/', Home::class);
+Route::get('/black-friday', \App\Livewire\PromotionCampaignPage::class)->name('promotions.black-friday');
+Route::get('/khuyen-mai/{slug}', \App\Livewire\PromotionCampaignPage::class)->name('promotions.show');
 Route::get('/about', About::class);
 Route::get('/contact', Contact::class);
 Route::get('/sua-chua-gear', \App\Livewire\RepairServices::class)->name('repair-services');

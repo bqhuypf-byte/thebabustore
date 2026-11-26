@@ -13,6 +13,7 @@ class DeviceTesterTest extends TestCase
             ->assertSee('id="dt-keyboard"', false)
             ->assertSee('id="dt-mouse"', false)
             ->assertSee('device-tester.js')->assertSee('device-tester.css')
-            ->assertSee('polling rate USB');
+            ->assertSee('dt-auto-results')->assertSee('dt-results-card')
+            ->assertDontSee('dt-cps-details')->assertDontSee('dt-advanced')->assertDontSee('dt-mouse-stats');
     }
 }

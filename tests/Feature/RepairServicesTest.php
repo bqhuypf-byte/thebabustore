@@ -30,7 +30,7 @@ class RepairServicesTest extends TestCase
     {
         $this->get('/sua-chua-gear')->assertOk()
             ->assertSee('Chăm lại gear.')->assertSee('care-request-form')
-            ->assertSee('Liên hệ báo giá')->assertSee('Liên hệ xác nhận')
+            ->assertSee('Báo giá sau kiểm tra')->assertSee('150.000đ')->assertSee('repair-shop-grid')->assertDontSee('care-service-directory')
             ->assertDontSee('0787.955.888')->assertDontSee('0995.521.999')
             ->assertDontSee('90%')->assertDontSee('15–30 phút');
         $this->assertCount(4, RepairServicesContent::groups());
@@ -41,6 +41,51 @@ class RepairServicesTest extends TestCase
                 $this->assertNull($item['warranty']);
             }
         }
+    }
+
+    public function test_service_selection_prefills_device_and_preserves_customer_description(): void
+    {
+        Livewire::test(RepairServices::class)->call('chooseService', 'mouse', 0)
+            ->assertSet('deviceType', 'mouse')->assertSet('description', 'Cần tư vấn: Thay switch chuột. Model / tình trạng: ')
+            ->set('description', 'Tôi dùng G304, nút trái bị double click.')
+            ->call('chooseService', 'keyboard', 0)->assertSet('deviceType', 'keyboard')
+            ->assertSet('description', 'Tôi dùng G304, nút trái bị double click.');
+        Livewire::test(RepairServices::class)->call('chooseService', 'unknown', 999)
+            ->assertSet('deviceType', '')->assertSet('description', '');
+    }
+
+    public function test_admin_content_is_used_and_unverified_or_unsafe_prices_are_hidden(): void
+    {
+        $setting = Setting::query()->firstOrFail();
+        $groups = RepairServicesContent::defaults();
+        $groups[0]['items'][0]['name'] = 'Dịch vụ được chỉnh trong admin';
+        $groups[0]['items'][0]['price_from'] = 123456;
+        $setting->update(['repair_services' => $groups, 'repair_parts' => [
+            ['name' => 'Chưa xác minh', 'price' => 123456, 'verified' => false],
+            ['name' => 'URL không an toàn', 'price' => 345678, 'verified' => true, 'source_url' => 'javascript:alert(1)', 'checked_at' => '2026-11-25'],
+            ['name' => 'Đã xác minh', 'device' => 'mouse', 'price' => 23456, 'verified' => true, 'source_url' => 'https://example.test/part', 'checked_at' => '2026-11-25'],
+        ]]);
+        $this->assertSame('Dịch vụ được chỉnh trong admin', RepairServicesContent::groups()[0]['items'][0]['name']);
+        $this->assertNull(RepairServicesContent::groups()[0]['items'][0]['price_from']);
+        $parts = RepairServicesContent::parts();
+        $this->assertNull($parts[0]['price']);
+        $this->assertNull($parts[1]['price']);
+        $this->assertNull($parts[1]['source_url']);
+        $this->assertSame(23456, $parts[2]['price']);
+    }
+
+    public function test_admin_can_save_repair_catalog_and_source_prices(): void
+    {
+        $this->actingAs(\App\Models\User::factory()->create(['is_admin' => true]));
+        $setting = Setting::query()->firstOrFail();
+        $groups = RepairServicesContent::defaults();
+        $groups = [array_merge($groups[0], ['items' => [array_merge($groups[0]['items'][0], ['name' => 'Dịch vụ sửa từ form admin'])]])];
+        $setting->update(['repair_services' => $groups, 'repair_parts' => []]);
+        Livewire::test(\App\Filament\Pages\RepairCatalog::class)
+            ->fillForm(['repair_services' => $groups, 'repair_parts' => RepairServicesContent::partDefaults()])
+            ->call('save')->assertHasNoFormErrors();
+        $this->assertSame('Dịch vụ sửa từ form admin', $setting->fresh()->repair_services[0]['items'][0]['name']);
+        $this->get('/sua-chua-gear')->assertOk()->assertSee('Dịch vụ sửa từ form admin');
     }
 
     public function test_required_fields_and_invalid_device_are_rejected_without_mail(): void

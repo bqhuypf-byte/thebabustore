@@ -24,3 +24,11 @@ body.babu-retail #product-page .pd-photo-grid button:focus-visible{outline:2px s
 
 /* Give the main product photograph more room on three-column desktops. */
 @media(min-width:1200px){body.babu-retail #product-page .pd-product-frame .pd-grid:has(.pd-photo-grid){grid-template-columns:minmax(0,1.4fr) minmax(0,1.2fr) minmax(230px,.7fr)}}
+
+/* A single thumbnail row with navigation at either end. */
+body.babu-retail #product-page .pd-product-frame .pd-gallery.pd-photo-grid .pd-thumbnail-carousel{grid-column:1;grid-row:2;display:grid;grid-template-columns:24px minmax(0,1fr) 24px;align-items:center;gap:8px;min-width:0;width:100%}
+body.babu-retail #product-page .pd-product-frame .pd-gallery.pd-photo-grid .pd-thumbnails{grid-column:2;grid-row:1;display:flex;gap:10px;max-width:100%;overflow-x:auto;overflow-y:hidden;scroll-snap-type:x mandatory;scrollbar-width:none;padding:3px;box-sizing:border-box}
+body.babu-retail #product-page .pd-product-frame .pd-gallery.pd-photo-grid .pd-thumbnails::-webkit-scrollbar{display:none}
+body.babu-retail #product-page .pd-product-frame .pd-gallery.pd-photo-grid .pd-thumbnails button{flex:0 0 calc((100% - 30px)/4);scroll-snap-align:start}
+body.babu-retail #product-page .pd-product-frame .pd-gallery.pd-photo-grid .pd-thumb-arrow{display:grid;place-items:center;width:24px;height:36px;padding:0;border:1px solid #e5e7eb;border-radius:6px;background:#fff;color:#303744;font:26px/1 Roboto,sans-serif;cursor:pointer}
+body.babu-retail #product-page .pd-product-frame .pd-gallery.pd-photo-grid .pd-thumb-arrow:hover{background:#f4f5ff;color:#182abb}

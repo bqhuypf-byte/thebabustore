@@ -13,6 +13,8 @@ class Setting extends Model
 
     protected $fillable = [
         'homepage_sections',
+        'repair_services',
+        'repair_parts',
         'address',
         'hotline',
         'support_hours',
@@ -65,7 +67,7 @@ class Setting extends Model
 
     protected function casts(): array
     {
-        return ['homepage_sections' => 'array'];
+        return ['homepage_sections' => 'array', 'repair_services' => 'array', 'repair_parts' => 'array'];
     }
 
     protected static function boot()

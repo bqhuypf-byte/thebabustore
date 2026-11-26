@@ -4,30 +4,50 @@ namespace App\Support;
 
 class RepairServicesContent
 {
+    public static function defaults(): array
+    {
+        return json_decode(file_get_contents(resource_path('data/repair-services.json')), true, 512, JSON_THROW_ON_ERROR);
+    }
+
     public static function groups(): array
     {
-        $definitions = [
-            ['keyboard', 'Thay switch / hotswap', 'Xử lý phím kẹt, chập chờn và thay switch phù hợp với bàn phím.', [
-                'Thay switch MX', 'Thay switch Romer-G', 'Hàn switch của khách', 'Rã hàn switch của khách', 'Combo rã và hàn switch',
-            ]],
-            ['cleaning', 'Vệ sinh & lube bàn phím', 'Làm sạch, chăm switch và stab để cải thiện trải nghiệm gõ.', [
-                'Vệ sinh keycap, PCB, plate và case', 'Lube switch', 'Mod stab', 'Mod LED đơn 2 chân', 'Phục hồi keycap, khung và mạch bàn phím', 'Sơn bàn phím theo yêu cầu', 'Kiểm tra bàn phím vào nước, rỉ bề mặt',
-            ]],
-            ['mouse', 'Sửa chuột', 'Kiểm tra double click, cuộn lăn, dây kết nối và các lỗi thường gặp.', [
-                'Thay switch chuột', 'Thay cuộn lăn', 'Thay hoặc nối dây chuột', 'Thay cổng kết nối', 'Thay pin chuột', 'Kiểm tra lỗi mạch chuột', 'Thay feet chuột', 'Vệ sinh chuột',
-            ]],
-            ['headphones', 'Tai nghe & cáp', 'Kiểm tra âm thanh, dây kết nối và các bộ phận cần thay thế.', [
-                'Thay đệm tai nghe', 'Thay đệm quai đeo', 'Thay hoặc nối dây tai nghe', 'Kiểm tra driver và lỗi âm thanh', 'Vệ sinh tai nghe', 'Phục hồi gãy vỡ tai nghe',
-            ]],
-        ];
+        $groups = \App\Models\Setting::query()->value('repair_services');
+        $groups = is_string($groups) ? json_decode($groups, true) : $groups;
+        return array_map(static function (array $group) {
+            $group['device'] = $group['id'] === 'cleaning' ? 'keyboard' : $group['id'];
+            $group['items'] = array_map(static fn (array $item) => array_merge($item, [
+                'kind' => $item['kind'] ?? 'repair', 'symptoms' => $item['symptoms'] ?? '', 'scope' => $item['scope'] ?? '',
+                'price_from' => null, 'price_note' => 'Báo giá sau kiểm tra', 'warranty' => null,
+                'display_price' => ($item['kind'] ?? 'repair') !== 'repair' && is_numeric($item['reference_price_vnd'] ?? null) && $item['reference_price_vnd'] > 0 && filter_var($item['source_url'] ?? '', FILTER_VALIDATE_URL) ? (int) $item['reference_price_vnd'] : null,
+            ]), $group['items'] ?? []);
+            return $group;
+        }, is_array($groups) ? $groups : self::defaults());
+    }
 
-        return array_map(static fn (array $group) => [
-            'id' => $group[0], 'title' => $group[1], 'description' => $group[2],
-            'items' => array_map(static fn (string $name) => [
-                'name' => $name, 'price_from' => null, 'price_note' => 'Liên hệ báo giá',
-                'warranty' => null, 'source' => 'Tài liệu dịch vụ do chủ shop cung cấp; giá và điều kiện chờ xác nhận.',
-            ], $group[3]),
-        ], $definitions);
+    public static function partDefaults(): array
+    {
+        return [
+            ['name' => 'Encoder Huano xanh', 'variant' => '10mm', 'device' => 'mouse', 'price' => 10500, 'unit' => 'cái', 'verified' => true, 'checked_at' => '2026-11-25', 'source_name' => 'LinkPC Gaming', 'source_url' => 'https://linkpcgaming.com/san-pham/cuon-chuot-scroll-encoder/nut-cuon-chuot-huano-xanh-10mm-nhieu-do-cao-chinh-hang-cuon-lan-chuot-2513.html', 'note' => 'Một nguồn bán. Cần đo đúng chiều cao encoder; chưa bao gồm công thay.'],
+            ['name' => 'Switch Kailh GM 8.0', 'variant' => 'Black Mamba', 'device' => 'mouse', 'price' => null, 'unit' => 'cái', 'verified' => false, 'checked_at' => '2026-11-25', 'source_name' => 'Zpro', 'source_url' => 'https://zpro.vn/switch-chuot-kailh-gm-8-0-black-mamba-80-trieu-lan-bam/p2384.html', 'note' => 'Nguồn báo hết hàng; liên hệ xác nhận giá và linh kiện phù hợp.'],
+            ['name' => 'Switch Huano Pink', 'variant' => '80M', 'device' => 'mouse', 'price' => null, 'unit' => 'cái', 'verified' => false, 'checked_at' => '2026-11-25', 'source_name' => 'Zpro', 'source_url' => 'https://zpro.vn/switch-chuot-huano-pink-80m-80-trieu-lan-bam/p2383.html', 'note' => 'Nguồn báo hết hàng; liên hệ xác nhận giá và linh kiện phù hợp.'],
+            ['name' => 'Switch bàn phím', 'variant' => 'Theo loại switch và socket', 'device' => 'keyboard', 'price' => null, 'unit' => 'cái', 'verified' => false, 'note' => 'Cần xác định model và loại switch trước khi báo giá.'],
+            ['name' => 'Đệm tai / đệm đầu', 'variant' => 'Theo model tai nghe', 'device' => 'headphones', 'price' => null, 'unit' => 'bộ', 'verified' => false, 'note' => 'Kích thước và ngàm lắp được xác nhận theo thiết bị.'],
+        ];
+    }
+
+    public static function parts(): array
+    {
+        $parts = \App\Models\Setting::query()->value('repair_parts');
+        $parts = is_string($parts) ? json_decode($parts, true) : $parts;
+        return array_map(static function (array $part) {
+            $url = $part['source_url'] ?? '';
+            $valid = filter_var($url, FILTER_VALIDATE_URL) && in_array(parse_url($url, PHP_URL_SCHEME), ['http', 'https']);
+            $part['source_url'] = $valid ? $url : null;
+            if (! ($part['verified'] ?? false) || ! $valid || empty($part['checked_at']) || ! is_numeric($part['price'] ?? null) || $part['price'] <= 0) {
+                $part['price'] = null;
+            }
+            return $part;
+        }, is_array($parts) ? $parts : self::partDefaults());
     }
 
     public static function faqs(): array

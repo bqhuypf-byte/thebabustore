@@ -8,6 +8,7 @@
         @endif
         <span class="babu-blog-label">{{ $blogLabel }}</span>
     </a>
+    <time class="babu-blog-date" datetime="{{ ($post->published_at ?? $post->created_at)?->toDateString() }}">{{ ($post->published_at ?? $post->created_at)?->format('d/m/Y') }}</time>
     <h3 class="babu-blog-title"><a href="/blog/{{ $post->slug }}">{{ $post->title }}</a></h3>
     <a class="babu-blog-read" href="/blog/{{ $post->slug }}" aria-label="Đọc tiếp: {{ $post->title }}">Đọc tiếp <span aria-hidden="true">→</span></a>
 </article>

@@ -23,6 +23,22 @@ class RepairServices extends Component
     #[Locked]
     public bool $submitted = false;
 
+    public function chooseService(string $groupId, int $index, ?int $tierIndex = null): void
+    {
+        $group = collect(RepairServicesContent::groups())->firstWhere('id', $groupId);
+        $item = $group['items'][$index] ?? null;
+        if (! $item || ! in_array($group['device'], ['keyboard', 'mouse', 'headphones'])) {
+            return;
+        }
+        $this->deviceType = $group['device'];
+        if (trim($this->description) === '') {
+            $tier = $tierIndex !== null ? ($item['tiers'][$tierIndex] ?? null) : null;
+            $variant = $tier ? ' ('.$tier['label'].' — '.$tier['condition'].')' : '';
+            $this->description = 'Cần tư vấn: '.$item['name'].$variant.'. Model / tình trạng: ';
+        }
+        $this->resetValidation();
+    }
+
     public function submit(): void
     {
         if ($this->submitted) {
@@ -98,6 +114,7 @@ class RepairServices extends Component
         return view('repair-services', [
             'groups' => RepairServicesContent::groups(),
             'faqs' => RepairServicesContent::faqs(),
+            'parts' => RepairServicesContent::parts(),
             'serviceMedia' => $media,
             'repairSettings' => Setting::query()->first(),
         ]);
