@@ -149,6 +149,7 @@ body.babu-retail .store-footer-bottom { max-width:1240px; margin:auto; padding:1
  body.babu-retail .store-header-root.store-reference-header.store-reference-header.store-reference-header .store-inline-search { grid-column:1 / -1; grid-row:2; width:100%; min-width:0; }
  body.babu-retail .store-header-root.store-reference-header.store-reference-header.store-reference-header .store-menu-toggle { display:block!important; position:static!important; padding:0!important; grid-column:1; grid-row:1; justify-self:start; }
  body.babu-retail .store-header-root.store-reference-header.store-reference-header.store-reference-header .store-logo { grid-column:2; grid-row:1; justify-self:center; justify-content:center; width:min(220px,100%)!important; min-width:0; }
+ body.babu-retail .store-header-root .store-logo-picture { display:block; width:100%; }
  body.babu-retail .store-header-root > .store-nav { display:none!important; }
  body.babu-retail .store-header-root.store-reference-header.store-reference-header.store-reference-header .store-header-actions :is(.store-account,.store-warranty-lookup,.store-order-lookup) { display:none!important; }
  body.babu-retail .store-header-root.store-reference-header.store-reference-header.store-reference-header .store-cart { grid-column:3; grid-row:1; justify-self:end; margin-left:0; }

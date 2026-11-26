@@ -11,7 +11,14 @@
 
         <a class="store-logo" href="/" aria-label="{{ $headerSettings?->web_name ?: 'BABU STORE' }} - Trang chủ">
             @if($headerSettings?->logo)
+                @if(basename($headerSettings->logo) === '01KF33XQQYSMVG258X2954EE58.svg')
+                <picture class="store-logo-picture">
+                    <source media="(max-width: 850px)" srcset="{{ asset('images/babu-logo-mobile-vector.svg') }}">
+                @endif
                 <img class="store-brand-image" src="{{ Storage::url($headerSettings->logo) }}" alt="{{ $headerSettings->web_name ?: 'BABU STORE' }}" width="240" height="48" fetchpriority="high">
+                @if(basename($headerSettings->logo) === '01KF33XQQYSMVG258X2954EE58.svg')
+                </picture>
+                @endif
             @else
                 <strong>{{ $headerSettings?->web_name ?: 'BABU STORE' }}</strong>
             @endif
