@@ -477,7 +477,7 @@ body .ss-page .ss-card-bottom .ss-variant-options .ss-variant-option.is-selected
 .purchase-quantity input { width:64px; min-width:0; height:34px; padding:4px 6px; text-align:center; border:1px solid #ddd; border-radius:6px; background:#fff; }
 .purchase-quantity button:disabled,.purchase-actions button:disabled { opacity:.45; cursor:not-allowed; }
 .store-option-picker .opt:disabled { opacity:.4; cursor:not-allowed; }
-.purchase-toast { position:fixed; z-index:10010; right:20px; bottom:24px; display:flex; align-items:center; gap:16px; max-width:calc(100vw - 40px); padding:14px 18px; border-radius:12px; background:#171717; color:#fff; box-shadow:0 6px 24px #0003; }
+.purchase-toast { position:fixed; z-index:10010; right:20px; bottom:24px; display:flex; align-items:center; gap:16px; max-width:calc(100vw - 40px); padding:14px 18px; border-radius:12px; background:#15803d; color:#fff; box-shadow:0 6px 24px #14532d33; }
 .purchase-toast button { border:0; background:none; color:#fff; font-size:20px; cursor:pointer; }
 .purchase-toast[x-cloak] { display:none!important; }
 
