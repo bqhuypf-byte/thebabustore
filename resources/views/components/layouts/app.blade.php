@@ -19,7 +19,9 @@ if ($seoProduct) {
     <link rel="icon" href="{{ Storage::url($settings->web_icon)}}" type="image/png">
     <meta name="google" content="notranslate">
 
-    @if($seoProduct)
+    @if(request()->is('/'))
+        <title>The Babu Store | Gaming Gear &amp; Phụ kiện</title>
+    @elseif($seoProduct)
         <link rel="stylesheet" href="{{ asset('css/product-muse.css') }}?v={{ filemtime(public_path('css/product-muse.css')) }}">
         <link rel="stylesheet" href="{{ asset('css/product-muse-bridge.css') }}?v={{ filemtime(public_path('css/product-muse-bridge.css')) }}">
         <title>{{ $seoTitle }}</title>
